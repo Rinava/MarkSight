@@ -18,17 +18,30 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          code({ inline, className, children, ...props }) {
+          code({ className, children }) {
             const match = /language-(\w+)/.exec(className ?? "");
-            if (!inline && match) {
+            if (match) {
               return (
-                <SyntaxHighlighter {...props} PreTag="div" language={match[1]} style={oneDark}>
+                <SyntaxHighlighter
+                  PreTag="div"
+                  language={match[1]}
+                  style={oneDark}
+                  customStyle={{
+                    background: "var(--muted)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-md)",
+                    transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+                  }}
+                  codeTagProps={{
+                    style: { fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
+                  }}
+                >
                   {String(children).replace(/\n$/, "")}
                 </SyntaxHighlighter>
               );
             }
             return (
-              <code className={className} {...props}>
+              <code className={className}>
                 {children}
               </code>
             );

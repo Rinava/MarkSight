@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const STARTER = `# Welcome to MarkSight
 
@@ -28,13 +28,23 @@ export default function Home() {
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="p-2 md:p-3">
-          <div className="h-full">
-            <MarkdownEditor value={value} onChange={setValue} />
-          </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Editor</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="h-full rounded-md border bg-secondary">
+              <MarkdownEditor value={value} onChange={setValue} />
+            </div>
+          </CardContent>
         </Card>
-        <Card className="p-4 overflow-auto">
-          <MarkdownPreview value={debounced} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Preview</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-auto">
+            <MarkdownPreview value={debounced} />
+          </CardContent>
         </Card>
       </div>
     </div>

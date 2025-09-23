@@ -18,8 +18,13 @@ export function MarkdownEditor({ value, onChange }: MarkdownEditorProps) {
       markdown({ base: markdownLanguage }),
       EditorView.lineWrapping,
       EditorView.theme({
-        "&": { fontSize: "14px" },
+        "&": { fontSize: "14px", backgroundColor: "var(--secondary)", color: "var(--foreground)", fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
         ".cm-content": { padding: "12px" },
+        ".cm-gutters": { backgroundColor: "transparent", color: "var(--muted-foreground)", borderRight: "1px solid var(--border)" },
+        ".cm-lineNumbers .cm-gutterElement": { padding: "0 8px" },
+        ".cm-activeLine": { backgroundColor: "color-mix(in oklch, var(--muted) 100%, transparent)" },
+        ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "color-mix(in oklch, var(--accent) 25%, transparent)" },
+        ".cm-cursor": { borderLeftColor: "var(--accent)" },
       }),
     ];
   }, []);
