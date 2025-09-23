@@ -1,17 +1,25 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef, forwardRef, useImperativeHandle } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
+import { MarkdownToolbar } from "./markdown-toolbar";
 
 export interface MarkdownEditorProps {
   value: string;
   onChange: (next: string) => void;
+  showToolbar?: boolean;
 }
 
-export function MarkdownEditor({ value, onChange }: MarkdownEditorProps) {
+export interface MarkdownEditorRef {
+  insertText: (text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) => void;
+}
+
+export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
+  function MarkdownEditor({ value, onChange, showToolbar = true }, ref) {
   const [isFocused, setIsFocused] = useState(false);
+  const editorViewRef = useRef<EditorView | null>(null);
 
   const extensions = useMemo(function mkExtensions() {
     return [
@@ -33,13 +41,76 @@ export function MarkdownEditor({ value, onChange }: MarkdownEditorProps) {
     onChange(next);
   }, [onChange]);
 
+  const insertText = useCallback(function insert(text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) {
+    if (!editorViewRef.current) return;
+    
+    const view = editorViewRef.current;
+    const selection = view.state.selection.main;
+    
+    const from = replaceFrom ?? selection.from;
+    const to = replaceTo ?? selection.to;
+    
+    console.log('Editor insertText:', { text, cursorOffset, replaceFrom, replaceTo, from, to, selection: { from: selection.from, to: selection.to } });
+    
+    const changes = {
+      from,
+      to,
+      insert: text
+    };
+    
+    const newPosition = from + (cursorOffset ?? text.length);
+    
+    view.dispatch({
+      changes,
+      selection: {
+        anchor: newPosition,
+        head: newPosition
+      }
+    });
+    
+    view.focus();
+  }, []);
+
+  useImperativeHandle(ref, function getRef() {
+    return { insertText };
+  }, [insertText]);
+
+  const getCurrentContext = useCallback(function getContext() {
+    if (!editorViewRef.current) {
+      return { text: value, selection: { from: 0, to: 0 } };
+    }
+    
+    const view = editorViewRef.current;
+    const selection = view.state.selection.main;
+    
+    return {
+      text: view.state.doc.toString(),
+      selection: { from: selection.from, to: selection.to }
+    };
+  }, [value]);
+
+  const handleToolbarInsert = useCallback(function handleInsert(text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) {
+    insertText(text, cursorOffset, replaceFrom, replaceTo);
+  }, [insertText]);
+
   return (
-    <div className={isFocused ? "ring-2 ring-primary rounded-md" : "rounded-md"}>
+    <div className={`transition-all duration-300 ease-in-out ${
+      isFocused 
+        ? "ring-2 ring-primary shadow-lg rounded-md" 
+        : "ring-1 ring-border hover:ring-2 hover:ring-primary/50 rounded-md"
+    }`}>
+      {showToolbar && (
+        <MarkdownToolbar 
+          onInsert={handleToolbarInsert} 
+          getCurrentContext={getCurrentContext}
+        />
+      )}
       <CodeMirror
         value={value}
         onChange={handleChange}
         onFocus={function onF() { setIsFocused(true); }}
         onBlur={function onB() { setIsFocused(false); }}
+        onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
         height="100%"
         minHeight="300px"
         theme={undefined}
@@ -48,4 +119,6 @@ export function MarkdownEditor({ value, onChange }: MarkdownEditorProps) {
       />
     </div>
   );
-}
+});
+
+export { MarkdownEditor as default };
