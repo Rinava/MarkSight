@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
+import { useLocalStorage } from "@/lib/use-local-storage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const STARTER = `# Welcome to MarkSight
@@ -22,8 +23,11 @@ function greet(name: string) {
 `;
 
 export default function Home() {
-  const [value, setValue] = useState<string>(STARTER);
-  const debounced = useDebouncedValue(value, { delayMs: 200 });
+  const [value, setValue] = useLocalStorage({ 
+    key: "marksight-markdown-content", 
+    defaultValue: STARTER 
+  });
+  const debounced = useDebouncedValue(value, { delayMs: 50 });
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
