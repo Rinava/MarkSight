@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const nunito = Nunito({
   variable: "--font-geist-sans",
@@ -39,13 +40,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground`}>
         <ThemeProvider>
-          <div className="flex min-h-dvh flex-col">
-            <header className="flex items-center justify-between px-4 py-3 border-b">
-              <Logo />
-              <ThemeToggle />
-            </header>
-            <main className="flex-1">{children}</main>
-          </div>
+          <SidebarProvider>
+            <div className="flex min-h-dvh flex-col">
+              <header className="flex items-center justify-between px-4 py-3 border-b">
+                <Logo />
+                <ThemeToggle />
+              </header>
+              <main className="flex-1">{children}</main>
+            </div>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>

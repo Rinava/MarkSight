@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
-import { SimpleSidebar } from "@/components/simple-sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { ExportToolbar } from "@/components/export-toolbar";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 const STARTER =
   ["# Welcome to MarkSight 🌿", ""].join("\n") +
@@ -80,7 +81,6 @@ export default function Home() {
     key: "marksight-markdown-content", 
     defaultValue: STARTER 
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
 
   const handleReset = () => {
@@ -90,23 +90,15 @@ export default function Home() {
     setValue("");
   };
 
-  // Keyboard shortcut to toggle sidebar (Cmd/Ctrl + B)
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 'b') {
-        event.preventDefault();
-        setIsSidebarOpen(prev => !prev);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
   return (
-    <div className="flex h-screen bg-background">
-      {/* Main Content */}
-      <div className="flex-1 min-w-0">
+    <>
+      <AppSidebar content={debounced} />
+      <SidebarInset>
+        {/* Sidebar Toggle Button - Always visible */}
+        <div className="fixed top-4 right-4 z-50 md:top-20">
+          <SidebarTrigger className="bg-background border shadow-lg hover:bg-accent" />
+        </div>
+        
         <div className="h-full overflow-y-auto">
           <div className="p-4 sm:p-6 md:p-8">
             <div className="flex items-center gap-2 mb-6">
@@ -156,25 +148,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Right Sidebar - Always render on desktop, conditionally show */}
-      <div className={`hidden md:block transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-0'} flex-shrink-0 overflow-hidden`}>
-        <SimpleSidebar 
-          content={debounced} 
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-      </div>
-      
-      {/* Mobile Sidebar - Always rendered but positioned fixed */}
-      <div className="md:hidden">
-        <SimpleSidebar 
-          content={debounced} 
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-      </div>
-    </div>
+      </SidebarInset>
+    </>
   );
 }
