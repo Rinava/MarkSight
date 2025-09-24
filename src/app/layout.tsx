@@ -3,6 +3,7 @@ import { Nunito, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 
 const nunito = Nunito({
   variable: "--font-geist-sans",
@@ -19,6 +20,14 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "MarkSight",
   description: "Markdown Preview & Exporter",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +41,7 @@ export default function RootLayout({
         <ThemeProvider>
           <div className="flex min-h-dvh flex-col">
             <header className="flex items-center justify-between px-4 py-3 border-b">
-              <div className="font-medium">MarkSight</div>
+              <Logo />
               <ThemeToggle />
             </header>
             <main className="flex-1">{children}</main>
