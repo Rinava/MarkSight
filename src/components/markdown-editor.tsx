@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState, useRef, forwardRef, useImperativeHandle
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
+import { EditorState } from "@codemirror/state";
 import { MarkdownToolbar } from "./markdown-toolbar";
 
 export interface MarkdownEditorProps {
@@ -31,7 +32,10 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         ".cm-gutters": { backgroundColor: "transparent", color: "var(--muted-foreground)", borderRight: "1px solid var(--border)" },
         ".cm-lineNumbers .cm-gutterElement": { padding: "0 8px" },
         ".cm-activeLine": { backgroundColor: "color-mix(in oklch, var(--muted) 100%, transparent)" },
-        ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "color-mix(in oklch, var(--accent) 25%, transparent)" },
+        ".cm-selectionBackground": { backgroundColor: "#609B6E40" }, // Primary color with 25% opacity
+        "&.cm-focused .cm-selectionBackground": { backgroundColor: "#609B6E60" }, // Primary color with 37.5% opacity
+        ".dark .cm-selectionBackground": { backgroundColor: "#76B08540" },
+        ".dark &.cm-focused .cm-selectionBackground": { backgroundColor: "#76B08560" },
         ".cm-cursor": { borderLeftColor: "var(--accent)" },
       }),
     ];
@@ -50,7 +54,6 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
     const from = replaceFrom ?? selection.from;
     const to = replaceTo ?? selection.to;
     
-    console.log('Editor insertText:', { text, cursorOffset, replaceFrom, replaceTo, from, to, selection: { from: selection.from, to: selection.to } });
     
     const changes = {
       from,

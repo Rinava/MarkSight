@@ -212,4 +212,22 @@
 
   html { transition: color 0.3s ease, background-color 0.3s ease; }
   body, button, input, textarea, select { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+  /* Text selection styles */
+  ::selection {
+    background-color: #609B6E80; /* Primary color with 50% opacity */
+    color: #1B2E1E;
+  }
+  .dark ::selection {
+    background-color: #76B08580; /* Primary color with 50% opacity in dark mode */
+    color: #E6F0E2;
+  }
+
+  /* CodeMirror specific selection improvements */
+  .cm-editor ::selection {
+    background-color: #609B6E60 !important; /* Primary color with 37.5% opacity */
+  }
+  .dark .cm-editor ::selection {
+    background-color: #76B08560 !important; /* Primary color with 37.5% opacity in dark mode */
+  }
 }

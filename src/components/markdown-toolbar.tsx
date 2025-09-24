@@ -127,19 +127,19 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
         case '1':
           if (event.shiftKey) {
             event.preventDefault();
-            insertLine("# ", "Heading 1");
+            smartHeading(1);
           }
           break;
         case '2':
           if (event.shiftKey) {
             event.preventDefault();
-            insertLine("## ", "Heading 2");
+            smartHeading(2);
           }
           break;
         case '3':
           if (event.shiftKey) {
             event.preventDefault();
-            insertLine("### ", "Heading 3");
+            smartHeading(3);
           }
           break;
         case 'l':
@@ -201,8 +201,6 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     const { text, selection } = context;
     const hasSelection = selection.from !== selection.to;
     
-    console.log('Smart insert called:', { elementType, hasSelection, selection, selectedText: hasSelection ? text.substring(selection.from, selection.to) : 'none' });
-    
     if (hasSelection) {
       // Handle text selection - check if selection is already formatted
       const selectedText = text.substring(selection.from, selection.to);
@@ -213,21 +211,17 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
         return match && pattern.type === elementType;
       });
       
-      console.log('Selection analysis:', { selectedText, selectedPattern: selectedPattern?.type || 'none' });
-      
       if (selectedPattern) {
         // Remove formatting from selected text
         const innerMatch = selectedText.match(new RegExp(`^${selectedPattern.before.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(.+)${selectedPattern.after.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
         if (innerMatch) {
           const innerText = innerMatch[1];
-          console.log('Removing formatting:', { innerText });
           onInsert(innerText, innerText.length, selection.from, selection.to);
         }
       } else {
         // Wrap selected text with formatting
         const wrappedText = `${before}${selectedText}${after}`;
         const cursorOffset = before.length + selectedText.length + after.length;
-        console.log('Wrapping text:', { wrappedText, cursorOffset });
         onInsert(wrappedText, cursorOffset, selection.from, selection.to);
       }
       return;
@@ -291,21 +285,16 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
   };
 
   const insertText = (before: string, after: string = "", placeholder: string = "") => {
-    console.log('Insert text called:', { before, after, placeholder });
-    
     if (getCurrentContext) {
       const context = getCurrentContext();
       const { selection } = context;
       const hasSelection = selection.from !== selection.to;
-      
-      console.log('Context check:', { hasSelection, selection });
       
       if (hasSelection) {
         // Wrap selected text
         const selectedText = context.text.substring(selection.from, selection.to);
         const wrappedText = `${before}${selectedText}${after}`;
         const cursorOffset = before.length + selectedText.length + after.length;
-        console.log('Wrapping in insertText:', { selectedText, wrappedText, cursorOffset });
         onInsert(wrappedText, cursorOffset, selection.from, selection.to);
         return;
       }
@@ -314,7 +303,6 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     // Normal insertion with placeholder
     const text = placeholder ? `${before}${placeholder}${after}` : `${before}${after}`;
     const cursorOffset = placeholder ? before.length : before.length + after.length;
-    console.log('Normal insert:', { text, cursorOffset });
     onInsert(text, cursorOffset);
   };
 
@@ -322,6 +310,68 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     const text = placeholder ? `${prefix}${placeholder}` : prefix;
     const cursorOffset = prefix.length;
     onInsert(`\n${text}\n`, cursorOffset + 1);
+  };
+
+  const smartHeading = (level: number) => {
+    const prefix = '#'.repeat(level) + ' ';
+    const placeholder = `Heading ${level}`;
+    
+    if (!getCurrentContext) {
+      insertLine(prefix, placeholder);
+      return;
+    }
+
+    const context = getCurrentContext();
+    const { text, selection } = context;
+    const hasSelection = selection.from !== selection.to;
+    
+    if (hasSelection) {
+      const selectedText = text.substring(selection.from, selection.to);
+      
+      const lines = selectedText.split('\n');
+      if (lines.length > 1) {
+        const firstLine = lines[0];
+        const restLines = lines.slice(1);
+        
+        const cleanFirstLine = firstLine.replace(/^#+\s*/, '');
+        const newText = `${prefix}${cleanFirstLine}${restLines.length > 0 ? '\n' + restLines.join('\n') : ''}`;
+        const cursorOffset = newText.length;
+        
+        onInsert(newText, cursorOffset, selection.from, selection.to);
+      } else {
+        // Single line selection: convert to heading
+        const cleanText = selectedText.replace(/^#+\s*/, '');
+        const headingText = `${prefix}${cleanText}`;
+        const cursorOffset = headingText.length;
+        
+        onInsert(headingText, cursorOffset, selection.from, selection.to);
+      }
+      return;
+    }
+    
+    const lines = text.split('\n');
+    let currentLineIndex = 0;
+    let lineStart = 0;
+    
+    // Find which line the cursor is on
+    for (let i = 0; i < lines.length; i++) {
+      const lineEnd = lineStart + lines[i].length;
+      if (selection.from >= lineStart && selection.from <= lineEnd) {
+        currentLineIndex = i;
+        break;
+      }
+      lineStart = lineEnd + 1; // +1 for newline character
+    }
+    
+    const currentLine = lines[currentLineIndex];
+    const lineEnd = lineStart + currentLine.length;
+    
+    // Remove existing heading markers
+    const cleanLine = currentLine.replace(/^#+\s*/, '');
+    const newHeading = cleanLine ? `${prefix}${cleanLine}` : `${prefix}${placeholder}`;
+    const cursorOffset = prefix.length + (cleanLine ? cleanLine.length : 0);
+    
+    onInsert(newHeading, cursorOffset, lineStart, lineEnd);
   };
 
   const buttons: ToolbarButton[] = [
@@ -351,21 +401,21 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       label: "Heading 1",
       shortcut: "⌘⇧1",
       formatType: "heading1",
-      action: () => insertLine("# ", "Heading 1"),
+      action: () => smartHeading(1),
     },
     {
       icon: Heading2,
       label: "Heading 2",
       shortcut: "⌘⇧2",
       formatType: "heading2",
-      action: () => insertLine("## ", "Heading 2"),
+      action: () => smartHeading(2),
     },
     {
       icon: Heading3,
       label: "Heading 3",
       shortcut: "⌘⇧3",
       formatType: "heading3",
-      action: () => insertLine("### ", "Heading 3"),
+      action: () => smartHeading(3),
     },
     {
       icon: List,
