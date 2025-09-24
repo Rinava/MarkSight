@@ -6,9 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
 
-export interface ThemeToggleProps {}
-
-export function ThemeToggle({}: ThemeToggleProps) {
+export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
