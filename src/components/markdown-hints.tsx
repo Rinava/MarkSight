@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -334,11 +336,43 @@ export function MarkdownHints() {
                                           </del>
                                         ),
                                         code: ({ children, className }) => {
-                                          // Simple inline code styling for hints
+                                          const match = /language-(\w+)/.exec(className ?? "");
+                                          
+                                          // Check if it's a code block (has className or contains newlines)
+                                          const isCodeBlock = Boolean(className) || String(children).includes('\n');
+                                          
+                                          // Handle inline code (single backticks)
+                                          if (!isCodeBlock) {
+                                            return (
+                                              <code className="bg-muted px-1 rounded text-xs font-mono border">
+                                                {children}
+                                              </code>
+                                            );
+                                          }
+                                          
+                                          // Handle code blocks (triple backticks) with smaller size for hints
                                           return (
-                                            <code className="bg-muted px-1 rounded text-xs font-mono border">
-                                              {children}
-                                            </code>
+                                            <SyntaxHighlighter
+                                              PreTag="div"
+                                              language={match ? match[1] : "text"}
+                                              style={oneDark}
+                                              customStyle={{
+                                                background: "var(--muted)",
+                                                border: "1px solid var(--border)",
+                                                borderRadius: "var(--radius)",
+                                                fontSize: "10px",
+                                                margin: 0,
+                                                padding: "8px",
+                                              }}
+                                              codeTagProps={{
+                                                style: { 
+                                                  fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+                                                  fontSize: "10px"
+                                                },
+                                              }}
+                                            >
+                                              {String(children).replace(/\n$/, "")}
+                                            </SyntaxHighlighter>
                                           );
                                         },
                                         blockquote: ({ children }) => (
@@ -368,11 +402,6 @@ export function MarkdownHints() {
                                           >
                                             {children}
                                           </a>
-                                        ),
-                                        pre: ({ children }) => (
-                                          <pre className="bg-muted p-1 rounded text-xs overflow-x-auto">
-                                            {children}
-                                          </pre>
                                         ),
                                         hr: () => (
                                           <hr className="border-muted-foreground my-1" />

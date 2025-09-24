@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
 import { DocumentOutline } from "@/components/document-outline";
@@ -8,28 +7,22 @@ import { MarkdownHints } from "@/components/markdown-hints";
 import { ExportToolbar } from "@/components/export-toolbar";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-const STARTER = [
-  "# Welcome to MarkSight 🌿",
-  "",
-  "This is a simple test with `inline code` here.",
-  "",
-  "And **bold text** works fine."
-].join('\n') + `
+const STARTER =
+  ["# Welcome to MarkSight 🌿", ""].join("\n") +
+  `
 
-## Real-Time Google Docs-Like Experience
-
-Welcome to the most advanced Markdown editor with **real-time preview** and Google Docs-inspired features!
+Welcome to the most advanced Markdown editor with **real-time preview** and **export options!**
 
 ### ✨ Key Features
 
 1. **Live Preview** - See changes instantly as you type
 2. **Smart Toolbar** - Context-aware formatting buttons
-3. **Keyboard Shortcuts** - Just like Google Docs
+3. **Keyboard Shortcuts** - To speed up your workflow
 4. **Document Outline** - Navigate through your document easily
 5. **Export Options** - HTML and PDF with beautiful styling
-6. **Nature-Inspired Themes** - Calm and professional design
 
 ### 🚀 Try These Features
 
@@ -57,18 +50,6 @@ function createDocument(content: string): Document {
 }
 \`\`\`
 
-### 📝 More Examples
-
-> This is a beautiful blockquote that showcases the nature-inspired theme
-
-#### Lists Work Perfectly
-- Unordered lists
-- With multiple items
-- And proper indentation
-
-1. Numbered lists too
-2. With automatic numbering
-3. And clean formatting
 
 #### Tables Are Supported
 
@@ -101,6 +82,13 @@ export default function Home() {
   });
   const debounced = useDebouncedValue(value, { delayMs: 100 });
 
+  const handleReset = () => {
+    setValue(STARTER);
+  };
+  const handleClear = () => {
+    setValue("");
+  };
+
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -108,13 +96,34 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <CardHeader>
-                <CardTitle>Editor</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Editor</CardTitle>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleReset}
+                    className="text-xs"
+                  >
+                    Reset
+                  </Button>
+            
+                </div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="h-full rounded-md border bg-secondary">
                   <MarkdownEditor value={value} onChange={setValue} />
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleClear}
+                  className="text-xs"
+                >
+                  Clear
+                </Button>
+              </CardFooter>
             </Card>
             <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <CardHeader className="pb-2">
