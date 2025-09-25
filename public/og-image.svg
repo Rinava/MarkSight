@@ -1,0 +1,7 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#000000"/>
+  <rect x="100" y="100" width="1000" height="430" rx="16" fill="#1a1a1a"/>
+  <text x="600" y="240" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle">MarkSight</text>
+  <text x="600" y="300" font-family="Arial, sans-serif" font-size="24" fill="#cccccc" text-anchor="middle">Advanced Markdown Editor with Real-time Preview</text>
+  <text x="600" y="340" font-family="Arial, sans-serif" font-size="18" fill="#999999" text-anchor="middle">made by laramateo.com</text>
+</svg>

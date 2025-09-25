@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Metadata } from "next";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
 import { ExportToolbar } from "@/components/export-toolbar";
@@ -21,7 +22,7 @@ const STARTER =
   ["# Welcome to MarkSight 🌿", ""].join("\n") +
   `
 
-Welcome to the most advanced Markdown editor with **real-time preview** and **export options!**
+Welcome to the most advanced **open source** Markdown editor with **real-time preview** and **export options!**
 
 ### ✨ Key Features
 
@@ -30,6 +31,8 @@ Welcome to the most advanced Markdown editor with **real-time preview** and **ex
 3. **Keyboard Shortcuts** - To speed up your workflow
 4. **Document Outline** - Navigate through your document easily
 5. **Export Options** - HTML and PDF with beautiful styling
+6. **Open Source** - Free to use and contribute to on GitHub
+7. **Community Driven** - Anyone can participate and improve the project
 
 ### 🚀 Try These Features
 
@@ -80,6 +83,17 @@ Click the theme toggle in the header to switch between light and dark modes with
 ---
 
 **Start typing and experience the magic of real-time collaborative-style editing!**
+
+### 🤝 Open Source & Community
+
+MarkSight is **completely free and open source**! Anyone can:
+- **Use it** for free without restrictions
+- **Contribute** code, features, and improvements
+- **Report bugs** and suggest enhancements
+- **Fork the project** and create your own version
+- **Collaborate** with other developers on GitHub
+
+Visit our [GitHub repository](https://github.com/rinava/MarkSight) to get involved!
 `;
 
 export default function Home() {
@@ -132,15 +146,27 @@ export default function Home() {
     <>
       <div className="h-full overflow-y-auto">
         <div className="p-4 sm:p-6 md:p-8">
-          <div className="flex items-center gap-2 mb-6">
+          <header className="flex items-center gap-2 mb-6">
             <h1 className="text-2xl font-bold">MarkSight</h1>
+            <span className="text-sm text-muted-foreground">- Advanced Markdown Editor</span>
+          </header>
+          
+          <div className="sr-only">
+            <h2>Professional Markdown Editor Features</h2>
+            <p>
+              MarkSight is a powerful, free and open source markdown editor created by laramateo.com. 
+              Features include real-time preview, smart toolbar, keyboard shortcuts, 
+              document outline navigation, HTML and PDF export capabilities, and 
+              dark/light theme support. Anyone can contribute to the project on GitHub. 
+              Perfect for writers, developers, and content creators.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Editor</CardTitle>
+                  <CardTitle>Markdown Editor</CardTitle>
                   <Button
                     variant="outline"
                     size="sm"
@@ -169,7 +195,7 @@ export default function Home() {
             </Card>
             <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <CardHeader className="pb-2">
-                <CardTitle>Preview</CardTitle>
+                <CardTitle>Live Preview</CardTitle>
                 <ExportToolbar
                   content={debounced}
                   filename="marksight-document"
@@ -179,7 +205,7 @@ export default function Home() {
                 <MarkdownPreview value={debounced} />
               </CardContent>
             </Card>
-          </div>
+          </section>
         </div>
       </div>
     </>

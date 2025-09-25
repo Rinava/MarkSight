@@ -3,6 +3,7 @@
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Footer } from "@/components/footer";
 import { useContent } from "@/contexts/content-context";
 import { Toaster } from "sonner";
 import { SidebarTrigger, SidebarInset } from "./ui/sidebar";
@@ -27,6 +28,7 @@ export function LayoutContent({ children }: LayoutContentProps) {
           </div>
         </header>
         <main className="flex-1 min-h-0">{children}</main>
+        <Footer />
       </SidebarInset>
       <AppSidebar content={content} />
       <Toaster />
