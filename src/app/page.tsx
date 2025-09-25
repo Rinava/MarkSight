@@ -7,9 +7,16 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ExportToolbar } from "@/components/export-toolbar";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 
 const STARTER =
   ["# Welcome to MarkSight 🌿", ""].join("\n") +
@@ -77,17 +84,43 @@ Click the theme toggle in the header to switch between light and dark modes with
 `;
 
 export default function Home() {
-  const [value, setValue] = useLocalStorage({ 
-    key: "marksight-markdown-content", 
-    defaultValue: STARTER 
+  const [value, setValue] = useLocalStorage({
+    key: "marksight-markdown-content",
+    defaultValue: STARTER,
   });
+  const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
 
+  const handleValueChange = (newValue: string) => {
+    setPreviousValue(value); 
+    setValue(newValue);
+  };
+  const handleUndo = () => {
+    setValue(previousValue);
+  };
+
   const handleReset = () => {
+    setPreviousValue(value);
     setValue(STARTER);
+    toast.success("Document reset to default", {
+      description:
+        "Your previous content has been replaced with the default template.",
+      action: {
+        label: "Undo",
+        onClick: handleUndo,
+      },
+    });
   };
   const handleClear = () => {
+    setPreviousValue(value);
     setValue("");
+    toast.success("Document cleared", {
+      description: "All content has been removed from the editor.",
+      action: {
+        label: "Undo",
+        onClick: handleUndo,
+      },
+    });
   };
 
   return (
@@ -98,21 +131,21 @@ export default function Home() {
         <div className="fixed top-4 right-4 z-50 md:top-20">
           <SidebarTrigger className="bg-background border shadow-lg hover:bg-accent" />
         </div>
-        
+
         <div className="h-full overflow-y-auto">
           <div className="p-4 sm:p-6 md:p-8">
             <div className="flex items-center gap-2 mb-6">
               <h1 className="text-2xl font-bold">MarkSight</h1>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Editor</CardTitle>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={handleReset}
                       className="text-xs"
                     >
@@ -122,13 +155,13 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="h-full rounded-md border bg-secondary">
-                    <MarkdownEditor value={value} onChange={setValue} />
+                    <MarkdownEditor value={value} onChange={handleValueChange} />
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={handleClear}
                     className="text-xs"
                   >
@@ -139,7 +172,10 @@ export default function Home() {
               <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <CardHeader className="pb-2">
                   <CardTitle>Preview</CardTitle>
-                  <ExportToolbar content={debounced} filename="marksight-document" />
+                  <ExportToolbar
+                    content={debounced}
+                    filename="marksight-document"
+                  />
                 </CardHeader>
                 <CardContent className="overflow-auto">
                   <MarkdownPreview value={debounced} />
