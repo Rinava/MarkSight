@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { MarkdownPreview } from "@/components/markdown-preview";
-import { AppSidebar } from "@/components/app-sidebar";
 import { ExportToolbar } from "@/components/export-toolbar";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
+import { useContent } from "@/contexts/content-context";
 import {
   Card,
   CardContent,
@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 
 const STARTER =
@@ -90,9 +89,15 @@ export default function Home() {
   });
   const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
+  const { setContent } = useContent();
+
+  // Update context content when debounced value changes
+  useEffect(() => {
+    setContent(debounced);
+  }, [debounced, setContent]);
 
   const handleValueChange = (newValue: string) => {
-    setPreviousValue(value); 
+    setPreviousValue(value);
     setValue(newValue);
   };
   const handleUndo = () => {
@@ -125,66 +130,58 @@ export default function Home() {
 
   return (
     <>
-      <AppSidebar content={debounced} />
-      <SidebarInset>
-        {/* Sidebar Toggle Button - Always visible */}
-        <div className="fixed top-4 right-4 z-50 md:top-20">
-          <SidebarTrigger className="bg-background border shadow-lg hover:bg-accent" />
-        </div>
+      <div className="h-full overflow-y-auto">
+        <div className="p-4 sm:p-6 md:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <h1 className="text-2xl font-bold">MarkSight</h1>
+          </div>
 
-        <div className="h-full overflow-y-auto">
-          <div className="p-4 sm:p-6 md:p-8">
-            <div className="flex items-center gap-2 mb-6">
-              <h1 className="text-2xl font-bold">MarkSight</h1>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Editor</CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleReset}
-                      className="text-xs"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="h-full rounded-md border bg-secondary">
-                    <MarkdownEditor value={value} onChange={handleValueChange} />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-end">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Editor</CardTitle>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleClear}
+                    onClick={handleReset}
                     className="text-xs"
                   >
-                    Clear
+                    Reset
                   </Button>
-                </CardFooter>
-              </Card>
-              <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <CardHeader className="pb-2">
-                  <CardTitle>Preview</CardTitle>
-                  <ExportToolbar
-                    content={debounced}
-                    filename="marksight-document"
-                  />
-                </CardHeader>
-                <CardContent className="overflow-auto">
-                  <MarkdownPreview value={debounced} />
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="h-full rounded-md border bg-secondary">
+                  <MarkdownEditor value={value} onChange={handleValueChange} />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClear}
+                  className="text-xs"
+                >
+                  Clear
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <CardHeader className="pb-2">
+                <CardTitle>Preview</CardTitle>
+                <ExportToolbar
+                  content={debounced}
+                  filename="marksight-document"
+                />
+              </CardHeader>
+              <CardContent className="overflow-auto">
+                <MarkdownPreview value={debounced} />
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </SidebarInset>
+      </div>
     </>
   );
 }
