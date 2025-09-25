@@ -29,10 +29,10 @@ export function AppSidebar({ content, onHeadingClick }: AppSidebarProps) {
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
           <SidebarGroupLabel>Contents</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="min-w-0">
             <DocumentOutline
               content={content}
               onHeadingClick={onHeadingClick}
@@ -44,7 +44,7 @@ export function AppSidebar({ content, onHeadingClick }: AppSidebarProps) {
 
         <SidebarGroup>
           <SidebarGroupLabel>Help</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="min-w-0">
             <MarkdownHints />
           </SidebarGroupContent>
         </SidebarGroup>

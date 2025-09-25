@@ -289,8 +289,8 @@ export function MarkdownHints() {
                                     Copy
                                   </Button>
                                 </div>
-                                <div className="text-xs bg-background border rounded px-2 py-1">
-                                  <pre className="whitespace-pre-wrap font-mono text-xs text-muted-foreground">
+                                <div className="text-xs bg-background border rounded px-2 py-1 overflow-x-auto">
+                                  <pre className="whitespace-pre-wrap font-mono text-xs text-muted-foreground min-w-0">
                                     {hint.example}
                                   </pre>
                                 </div>
@@ -299,8 +299,8 @@ export function MarkdownHints() {
                                 <div className="text-xs font-medium text-muted-foreground mb-1">
                                   Preview:
                                 </div>
-                                <div className="text-xs bg-muted/50 border rounded px-2 py-1">
-                                  <div className="prose prose-xs dark:prose-invert max-w-none [&>*]:my-0 [&>*]:leading-tight">
+                                <div className="text-xs bg-muted/50 border rounded px-2 py-1 overflow-x-auto">
+                                  <div className="prose prose-xs dark:prose-invert max-w-none [&>*]:my-0 [&>*]:leading-tight min-w-0">
                                     <ReactMarkdown
                                       remarkPlugins={[remarkGfm]}
                                       components={{
@@ -407,9 +407,11 @@ export function MarkdownHints() {
                                           <hr className="border-muted-foreground my-1" />
                                         ),
                                         table: ({ children }) => (
-                                          <table className="border-collapse border border-muted text-xs">
-                                            {children}
-                                          </table>
+                                          <div className="overflow-x-auto">
+                                            <table className="border-collapse border border-muted text-xs min-w-full">
+                                              {children}
+                                            </table>
+                                          </div>
                                         ),
                                         th: ({ children }) => (
                                           <th className="border border-muted px-1 py-0.5 bg-muted font-medium">

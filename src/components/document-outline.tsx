@@ -103,12 +103,12 @@ export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProp
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start text-left h-auto py-1 px-2"
+                className="w-full justify-start text-left h-auto py-1 px-2 min-w-0"
                 style={{ paddingLeft: `${8 + indent}px` }}
                 onClick={() => handleHeadingClick(heading)}
               >
                 <HeadingIcon className={`${iconSize} mr-2 flex-shrink-0`} />
-                <span className={`truncate ${heading.level === 1 ? 'text-sm font-medium' : heading.level === 2 ? 'text-xs font-medium' : 'text-xs'}`}>
+                <span className={`truncate min-w-0 ${heading.level === 1 ? 'text-sm font-medium' : heading.level === 2 ? 'text-xs font-medium' : 'text-xs'}`}>
                   {heading.text}
                 </span>
               </Button>
