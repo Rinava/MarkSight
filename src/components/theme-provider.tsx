@@ -13,7 +13,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       attribute="class" 
       defaultTheme="system" 
       enableSystem
-      disableTransitionOnChange={false}
+      disableTransitionOnChange
       storageKey="marksight-theme"
     >
       {children}

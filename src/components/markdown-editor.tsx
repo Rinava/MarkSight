@@ -118,8 +118,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
         height="100%"
         minHeight="300px"
-        theme={resolvedTheme === "dark" ? "dark" : "light"}  
-
+        theme={resolvedTheme === "dark" ? "dark" : "light"}
         extensions={extensions}
         basicSetup={{ lineNumbers: true }}
       />

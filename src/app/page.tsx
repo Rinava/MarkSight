@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MarkdownEditor } from "@/components/markdown-editor";
-import { MarkdownPreview } from "@/components/markdown-preview";
+import dynamic from "next/dynamic";
 import { ExportToolbar } from "@/components/export-toolbar";
+
+const MarkdownEditor = dynamic(() => import("@/components/markdown-editor").then(mod => ({ default: mod.MarkdownEditor })), {
+  ssr: false,
+  loading: () => <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+});
+
+const MarkdownPreview = dynamic(() => import("@/components/markdown-preview").then(mod => ({ default: mod.MarkdownPreview })), {
+  ssr: false,
+  loading: () => <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+});
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
 import { useContent } from "@/contexts/content-context";
