@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContentProvider } from "@/contexts/content-context";
 import { LayoutContent } from "@/components/layout-content";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { AnalyticsProvider } from "@/components/analytics-provider";
+import { Analytics } from "@vercel/analytics/react";
 
 const nunito = Nunito({
   variable: "--font-geist-sans",
@@ -159,17 +162,21 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData),
           }}
         />
+        <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""} />
       </head>
       <body
-        className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground`}
+        className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground transition-colors duration-300`}
       >
         <ThemeProvider>
           <ContentProvider>
             <SidebarProvider>
-              <LayoutContent>{children}</LayoutContent>
+              <AnalyticsProvider>
+                <LayoutContent>{children}</LayoutContent>
+              </AnalyticsProvider>
             </SidebarProvider>
           </ContentProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

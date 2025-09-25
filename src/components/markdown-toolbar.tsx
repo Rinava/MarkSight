@@ -4,6 +4,7 @@ import { useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   Bold,
   Italic,
@@ -43,6 +44,7 @@ interface MarkdownPattern {
 }
 
 export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbarProps) {
+  const { trackToolbarInteraction, trackShortcut } = useAnalytics();
   const markdownPatterns = useMemo(() => [
     { pattern: /\*\*([^*]+)\*\*/g, type: 'bold', before: '**', after: '**' },
     { pattern: /\*([^*]+)\*/g, type: 'italic', before: '*', after: '*' },
@@ -181,6 +183,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
   }, [onInsert]);
 
   const smartInsert = useCallback((before: string, after: string, placeholder: string, elementType: string) => {
+    trackToolbarInteraction(elementType);
     if (!getCurrentContext) {
       insertText(before, after, placeholder);
       return;
@@ -238,12 +241,14 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
   }, [getCurrentContext, onInsert, insertText, findSurroundingMarkdown, markdownPatterns, removeFormatting, replaceFormatting]);
 
   const insertLine = useCallback((prefix: string, placeholder: string = "") => {
+    trackToolbarInteraction('insert_line');
     const text = placeholder ? `${prefix}${placeholder}` : prefix;
     const cursorOffset = prefix.length;
     onInsert(`\n${text}\n`, cursorOffset + 1);
-  }, [onInsert]);
+  }, [onInsert, trackToolbarInteraction]);
 
   const smartHeading = useCallback((level: number) => {
+    trackToolbarInteraction(`heading_${level}`);
     const prefix = '#'.repeat(level) + ' ';
     const placeholder = `Heading ${level}`;
     
@@ -460,51 +465,61 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       switch (event.key.toLowerCase()) {
         case 'b':
           event.preventDefault();
+          trackShortcut('Cmd+B');
           smartInsert("**", "**", "bold text", "bold");
           break;
         case 'i':
           event.preventDefault();
+          trackShortcut('Cmd+I');
           smartInsert("*", "*", "italic text", "italic");
           break;
         case 'u':
           event.preventDefault();
+          trackShortcut('Cmd+U');
           smartInsert("~~", "~~", "strikethrough text", "strikethrough");
           break;
         case 'k':
           event.preventDefault();
+          trackShortcut('Cmd+K');
           insertText("[", "](url)", "link text");
           break;
         case '`':
           event.preventDefault();
+          trackShortcut('Cmd+`');
           smartInsert("`", "`", "code", "code");
           break;
         case '1':
           if (event.shiftKey) {
             event.preventDefault();
+            trackShortcut('Cmd+Shift+1');
             smartHeading(1);
           }
           break;
         case '2':
           if (event.shiftKey) {
             event.preventDefault();
+            trackShortcut('Cmd+Shift+2');
             smartHeading(2);
           }
           break;
         case '3':
           if (event.shiftKey) {
             event.preventDefault();
+            trackShortcut('Cmd+Shift+3');
             smartHeading(3);
           }
           break;
         case 'l':
           if (event.shiftKey) {
             event.preventDefault();
+            trackShortcut('Cmd+Shift+L');
             insertLine("- ", "List item");
           }
           break;
         case 'o':
           if (event.shiftKey) {
             event.preventDefault();
+            trackShortcut('Cmd+Shift+O');
             insertLine("1. ", "List item");
           }
           break;
@@ -517,7 +532,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [insertLine, insertText, smartHeading, smartInsert]);
+  }, [insertLine, insertText, smartHeading, smartInsert, trackShortcut]);
 
   return (
     <TooltipProvider>

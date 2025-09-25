@@ -4,13 +4,17 @@ import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { useTheme } from "next-themes";
 
 export interface MarkdownPreviewProps {
   value: string;
 }
 
 export function MarkdownPreview({ value }: MarkdownPreviewProps) {
+  const { theme, systemTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && systemTheme === "dark");
+  
   const content = useMemo(
     function map() {
       return value;
@@ -44,7 +48,7 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
               <SyntaxHighlighter
                 PreTag="div"
                 language={match ? match[1] : "text"}
-                style={oneDark}
+                style={isDark ? oneDark : oneLight}
                 customStyle={{
                   background: "var(--muted)",
                   border: "1px solid var(--border)",

@@ -7,6 +7,7 @@ import { ExportToolbar } from "@/components/export-toolbar";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
 import { useContent } from "@/contexts/content-context";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   Card,
   CardContent,
@@ -103,11 +104,13 @@ export default function Home() {
   const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
   const { setContent } = useContent();
+  const { trackDocumentChange, trackReset, trackClear } = useAnalytics();
 
   // Update context content when debounced value changes
   useEffect(() => {
     setContent(debounced);
-  }, [debounced, setContent]);
+    trackDocumentChange(debounced);
+  }, [debounced, setContent, trackDocumentChange]);
 
   const handleValueChange = (newValue: string) => {
     setPreviousValue(value);
@@ -120,6 +123,7 @@ export default function Home() {
   const handleReset = () => {
     setPreviousValue(value);
     setValue(STARTER);
+    trackReset();
     toast.success("Document reset to default", {
       description:
         "Your previous content has been replaced with the default template.",
@@ -132,6 +136,7 @@ export default function Home() {
   const handleClear = () => {
     setPreviousValue(value);
     setValue("");
+    trackClear();
     toast.success("Document cleared", {
       description: "All content has been removed from the editor.",
       action: {
@@ -177,7 +182,7 @@ export default function Home() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="h-full rounded-md border bg-secondary">
+                <div className="h-full rounded-md border bg-card">
                   <MarkdownEditor value={value} onChange={handleValueChange} />
                 </div>
               </CardContent>

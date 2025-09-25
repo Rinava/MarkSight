@@ -5,6 +5,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
 import { MarkdownToolbar } from "./markdown-toolbar";
+import { useAnalytics } from "@/hooks/use-analytics";
+import { useTheme } from "next-themes";
 
 export interface MarkdownEditorProps {
   value: string;
@@ -20,21 +22,21 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   function MarkdownEditor({ value, onChange, showToolbar = true }, ref) {
   const [isFocused, setIsFocused] = useState(false);
   const editorViewRef = useRef<EditorView | null>(null);
+  const { trackEditorInteraction } = useAnalytics();
+  const { theme } = useTheme();
 
   const extensions = useMemo(function mkExtensions() {
     return [
       markdown({ base: markdownLanguage }),
       EditorView.lineWrapping,
       EditorView.theme({
-        "&": { fontSize: "14px", backgroundColor: "var(--secondary)", color: "var(--foreground)", fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
+        "&": { fontSize: "14px", backgroundColor: "var(--card)", color: "var(--foreground)", fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
         ".cm-content": { padding: "12px" },
         ".cm-gutters": { backgroundColor: "transparent", color: "var(--muted-foreground)", borderRight: "1px solid var(--border)" },
         ".cm-lineNumbers .cm-gutterElement": { padding: "0 8px" },
         ".cm-activeLine": { backgroundColor: "color-mix(in oklch, var(--muted) 100%, transparent)" },
-        ".cm-selectionBackground": { backgroundColor: "#609B6E40" }, // Primary color with 25% opacity
-        "&.cm-focused .cm-selectionBackground": { backgroundColor: "#609B6E60" }, // Primary color with 37.5% opacity
-        ".dark .cm-selectionBackground": { backgroundColor: "#76B08540" },
-        ".dark &.cm-focused .cm-selectionBackground": { backgroundColor: "#76B08560" },
+        ".cm-selectionBackground": { backgroundColor: "color-mix(in oklch, var(--primary) 25%, transparent)" },
+        "&.cm-focused .cm-selectionBackground": { backgroundColor: "color-mix(in oklch, var(--primary) 37.5%, transparent)" },
         ".cm-cursor": { borderLeftColor: "var(--accent)" },
       }),
     ];
@@ -93,7 +95,8 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
 
   const handleToolbarInsert = useCallback(function handleInsert(text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) {
     insertText(text, cursorOffset, replaceFrom, replaceTo);
-  }, [insertText]);
+    trackEditorInteraction('toolbar_insert', text);
+  }, [insertText, trackEditorInteraction]);
 
   return (
     <div className={`transition-all duration-300 ease-in-out ${
@@ -115,7 +118,8 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
         height="100%"
         minHeight="300px"
-        theme={undefined}
+        theme={theme === "dark" ? "dark" : "light"}  
+
         extensions={extensions}
         basicSetup={{ lineNumbers: true }}
       />

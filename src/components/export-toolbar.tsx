@@ -9,6 +9,7 @@ import { Download, FileText, Printer, ExternalLink } from "lucide-react";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export interface ExportToolbarProps {
   content: string;
@@ -18,6 +19,7 @@ export interface ExportToolbarProps {
 export function ExportToolbar({ content, filename = "document" }: ExportToolbarProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
+  const { trackExportAction } = useAnalytics();
 
   async function generateHTML(includeStyles = true) {
     const result = await remark()
@@ -160,6 +162,7 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
   async function exportHTML() {
     setIsExporting(true);
     setExportProgress(0);
+    trackExportAction('html', content);
 
     // Simulate progress for better UX
     const progressInterval = setInterval(() => {
@@ -187,6 +190,7 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
   async function exportPDF() {
     setIsExporting(true);
     setExportProgress(0);
+    trackExportAction('pdf', content);
 
     const progressInterval = setInterval(() => {
       setExportProgress(prev => Math.min(prev + 15, 90));

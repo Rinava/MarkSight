@@ -5,10 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { trackThemeChange } = useAnalytics();
 
   useEffect(function mount() {
     setMounted(true);
@@ -18,7 +20,8 @@ export function ThemeToggle() {
     const current = theme === "system" ? systemTheme ?? "light" : theme ?? "light";
     const target = current === "dark" ? "light" : "dark";
     setTheme(target);
-  }, [theme, systemTheme, setTheme]);
+    trackThemeChange(target as 'light' | 'dark');
+  }, [theme, systemTheme, setTheme, trackThemeChange]);
 
   if (!mounted) return null;
 
