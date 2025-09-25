@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Nunito, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Logo } from "@/components/logo";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContentProvider } from "@/contexts/content-context";
 import { LayoutContent } from "@/components/layout-content";

@@ -23,7 +23,7 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          code({ className, children, ...props }) {
+          code({ className, children }) {
             const match = /language-(\w+)/.exec(className ?? "");
 
             // In ReactMarkdown:

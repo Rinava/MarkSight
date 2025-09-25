@@ -18,7 +18,7 @@ interface Heading {
   line: number;
 }
 
-function getHeadingIcon(level: number) {
+function getHeadingIcon() {
   return Hash;
 }
 
@@ -89,7 +89,7 @@ export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProp
       </CardHeader>
       <CardContent className="space-y-1">
         {headings.map(function renderHeading(heading, index) {
-          const HeadingIcon = getHeadingIcon(heading.level);
+          const HeadingIcon = getHeadingIcon();
           const iconSize = getHeadingIconSize(heading.level);
           const indent = (heading.level - 1) * 12;
           

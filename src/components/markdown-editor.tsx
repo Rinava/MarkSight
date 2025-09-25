@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState, useRef, forwardRef, useImperativeHandle
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
 import { MarkdownToolbar } from "./markdown-toolbar";
 
 export interface MarkdownEditorProps {

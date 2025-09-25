@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex flex-col items-center gap-2 text-center md:flex-row md:text-left">
             <p className="text-sm text-muted-foreground">
-              Made with ❤️ by{" "}
+              Made with 🫶 by{" "}
               <Link
                 href="https://laramateo.com"
                 target="_blank"

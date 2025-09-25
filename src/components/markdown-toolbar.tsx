@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -43,12 +43,12 @@ interface MarkdownPattern {
 }
 
 export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbarProps) {
-  const markdownPatterns: MarkdownPattern[] = [
+  const markdownPatterns = useMemo(() => [
     { pattern: /\*\*([^*]+)\*\*/g, type: 'bold', before: '**', after: '**' },
     { pattern: /\*([^*]+)\*/g, type: 'italic', before: '*', after: '*' },
     { pattern: /~~([^~]+)~~/g, type: 'strikethrough', before: '~~', after: '~~' },
     { pattern: /`([^`]+)`/g, type: 'code', before: '`', after: '`' },
-  ];
+  ], []);
 
   function getActiveFormatting(): string[] {
     if (!getCurrentContext) return [];
@@ -95,77 +95,8 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     return activeFormats;
   }
 
-  // Keyboard shortcuts
-  useEffect(function setupKeyboardShortcuts() {
-    function handleKeyDown(event: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-      const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
-      if (!isCtrlOrCmd) return;
-
-      switch (event.key.toLowerCase()) {
-        case 'b':
-          event.preventDefault();
-          smartInsert("**", "**", "bold text", "bold");
-          break;
-        case 'i':
-          event.preventDefault();
-          smartInsert("*", "*", "italic text", "italic");
-          break;
-        case 'u':
-          event.preventDefault();
-          smartInsert("~~", "~~", "strikethrough text", "strikethrough");
-          break;
-        case 'k':
-          event.preventDefault();
-          insertText("[", "](url)", "link text");
-          break;
-        case '`':
-          event.preventDefault();
-          smartInsert("`", "`", "code", "code");
-          break;
-        case '1':
-          if (event.shiftKey) {
-            event.preventDefault();
-            smartHeading(1);
-          }
-          break;
-        case '2':
-          if (event.shiftKey) {
-            event.preventDefault();
-            smartHeading(2);
-          }
-          break;
-        case '3':
-          if (event.shiftKey) {
-            event.preventDefault();
-            smartHeading(3);
-          }
-          break;
-        case 'l':
-          if (event.shiftKey) {
-            event.preventDefault();
-            insertLine("- ", "List item");
-          }
-          break;
-        case 'o':
-          if (event.shiftKey) {
-            event.preventDefault();
-            insertLine("1. ", "List item");
-          }
-          break;
-        default:
-          break;
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown);
-    return function cleanup() {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  const findSurroundingMarkdown = (text: string, position: number): MarkdownPattern | null => {
+  const findSurroundingMarkdown = useCallback((text: string, position: number): MarkdownPattern | null => {
     for (const patternInfo of markdownPatterns) {
       const matches = [...text.matchAll(patternInfo.pattern)];
       for (const match of matches) {
@@ -179,7 +110,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       }
     }
     return null;
-  };
+  }, [markdownPatterns]);
 
   const canNest = (currentType: string, newType: string): boolean => {
     const nestingRules: Record<string, string[]> = {
@@ -191,7 +122,65 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     return nestingRules[currentType]?.includes(newType) ?? false;
   };
 
-  const smartInsert = (before: string, after: string, placeholder: string, elementType: string) => {
+  const insertText = useCallback((before: string, after: string = "", placeholder: string = "") => {
+    if (getCurrentContext) {
+      const context = getCurrentContext();
+      const { selection } = context;
+      const hasSelection = selection.from !== selection.to;
+      
+      if (hasSelection) {
+        // Wrap selected text
+        const selectedText = context.text.substring(selection.from, selection.to);
+        const wrappedText = `${before}${selectedText}${after}`;
+        const cursorOffset = before.length + selectedText.length + after.length;
+        onInsert(wrappedText, cursorOffset, selection.from, selection.to);
+        return;
+      }
+    }
+    
+    // Normal insertion with placeholder
+    const text = placeholder ? `${before}${placeholder}${after}` : `${before}${after}`;
+    const cursorOffset = placeholder ? before.length : before.length + after.length;
+    onInsert(text, cursorOffset);
+  }, [getCurrentContext, onInsert]);
+
+  const removeFormatting = useCallback((text: string, selection: { from: number; to: number }, pattern: MarkdownPattern) => {
+    const matches = [...text.matchAll(pattern.pattern)];
+    for (const match of matches) {
+      if (match.index !== undefined) {
+        const start = match.index;
+        const end = match.index + match[0].length;
+        if (selection.from >= start && selection.from <= end) {
+          const innerText = match[1];
+          const newCursorPos = selection.from - start - pattern.before.length;
+          
+          // Replace the entire matched text with just the inner content
+          onInsert(innerText, newCursorPos + innerText.length, start, end);
+          return;
+        }
+      }
+    }
+  }, [onInsert]);
+
+  const replaceFormatting = useCallback((text: string, selection: { from: number; to: number }, oldPattern: MarkdownPattern, newBefore: string, newAfter: string, placeholder: string) => {
+    const matches = [...text.matchAll(oldPattern.pattern)];
+    for (const match of matches) {
+      if (match.index !== undefined) {
+        const start = match.index;
+        const end = match.index + match[0].length;
+        if (selection.from >= start && selection.from <= end) {
+          const innerText = match[1];
+          const newText = placeholder && !innerText ? `${newBefore}${placeholder}${newAfter}` : `${newBefore}${innerText}${newAfter}`;
+          const cursorOffset = newBefore.length + (placeholder && !innerText ? 0 : innerText.length);
+          
+          onInsert(newText, cursorOffset, start, end);
+          return;
+        }
+      }
+    }
+  }, [onInsert]);
+
+  const smartInsert = useCallback((before: string, after: string, placeholder: string, elementType: string) => {
     if (!getCurrentContext) {
       insertText(before, after, placeholder);
       return;
@@ -246,73 +235,15 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       // No surrounding markdown - normal insert
       insertText(before, after, placeholder);
     }
-  };
+  }, [getCurrentContext, onInsert, insertText, findSurroundingMarkdown, markdownPatterns, removeFormatting, replaceFormatting]);
 
-  const removeFormatting = (text: string, selection: { from: number; to: number }, pattern: MarkdownPattern) => {
-    const matches = [...text.matchAll(pattern.pattern)];
-    for (const match of matches) {
-      if (match.index !== undefined) {
-        const start = match.index;
-        const end = match.index + match[0].length;
-        if (selection.from >= start && selection.from <= end) {
-          const innerText = match[1];
-          const newCursorPos = selection.from - start - pattern.before.length;
-          
-          // Replace the entire matched text with just the inner content
-          onInsert(innerText, newCursorPos + innerText.length, start, end);
-          return;
-        }
-      }
-    }
-  };
-
-  const replaceFormatting = (text: string, selection: { from: number; to: number }, oldPattern: MarkdownPattern, newBefore: string, newAfter: string, placeholder: string) => {
-    const matches = [...text.matchAll(oldPattern.pattern)];
-    for (const match of matches) {
-      if (match.index !== undefined) {
-        const start = match.index;
-        const end = match.index + match[0].length;
-        if (selection.from >= start && selection.from <= end) {
-          const innerText = match[1];
-          const newText = placeholder && !innerText ? `${newBefore}${placeholder}${newAfter}` : `${newBefore}${innerText}${newAfter}`;
-          const cursorOffset = newBefore.length + (placeholder && !innerText ? 0 : innerText.length);
-          
-          onInsert(newText, cursorOffset, start, end);
-          return;
-        }
-      }
-    }
-  };
-
-  const insertText = (before: string, after: string = "", placeholder: string = "") => {
-    if (getCurrentContext) {
-      const context = getCurrentContext();
-      const { selection } = context;
-      const hasSelection = selection.from !== selection.to;
-      
-      if (hasSelection) {
-        // Wrap selected text
-        const selectedText = context.text.substring(selection.from, selection.to);
-        const wrappedText = `${before}${selectedText}${after}`;
-        const cursorOffset = before.length + selectedText.length + after.length;
-        onInsert(wrappedText, cursorOffset, selection.from, selection.to);
-        return;
-      }
-    }
-    
-    // Normal insertion with placeholder
-    const text = placeholder ? `${before}${placeholder}${after}` : `${before}${after}`;
-    const cursorOffset = placeholder ? before.length : before.length + after.length;
-    onInsert(text, cursorOffset);
-  };
-
-  const insertLine = (prefix: string, placeholder: string = "") => {
+  const insertLine = useCallback((prefix: string, placeholder: string = "") => {
     const text = placeholder ? `${prefix}${placeholder}` : prefix;
     const cursorOffset = prefix.length;
     onInsert(`\n${text}\n`, cursorOffset + 1);
-  };
+  }, [onInsert]);
 
-  const smartHeading = (level: number) => {
+  const smartHeading = useCallback((level: number) => {
     const prefix = '#'.repeat(level) + ' ';
     const placeholder = `Heading ${level}`;
     
@@ -372,7 +303,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     const cursorOffset = prefix.length + (cleanLine ? cleanLine.length : 0);
     
     onInsert(newHeading, cursorOffset, lineStart, lineEnd);
-  };
+  }, [getCurrentContext, onInsert, insertLine]);
 
   const buttons: ToolbarButton[] = [
     {
@@ -517,6 +448,76 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       );
     });
   };
+
+  // Keyboard shortcuts
+  useEffect(function setupKeyboardShortcuts() {
+    function handleKeyDown(event: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+      if (!isCtrlOrCmd) return;
+
+      switch (event.key.toLowerCase()) {
+        case 'b':
+          event.preventDefault();
+          smartInsert("**", "**", "bold text", "bold");
+          break;
+        case 'i':
+          event.preventDefault();
+          smartInsert("*", "*", "italic text", "italic");
+          break;
+        case 'u':
+          event.preventDefault();
+          smartInsert("~~", "~~", "strikethrough text", "strikethrough");
+          break;
+        case 'k':
+          event.preventDefault();
+          insertText("[", "](url)", "link text");
+          break;
+        case '`':
+          event.preventDefault();
+          smartInsert("`", "`", "code", "code");
+          break;
+        case '1':
+          if (event.shiftKey) {
+            event.preventDefault();
+            smartHeading(1);
+          }
+          break;
+        case '2':
+          if (event.shiftKey) {
+            event.preventDefault();
+            smartHeading(2);
+          }
+          break;
+        case '3':
+          if (event.shiftKey) {
+            event.preventDefault();
+            smartHeading(3);
+          }
+          break;
+        case 'l':
+          if (event.shiftKey) {
+            event.preventDefault();
+            insertLine("- ", "List item");
+          }
+          break;
+        case 'o':
+          if (event.shiftKey) {
+            event.preventDefault();
+            insertLine("1. ", "List item");
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return function cleanup() {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [insertLine, insertText, smartHeading, smartInsert]);
 
   return (
     <TooltipProvider>
