@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContentProvider } from "@/contexts/content-context";
 import { LayoutContent } from "@/components/layout-content";
-import { GoogleAnalytics } from "@/components/google-analytics";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -162,7 +162,7 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData),
           }}
         />
-        <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""} />
+        <GoogleAnalytics gaId="G-YYGPWZ1WF7" />
       </head>
       <body
         className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground transition-colors duration-300`}

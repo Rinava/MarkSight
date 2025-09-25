@@ -1,3 +1,5 @@
+import { sendGAEvent } from "@next/third-parties/google";
+
 interface AnalyticsEvent {
   action: string;
   category: string;
@@ -14,32 +16,12 @@ interface DocumentMetrics {
   imageCount: number;
 }
 
-declare global {
-  interface Window {
-    gtag: (
-      command: 'config' | 'event' | 'js' | 'set',
-      targetId: string | Date,
-      config?: Record<string, unknown>
-    ) => void;
-  }
-}
-
 export function trackEvent(event: AnalyticsEvent) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', event.action, {
-      event_category: event.category,
-      event_label: event.label,
-      value: event.value,
-    });
-  }
-}
-
-export function trackPageView(url: string) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!, {
-      page_path: url,
-    });
-  }
+  sendGAEvent('event', event.action, {
+    event_category: event.category,
+    event_label: event.label,
+    value: event.value,
+  });
 }
 
 export function trackDocumentMetrics(metrics: DocumentMetrics) {
