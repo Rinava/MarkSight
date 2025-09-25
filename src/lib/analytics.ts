@@ -19,7 +19,7 @@ declare global {
     gtag: (
       command: 'config' | 'event' | 'js' | 'set',
       targetId: string | Date,
-      config?: Record<string, any>
+      config?: Record<string, unknown>
     ) => void;
   }
 }
@@ -72,7 +72,7 @@ export function trackEditorAction(action: string, details?: string) {
   trackEvent({
     action: 'editor_action',
     category: 'editor',
-    label: action,
+    label: details ? `${action}: ${details}` : action,
   });
 }
 

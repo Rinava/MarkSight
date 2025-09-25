@@ -23,7 +23,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   const [isFocused, setIsFocused] = useState(false);
   const editorViewRef = useRef<EditorView | null>(null);
   const { trackEditorInteraction } = useAnalytics();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const extensions = useMemo(function mkExtensions() {
     return [
@@ -118,7 +118,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
         height="100%"
         minHeight="300px"
-        theme={theme === "dark" ? "dark" : "light"}  
+        theme={resolvedTheme === "dark" ? "dark" : "light"}  
 
         extensions={extensions}
         basicSetup={{ lineNumbers: true }}

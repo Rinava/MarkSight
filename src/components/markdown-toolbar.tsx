@@ -238,7 +238,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
       // No surrounding markdown - normal insert
       insertText(before, after, placeholder);
     }
-  }, [getCurrentContext, onInsert, insertText, findSurroundingMarkdown, markdownPatterns, removeFormatting, replaceFormatting]);
+  }, [getCurrentContext, onInsert, insertText, findSurroundingMarkdown, markdownPatterns, removeFormatting, replaceFormatting, trackToolbarInteraction]);
 
   const insertLine = useCallback((prefix: string, placeholder: string = "") => {
     trackToolbarInteraction('insert_line');
@@ -308,7 +308,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     const cursorOffset = prefix.length + (cleanLine ? cleanLine.length : 0);
     
     onInsert(newHeading, cursorOffset, lineStart, lineEnd);
-  }, [getCurrentContext, onInsert, insertLine]);
+  }, [getCurrentContext, onInsert, insertLine, trackToolbarInteraction]);
 
   const buttons: ToolbarButton[] = [
     {
