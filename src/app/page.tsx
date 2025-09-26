@@ -4,19 +4,36 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { ExportToolbar } from "@/components/export-toolbar";
 
-const MarkdownEditor = dynamic(() => import("@/components/markdown-editor").then(mod => ({ default: mod.MarkdownEditor })), {
-  ssr: false,
-  loading: () => <div className="h-[300px] bg-muted animate-pulse rounded-md" />
-});
+const MarkdownEditor = dynamic(
+  () =>
+    import("@/components/markdown-editor").then((mod) => ({
+      default: mod.MarkdownEditor,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+    ),
+  }
+);
 
-const MarkdownPreview = dynamic(() => import("@/components/markdown-preview").then(mod => ({ default: mod.MarkdownPreview })), {
-  ssr: false,
-  loading: () => <div className="h-[300px] bg-muted animate-pulse rounded-md" />
-});
+const MarkdownPreview = dynamic(
+  () =>
+    import("@/components/markdown-preview").then((mod) => ({
+      default: mod.MarkdownPreview,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+    ),
+  }
+);
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
 import { useContent } from "@/contexts/content-context";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Card,
   CardContent,
@@ -27,7 +44,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const STARTER =
+const LONG_STARTER =
   ["# Welcome to MarkSight 🌿", ""].join("\n") +
   `
 
@@ -105,7 +122,15 @@ MarkSight is **completely free and open source**! Anyone can:
 Visit our [GitHub repository](https://github.com/rinava/MarkSight) to get involved!
 `;
 
+const SHORT_STARTER =
+  ["# Welcome to MarkSight 🌿", ""].join("\n") +
+  `
+Welcome to the most advanced **open source** Markdown editor with **real-time preview** and **export options!**
+`;
+
+
 export default function Home() {
+  const STARTER = useIsMobile() ? SHORT_STARTER : LONG_STARTER;
   const [value, setValue] = useLocalStorage({
     key: "marksight-markdown-content",
     defaultValue: STARTER,
@@ -161,17 +186,20 @@ export default function Home() {
         <div className="p-4 sm:p-6 md:p-8">
           <header className="flex items-center gap-2 mb-6">
             <h1 className="text-2xl font-bold">MarkSight</h1>
-            <span className="text-sm text-muted-foreground">- Advanced Markdown Editor</span>
+            <span className="text-sm text-muted-foreground">
+              - Advanced Markdown Editor
+            </span>
           </header>
-          
+
           <div className="sr-only">
             <h2>Professional Markdown Editor Features</h2>
             <p>
-              MarkSight is a powerful, free and open source markdown editor created by laramateo.com. 
-              Features include real-time preview, smart toolbar, keyboard shortcuts, 
-              document outline navigation, HTML and PDF export capabilities, and 
-              dark/light theme support. Anyone can contribute to the project on GitHub. 
-              Perfect for writers, developers, and content creators.
+              MarkSight is a powerful, free and open source markdown editor
+              created by laramateo.com. Features include real-time preview,
+              smart toolbar, keyboard shortcuts, document outline navigation,
+              HTML and PDF export capabilities, and dark/light theme support.
+              Anyone can contribute to the project on GitHub. Perfect for
+              writers, developers, and content creators.
             </p>
           </div>
 
