@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Nunito, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -98,6 +98,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -139,17 +140,19 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* JSON-LD is non-executable data, so CSP script-src does not apply and
+            no nonce is needed (a manual nonce also breaks hydration). */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
           }}
         />
       </head>
       <body
         className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground`}
       >
-        <ThemeProvider>
+        <ThemeProvider nonce={nonce}>
           <ContentProvider>
             <SidebarProvider defaultOpen={defaultOpen}>
               <LayoutContent>{children}</LayoutContent>
