@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
+import GithubSlugger from "github-slugger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Hash } from "lucide-react";
@@ -22,6 +23,21 @@ function getHeadingIcon() {
   return Hash;
 }
 
+function getScrollParent(el: HTMLElement): HTMLElement | null {
+  let parent = el.parentElement;
+  while (parent) {
+    const overflowY = getComputedStyle(parent).overflowY;
+    if (
+      (overflowY === "auto" || overflowY === "scroll") &&
+      parent.scrollHeight > parent.clientHeight
+    ) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return null;
+}
+
 function getHeadingIconSize(level: number) {
   const sizes = {
     1: "h-4 w-4",
@@ -39,14 +55,23 @@ export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProp
     const lines = content.split('\n');
     const headingRegex = /^(#{1,6})\s+(.+)$/;
     const extracted: Heading[] = [];
+    // Same slugger rehype-slug uses in the preview, so outline links match the
+    // rendered heading ids (including duplicate-heading numbering).
+    const slugger = new GithubSlugger();
+    let insideFence = false;
 
     lines.forEach(function processLine(line, index) {
+      if (/^\s*```/.test(line)) {
+        insideFence = !insideFence;
+        return;
+      }
+      if (insideFence) return;
       const match = line.match(headingRegex);
       if (match) {
         const level = match[1].length;
         const text = match[2].trim();
-        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-        
+        const id = slugger.slug(text);
+
         extracted.push({
           level,
           text,
@@ -61,17 +86,29 @@ export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProp
 
   function handleHeadingClick(heading: Heading) {
     onHeadingClick?.(heading.id);
-    
-    // Also scroll to the heading in the preview
+
+    // Scroll the heading into view inside the preview pane. The preview is its
+    // own scroll container, and smooth scrollIntoView is unreliable across
+    // nested scroll containers — so scroll the nearest scrollable ancestor.
     const element = document.getElementById(heading.id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (!element) return;
+
+    const scroller = getScrollParent(element);
+    if (scroller) {
+      const top =
+        element.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop -
+        8;
+      scroller.scrollTo({ top, behavior: "smooth" });
+    } else {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
   if (headings.length === 0) {
     return (
-      <Card className="h-fit transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <Card className="h-fit transition-all duration-300 hover:shadow-lg motion-safe:hover:-translate-y-1">
         <CardHeader>
           <CardTitle className="text-sm font-medium">Document Outline</CardTitle>
         </CardHeader>
@@ -83,7 +120,7 @@ export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProp
   }
 
   return (
-    <Card className="h-fit transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <Card className="h-fit transition-all duration-300 hover:shadow-lg motion-safe:hover:-translate-y-1">
       <CardHeader>
         <CardTitle className="text-sm font-medium">Document Outline</CardTitle>
       </CardHeader>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -6,7 +6,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContentProvider } from "@/contexts/content-context";
 import { LayoutContent } from "@/components/layout-content";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { AnalyticsProvider } from "@/components/analytics-provider";
 import { Analytics } from "@vercel/analytics/react";
 
 const nunito = Nunito({
@@ -27,25 +26,15 @@ export const metadata: Metadata = {
     default: "MarkSight - Advanced Markdown Editor with Real-time Preview",
     template: "%s | MarkSight - Markdown Editor"
   },
-  description: "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub. Create beautiful documents with HTML and PDF export capabilities.",
+  description: "Free, open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and HTML/PDF export.",
   keywords: [
     "markdown editor",
     "markdown preview",
     "real-time preview",
-    "markdown exporter",
     "HTML export",
     "PDF export",
-    "document editor",
-    "text editor",
-    "markdown tool",
-    "writing tool",
-    "documentation tool",
-    "markdown converter",
-    "open source",
-    "github",
-    "collaborate",
-    "contribute",
-    "free markdown editor"
+    "open source markdown editor",
+    "free markdown editor",
   ],
   authors: [{ name: "Lara Mateo", url: "https://laramateo.com" }],
   creator: "Lara Mateo",
@@ -68,20 +57,11 @@ export const metadata: Metadata = {
     siteName: "MarkSight",
     title: "MarkSight - Advanced Markdown Editor with Real-time Preview",
     description: "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub.",
-    images: [
-      {
-        url: "/og-image.svg",
-        width: 1200,
-        height: 630,
-        alt: "MarkSight - Markdown Editor with Real-time Preview",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "MarkSight - Advanced Markdown Editor with Real-time Preview",
     description: "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, and export options. Free to use and contribute to on GitHub.",
-    images: ["/og-image.svg"],
     creator: "@laramateo",
   },
   alternates: {
@@ -96,19 +76,16 @@ export const metadata: Metadata = {
         type: "image/svg+xml",
       },
     ],
-    apple: [
-      {
-        url: "/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
   },
   manifest: "/site.webmanifest",
-  other: {
-    "msapplication-TileColor": "#000000",
-    "theme-color": "#000000",
-  },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f8f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#19231a" },
+  ],
 };
 
 export default function RootLayout({
@@ -162,7 +139,6 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData),
           }}
         />
-        <GoogleAnalytics gaId="G-YYGPWZ1WF7" />
       </head>
       <body
         className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground transition-colors duration-300`}
@@ -170,13 +146,12 @@ export default function RootLayout({
         <ThemeProvider>
           <ContentProvider>
             <SidebarProvider>
-              <AnalyticsProvider>
-                <LayoutContent>{children}</LayoutContent>
-              </AnalyticsProvider>
+              <LayoutContent>{children}</LayoutContent>
             </SidebarProvider>
           </ContentProvider>
         </ThemeProvider>
         <Analytics />
+        <GoogleAnalytics gaId="G-YYGPWZ1WF7" />
       </body>
     </html>
   );

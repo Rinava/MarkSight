@@ -430,9 +430,11 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
               variant={isActive ? "default" : "ghost"}
               size="sm"
               onClick={button.action}
+              aria-label={button.label}
+              aria-pressed={button.formatType ? isActive : undefined}
               className={`h-8 w-8 p-0 transition-all duration-200 ${
-                isActive 
-                  ? "bg-primary text-primary-foreground shadow-sm" 
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "hover:bg-accent hover:text-accent-foreground"
               }`}
             >
