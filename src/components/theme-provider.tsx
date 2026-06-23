@@ -6,9 +6,10 @@ import { type ReactNode } from "react";
 
 export interface ThemeProviderProps {
   children: ReactNode;
+  nonce?: string;
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
+export function ThemeProvider({ children, nonce }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
@@ -16,6 +17,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       enableSystem
       disableTransitionOnChange
       storageKey="marksight-theme"
+      nonce={nonce}
     >
       <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </NextThemesProvider>
