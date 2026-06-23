@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { Nunito, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -11,13 +12,15 @@ import { Analytics } from "@vercel/analytics/react";
 const nunito = Nunito({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const firaCode = Fira_Code({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -88,11 +91,14 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -141,11 +147,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground transition-colors duration-300`}
+        className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground`}
       >
         <ThemeProvider>
           <ContentProvider>
-            <SidebarProvider>
+            <SidebarProvider defaultOpen={defaultOpen}>
               <LayoutContent>{children}</LayoutContent>
             </SidebarProvider>
           </ContentProvider>
