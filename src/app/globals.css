@@ -115,10 +115,15 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/70;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Offset for sticky header when jumping to a heading anchor from the outline. */
+  .prose :is(h1, h2, h3, h4, h5, h6) {
+    scroll-margin-top: 5rem;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -171,5 +176,18 @@
   }
   .dark .cm-editor ::selection {
     background-color: #76B08560 !important; /* Primary color with 37.5% opacity in dark mode */
+  }
+
+  /* Respect users who prefer reduced motion: neutralize CSS transitions/animations.
+     Framer Motion is handled separately via <MotionConfig reducedMotion="user">. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

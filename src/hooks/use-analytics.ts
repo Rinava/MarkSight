@@ -1,7 +1,6 @@
 import { useCallback } from "react";
-import { useDebouncedValue } from "@/lib/use-debounced-value";
-import { 
-  trackDocumentMetrics, 
+import {
+  trackDocumentMetrics,
   calculateDocumentMetrics,
   trackExport,
   trackThemeToggle,
@@ -68,25 +67,5 @@ export function useAnalytics() {
     trackClear,
     trackPreview,
     trackSidebar,
-  };
-}
-
-export function useDocumentAnalytics(content: string, debounceMs: number = 2000) {
-  const debouncedContent = useDebouncedValue(content, { delayMs: debounceMs });
-  
-  const trackDocumentChange = useCallback((content: string) => {
-    const metrics = calculateDocumentMetrics(content);
-    trackDocumentMetrics(metrics);
-  }, []);
-
-  // Track document changes with debouncing
-  useCallback(() => {
-    if (debouncedContent && debouncedContent !== content) {
-      trackDocumentChange(debouncedContent);
-    }
-  }, [debouncedContent, content, trackDocumentChange])();
-
-  return {
-    trackDocumentChange,
   };
 }

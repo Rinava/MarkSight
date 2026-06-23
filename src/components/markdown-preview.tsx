@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark, oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useTheme } from "next-themes";
@@ -12,20 +12,14 @@ export interface MarkdownPreviewProps {
 }
 
 export function MarkdownPreview({ value }: MarkdownPreviewProps) {
-  const { theme, systemTheme } = useTheme();
-  const isDark = theme === "dark" || (theme === "system" && systemTheme === "dark");
-  
-  const content = useMemo(
-    function map() {
-      return value;
-    },
-    [value]
-  );
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <div className="prose prose-sm dark:prose-invert max-w-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeSlug]}
         components={{
           code({ className, children }) {
             const match = /language-(\w+)/.exec(className ?? "");
@@ -67,33 +61,9 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
               </SyntaxHighlighter>
             );
           },
-          h1: ({ children }) => (
-            <h1
-              id={String(children).toLowerCase().replace(/\s+/g, "-")}
-              className="scroll-mt-20"
-            >
-              {children}
-            </h1>
-          ),
-          h2: ({ children }) => (
-            <h2
-              id={String(children).toLowerCase().replace(/\s+/g, "-")}
-              className="scroll-mt-20"
-            >
-              {children}
-            </h2>
-          ),
-          h3: ({ children }) => (
-            <h3
-              id={String(children).toLowerCase().replace(/\s+/g, "-")}
-              className="scroll-mt-20"
-            >
-              {children}
-            </h3>
-          ),
         }}
       >
-        {content}
+        {value}
       </ReactMarkdown>
     </div>
   );

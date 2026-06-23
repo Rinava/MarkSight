@@ -268,6 +268,7 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
                   size="sm"
                   onClick={button.action}
                   disabled={isExporting}
+                  aria-label={button.label}
                   className="h-8 w-8 p-0"
                 >
                   <button.icon className="h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface UseLocalStorageOptions {
   defaultValue?: string;
@@ -9,14 +9,11 @@ export interface UseLocalStorageOptions {
 
 export function useLocalStorage({ key, defaultValue = "" }: UseLocalStorageOptions) {
   const [storedValue, setStoredValue] = useState<string>(defaultValue);
-  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(function hydrate() {
-    setIsHydrated(true);
-    
     try {
       const item = window.localStorage.getItem(key);
-      if (item) {
+      if (item !== null) {
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {
@@ -24,18 +21,20 @@ export function useLocalStorage({ key, defaultValue = "" }: UseLocalStorageOptio
     }
   }, [key]);
 
-  const setValue = (value: string | ((val: string) => string)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      
-      if (isHydrated) {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
-    } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
-    }
-  };
+  const setValue = useCallback(
+    (value: string | ((val: string) => string)) => {
+      setStoredValue((prev) => {
+        const valueToStore = value instanceof Function ? value(prev) : value;
+        try {
+          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        } catch (error) {
+          console.warn(`Error setting localStorage key "${key}":`, error);
+        }
+        return valueToStore;
+      });
+    },
+    [key]
+  );
 
   return [storedValue, setValue] as const;
 }
