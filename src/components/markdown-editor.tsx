@@ -29,6 +29,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
     return [
       markdown({ base: markdownLanguage }),
       EditorView.lineWrapping,
+      EditorView.contentAttributes.of({ "aria-label": "Markdown editor" }),
       EditorView.theme({
         "&": { fontSize: "14px", backgroundColor: "var(--card)", color: "var(--foreground)", fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
         ".cm-content": { padding: "12px" },
@@ -99,29 +100,31 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   }, [insertText, trackEditorInteraction]);
 
   return (
-    <div className={`transition-all duration-300 ease-in-out ${
-      isFocused 
-        ? "ring-2 ring-primary shadow-lg rounded-md" 
-        : "ring-1 ring-border hover:ring-2 hover:ring-primary/50 rounded-md"
+    <div className={`flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md transition-shadow duration-300 ease-in-out ${
+      isFocused
+        ? "ring-2 ring-primary shadow-lg"
+        : "ring-1 ring-border hover:ring-2 hover:ring-primary/50"
     }`}>
       {showToolbar && (
-        <MarkdownToolbar 
-          onInsert={handleToolbarInsert} 
+        <MarkdownToolbar
+          onInsert={handleToolbarInsert}
           getCurrentContext={getCurrentContext}
         />
       )}
-      <CodeMirror
-        value={value}
-        onChange={handleChange}
-        onFocus={function onF() { setIsFocused(true); }}
-        onBlur={function onB() { setIsFocused(false); }}
-        onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
-        height="100%"
-        minHeight="300px"
-        theme={resolvedTheme === "dark" ? "dark" : "light"}
-        extensions={extensions}
-        basicSetup={{ lineNumbers: true }}
-      />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <CodeMirror
+          value={value}
+          onChange={handleChange}
+          onFocus={function onF() { setIsFocused(true); }}
+          onBlur={function onB() { setIsFocused(false); }}
+          onCreateEditor={function onCreate(view) { editorViewRef.current = view; }}
+          height="100%"
+          theme={resolvedTheme === "dark" ? "dark" : "light"}
+          extensions={extensions}
+          basicSetup={{ lineNumbers: true }}
+          className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:overflow-auto"
+        />
+      </div>
     </div>
   );
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 
 interface ContentContextType {
   content: string;
@@ -12,8 +12,10 @@ const ContentContext = createContext<ContentContextType | undefined>(undefined);
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState("");
 
+  const value = useMemo(() => ({ content, setContent }), [content]);
+
   return (
-    <ContentContext.Provider value={{ content, setContent }}>
+    <ContentContext.Provider value={value}>
       {children}
     </ContentContext.Provider>
   );

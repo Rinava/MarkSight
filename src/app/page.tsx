@@ -12,7 +12,11 @@ const MarkdownEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+      <div
+        role="status"
+        aria-label="Loading editor"
+        className="min-h-0 flex-1 animate-pulse rounded-md bg-muted"
+      />
     ),
   }
 );
@@ -25,7 +29,11 @@ const MarkdownPreview = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[300px] bg-muted animate-pulse rounded-md" />
+      <div
+        role="status"
+        aria-label="Loading preview"
+        className="min-h-0 flex-1 animate-pulse rounded-md bg-muted"
+      />
     ),
   }
 );
@@ -33,7 +41,6 @@ import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLocalStorage } from "@/lib/use-local-storage";
 import { useContent } from "@/contexts/content-context";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Card,
   CardContent,
@@ -122,15 +129,8 @@ MarkSight is **completely free and open source**! Anyone can:
 Visit our [GitHub repository](https://github.com/rinava/MarkSight) to get involved!
 `;
 
-const SHORT_STARTER =
-  ["# Welcome to MarkSight 🌿", ""].join("\n") +
-  `
-Welcome to the most advanced **open source** Markdown editor with **real-time preview** and **export options!**
-`;
-
-
 export default function Home() {
-  const STARTER = useIsMobile() ? SHORT_STARTER : LONG_STARTER;
+  const STARTER = LONG_STARTER;
   const [value, setValue] = useLocalStorage({
     key: "marksight-markdown-content",
     defaultValue: STARTER,
@@ -203,8 +203,8 @@ export default function Home() {
             </p>
           </div>
 
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+          <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <Card className="h-[60vh] min-h-[26rem] transition-shadow duration-300 hover:shadow-lg lg:h-[calc(100vh-13rem)]">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Markdown Editor</CardTitle>
@@ -218,10 +218,8 @@ export default function Home() {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="h-full rounded-md border bg-card">
-                  <MarkdownEditor value={value} onChange={handleValueChange} />
-                </div>
+              <CardContent className="flex min-h-0 flex-1 flex-col">
+                <MarkdownEditor value={value} onChange={handleValueChange} />
               </CardContent>
               <CardFooter className="flex justify-end">
                 <Button
@@ -234,7 +232,7 @@ export default function Home() {
                 </Button>
               </CardFooter>
             </Card>
-            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <Card className="h-[60vh] min-h-[26rem] transition-shadow duration-300 hover:shadow-lg lg:h-[calc(100vh-13rem)]">
               <CardHeader className="pb-2">
                 <CardTitle>Live Preview</CardTitle>
                 <ExportToolbar
@@ -242,7 +240,7 @@ export default function Home() {
                   filename="marksight-document"
                 />
               </CardHeader>
-              <CardContent className="overflow-auto">
+              <CardContent className="flex min-h-0 flex-1 flex-col overflow-auto">
                 <MarkdownPreview value={debounced} />
               </CardContent>
             </Card>

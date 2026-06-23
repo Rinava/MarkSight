@@ -3,9 +3,8 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark, oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useTheme } from "next-themes";
+import { SyntaxHighlighter, oneDark, oneLight } from "@/lib/syntax-highlighter";
 
 export interface MarkdownPreviewProps {
   value: string;
