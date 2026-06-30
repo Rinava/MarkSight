@@ -16,7 +16,7 @@ export function LayoutContent({ children }: LayoutContentProps) {
   const { content } = useContent();
 
   return (
-    <div className="flex min-h-dvh bg-background">
+    <div className="flex min-h-dvh w-full bg-background">
       <SidebarInset className="flex-1">
         <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center gap-3">
