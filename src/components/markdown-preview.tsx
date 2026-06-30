@@ -5,6 +5,16 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { useTheme } from "next-themes";
 import { SyntaxHighlighter, oneDark, oneLight } from "@/lib/syntax-highlighter";
+import { MermaidDiagram } from "@/components/mermaid-diagram";
+
+// A fenced ```mermaid block parses to <pre><code class="language-mermaid">.
+function isMermaidPre(node: unknown): boolean {
+  const child = (node as { children?: Array<Record<string, unknown>> })
+    ?.children?.[0];
+  if (!child || child.tagName !== "code") return false;
+  const className = (child.properties as { className?: unknown })?.className;
+  return Array.isArray(className) && className.includes("language-mermaid");
+}
 
 export interface MarkdownPreviewProps {
   value: string;
@@ -20,8 +30,20 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug]}
         components={{
+          // A mermaid block renders as a diagram (a block element), so unwrap
+          // the surrounding <pre> to avoid its code-block chrome. Every other
+          // <pre> renders exactly as before.
+          pre({ node, children, ...props }) {
+            if (isMermaidPre(node)) return <>{children}</>;
+            return <pre {...props}>{children}</pre>;
+          },
           code({ className, children }) {
             const match = /language-(\w+)/.exec(className ?? "");
+
+            // Render mermaid diagrams instead of highlighting the source.
+            if (match?.[1] === "mermaid") {
+              return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
+            }
 
             // In ReactMarkdown:
             // - Inline code: no className

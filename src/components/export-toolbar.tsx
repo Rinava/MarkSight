@@ -10,10 +10,61 @@ import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { renderMermaid } from "@/lib/mermaid";
 
 export interface ExportToolbarProps {
   content: string;
   filename?: string;
+}
+
+const MERMAID_BLOCK =
+  /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g;
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// remark-html escapes entities (e.g. `&` -> `&#x26;`) inside code blocks; decode
+// them back so the original mermaid source is fed to the renderer.
+function decodeHtmlEntities(value: string): string {
+  const el = document.createElement("textarea");
+  el.innerHTML = value;
+  return el.value;
+}
+
+function mermaidErrorHTML(error: unknown): string {
+  const message = escapeHtml(
+    error instanceof Error ? error.message : String(error)
+  );
+  return `<div class="mermaid-error"><strong>Failed to render Mermaid diagram</strong><pre>${message}</pre></div>`;
+}
+
+/**
+ * Replace each ```mermaid code block in the generated HTML with an inline SVG so
+ * exported HTML/PDF documents are self-contained (no runtime script needed).
+ * Diagrams render with the light theme to match the export's light page.
+ * Renders sequentially because mermaid relies on shared global/DOM state.
+ */
+async function inlineMermaidDiagrams(html: string): Promise<string> {
+  const matches = [...html.matchAll(MERMAID_BLOCK)];
+  if (matches.length === 0) return html;
+
+  const replacements: string[] = [];
+  for (const match of matches) {
+    const code = decodeHtmlEntities(match[1]);
+    try {
+      const svg = await renderMermaid(code, false);
+      replacements.push(`<div class="mermaid-diagram">${svg}</div>`);
+    } catch (error) {
+      replacements.push(mermaidErrorHTML(error));
+    }
+  }
+
+  let index = 0;
+  return html.replace(MERMAID_BLOCK, () => replacements[index++]);
 }
 
 export function ExportToolbar({ content, filename = "document" }: ExportToolbarProps) {
@@ -27,7 +78,7 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
       .use(remarkHtml)
       .process(content);
 
-    const htmlContent = result.toString();
+    const htmlContent = await inlineMermaidDiagrams(result.toString());
 
     if (!includeStyles) return htmlContent;
 
@@ -129,7 +180,35 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
         a:hover {
             text-decoration: underline;
         }
-        
+
+        .mermaid-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .mermaid-diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .mermaid-error {
+            border: 1px solid #f56565;
+            background: #fff5f5;
+            color: #c53030;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .mermaid-error pre {
+            background: none;
+            color: inherit;
+            padding: 0;
+            margin: 0.5rem 0 0;
+            white-space: pre-wrap;
+        }
+
         @media print {
             body {
                 max-width: none;
