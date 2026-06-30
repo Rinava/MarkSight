@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Contributing guide
+    url: https://github.com/Rinava/MarkSight/blob/main/CONTRIBUTING.md
+    about: Read this before opening a pull request.
+  - name: 💬 Questions & ideas
+    url: https://github.com/Rinava/MarkSight/discussions
+    about: Ask a question or discuss an idea (if Discussions is enabled).

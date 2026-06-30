@@ -1,0 +1,45 @@
+name: CI
+
+# Build and lint on every PR into main and on pushes to main.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel superseded runs for the same ref (e.g. force-pushes to an open PR).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: the workflow only needs to read repository contents.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Track the Node version pinned in .nvmrc (currently 22) so CI cannot
+      # drift from the version developers use locally.
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Deterministic install from the committed package-lock.json.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # next build --turbopack also runs type-checking and produces the
+      # production output. Runs fully headless with no required env vars.
+      - name: Build
+        run: npm run build
