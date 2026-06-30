@@ -16,7 +16,7 @@ Instead, use one of these private channels:
 - **GitHub Private Vulnerability Reporting** (preferred) — open a draft advisory
   from the repo's
   [Security tab](https://github.com/Rinava/MarkSight/security/advisories/new).
-- **Email** — [1laramateo@gmail.com](mailto:1laramateo@gmail.com).
+- **Email** — [laramateoco@gmail.com](mailto:laramateoco@gmail.com).
 
 Please include:
 
