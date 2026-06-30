@@ -64,8 +64,13 @@ src/
 
 ## Contributing
 
-Contributions are welcome — open an issue or a pull request on
-[GitHub](https://github.com/rinava/MarkSight).
+Contributions are welcome — whether it's a bug report, a feature idea, a docs
+fix, or a pull request. See the [contributing guide](./CONTRIBUTING.md) for how
+to set up the project and submit changes, and please follow our
+[Code of Conduct](./CODE_OF_CONDUCT.md).
+
+New here? Look for issues labelled
+[`good first issue`](https://github.com/Rinava/MarkSight/issues?q=is%3Aopen+label%3A%22good+first+issue%22).
 
 ## License
 
