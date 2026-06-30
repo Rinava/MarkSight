@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
-import { Download, FileText, Printer, ExternalLink } from "lucide-react";
+import { Download, FileDown, FileText, Printer, ExternalLink } from "lucide-react";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
@@ -235,6 +235,10 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
     }
   }
 
+  function downloadMarkdown() {
+    downloadFile(content, `${filename}.md`, 'text/markdown');
+  }
+
   const exportButtons = [
     {
       icon: FileText,
@@ -253,6 +257,12 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
       label: "Preview HTML",
       action: previewHTML,
       shortcut: "⌘⇧P",
+    },
+    {
+      icon: FileDown,
+      label: "Download Markdown",
+      action: downloadMarkdown,
+      shortcut: "⌘⇧S",
     },
   ];
 
