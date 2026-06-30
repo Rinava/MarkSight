@@ -1,6 +1,6 @@
 # MarkSight
 
-An open source markdown editor with real-time preview, a smart formatting toolbar, keyboard shortcuts, a document outline, and HTML/PDF export.
+An open source markdown editor with real-time preview, a smart formatting toolbar, keyboard shortcuts, a document outline, and Markdown/HTML/PDF export.
 
 🔗 **Live:** [marksight.laramateo.com](https://marksight.laramateo.com)
 
@@ -10,7 +10,7 @@ An open source markdown editor with real-time preview, a smart formatting toolba
 - **Smart toolbar** — context-aware formatting that detects and toggles existing markdown
 - **Keyboard shortcuts** — bold (⌘B), italic (⌘I), strikethrough (⌘U), link (⌘K), inline code (⌘`), headings (⌘⇧1–3), lists, and more
 - **Document outline** — auto-generated, clickable heading navigation that scrolls the preview
-- **Export** — download styled HTML or print to PDF; preview the HTML in a new tab
+- **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
 - **GitHub-flavored markdown** — tables, task lists, strikethrough (via `remark-gfm`)
 - **Syntax highlighting** — fenced code blocks rendered with Prism
 - **Light / dark theme** — system-aware, persisted across sessions
