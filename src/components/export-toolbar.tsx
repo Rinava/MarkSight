@@ -27,8 +27,8 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-// remark-html escapes entities (e.g. `&` -> `&#x26;`) inside code blocks; decode
-// them back so the original mermaid source is fed to the renderer.
+// remark-html entity-escapes code-block contents; decode so mermaid receives
+// the original source (including any frontmatter / %%{init}%% directives).
 function decodeHtmlEntities(value: string): string {
   const el = document.createElement("textarea");
   el.innerHTML = value;
@@ -42,12 +42,9 @@ function mermaidErrorHTML(error: unknown): string {
   return `<div class="mermaid-error"><strong>Failed to render Mermaid diagram</strong><pre>${message}</pre></div>`;
 }
 
-/**
- * Replace each ```mermaid code block in the generated HTML with an inline SVG so
- * exported HTML/PDF documents are self-contained (no runtime script needed).
- * Diagrams render with the light theme to match the export's light page.
- * Renders sequentially because mermaid relies on shared global/DOM state.
- */
+// Replace each mermaid block with inline SVG so exports are self-contained.
+// Light theme matches the export page; sequential because mermaid relies on
+// shared global/DOM state.
 async function inlineMermaidDiagrams(html: string): Promise<string> {
   const matches = [...html.matchAll(MERMAID_BLOCK)];
   if (matches.length === 0) return html;
