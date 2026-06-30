@@ -57,6 +57,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "prismjs": "^1.30.0"
+    "prismjs": "^1.30.0",
+    "postcss": "^8.5.10"
   }
 }
