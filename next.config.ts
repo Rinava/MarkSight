@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "framer-motion",
+      "fflate",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
       "@radix-ui/react-tooltip",

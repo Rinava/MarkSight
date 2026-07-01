@@ -10,6 +10,7 @@ import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { SkillCreatorDialog } from "@/components/skill-creator-dialog";
 
 export interface ExportToolbarProps {
   content: string;
@@ -294,8 +295,10 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
               </TooltipContent>
             </Tooltip>
           ))}
+          <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+          <SkillCreatorDialog content={content} />
         </div>
-        
+
         {isExporting && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
