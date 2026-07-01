@@ -8,12 +8,6 @@ export interface MermaidDiagramProps {
   code: string;
 }
 
-/**
- * Renders a ```mermaid fenced block as an inline SVG diagram in the live
- * preview. The `mermaid` package is dynamically imported via `renderMermaid`,
- * so it stays out of the initial client bundle. Diagrams re-render on theme
- * change to stay in sync with the preview's light/dark Prism styles.
- */
 export function MermaidDiagram({ code }: MermaidDiagramProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -67,7 +61,7 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
   return (
     <div
       className="not-prose my-4 flex justify-center overflow-x-auto"
-      // SVG is produced by mermaid with securityLevel: "strict" (sanitized).
+      // Sanitized by mermaid (securityLevel: "strict") before injection.
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

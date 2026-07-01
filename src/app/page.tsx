@@ -64,8 +64,9 @@ Welcome to the most advanced **open source** Markdown editor with **real-time pr
 3. **Keyboard Shortcuts** - To speed up your workflow
 4. **Document Outline** - Navigate through your document easily
 5. **Export Options** - HTML and PDF with beautiful styling
-6. **Open Source** - Free to use and contribute to on GitHub
-7. **Community Driven** - Anyone can participate and improve the project
+6. **Mermaid Diagrams** - Render flowcharts and more from fenced code blocks
+7. **Open Source** - Free to use and contribute to on GitHub
+8. **Community Driven** - Anyone can participate and improve the project
 
 ### 🚀 Try These Features
 
@@ -93,6 +94,18 @@ function createDocument(content: string): Document {
 }
 \`\`\`
 
+#### Mermaid Diagrams
+
+\`\`\`mermaid
+graph LR
+  A[Type Markdown] --> B[Live Preview]
+  B --> C{Export?}
+  C -->|HTML| D[Styled HTML]
+  C -->|PDF| E[Print-ready PDF]
+  C -->|Markdown| F[.md file]
+\`\`\`
+
+Diagrams render live as you type — theme any diagram with a \`%%{init}%%\` directive or YAML frontmatter.
 
 #### Tables Are Supported
 
