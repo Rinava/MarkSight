@@ -13,8 +13,20 @@ An open source markdown editor with real-time preview, a smart formatting toolba
 - **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
 - **GitHub-flavored markdown** — tables, task lists, strikethrough (via `remark-gfm`)
 - **Syntax highlighting** — fenced code blocks rendered with Prism
+- **Mermaid diagrams** — fenced `mermaid` blocks render as live SVG in the preview and exports, themeable per diagram via `%%{init}%%` directives or YAML frontmatter
 - **Light / dark theme** — system-aware, persisted across sessions
 - **Local persistence** — your document is saved to `localStorage` automatically
+
+A fenced `mermaid` block renders as a diagram:
+
+```mermaid
+graph LR
+  A[Type Markdown] --> B[Live Preview]
+  B --> C{Export?}
+  C -->|HTML| D[Styled HTML]
+  C -->|PDF| E[Print-ready PDF]
+  C -->|Markdown| F[.md file]
+```
 
 ## Tech stack
 
@@ -22,6 +34,7 @@ An open source markdown editor with real-time preview, a smart formatting toolba
 - [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) primitives
 - [CodeMirror](https://codemirror.net/) (`@uiw/react-codemirror`) for editing
 - [react-markdown](https://github.com/remarkjs/react-markdown) + `remark-gfm` for rendering
+- [Mermaid](https://mermaid.js.org/) for diagram rendering
 - [next-themes](https://github.com/pacocoursey/next-themes) for theming
 
 ## Getting started
