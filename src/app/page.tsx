@@ -137,6 +137,8 @@ export default function Home() {
   });
   const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
+  const charCount = debounced.length;
+  const wordCount = debounced.trim() ? debounced.trim().split(/\s+/).length : 0;
   const { setContent } = useContent();
   const { trackDocumentChange, trackReset, trackClear } = useAnalytics();
 
@@ -221,7 +223,11 @@ export default function Home() {
               <CardContent className="flex min-h-0 flex-1 flex-col">
                 <MarkdownEditor value={value} onChange={handleValueChange} />
               </CardContent>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {wordCount} {wordCount === 1 ? "word" : "words"} ·{" "}
+                  {charCount} {charCount === 1 ? "character" : "characters"}
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
