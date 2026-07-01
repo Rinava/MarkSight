@@ -64,8 +64,9 @@ Welcome to the most advanced **open source** Markdown editor with **real-time pr
 3. **Keyboard Shortcuts** - To speed up your workflow
 4. **Document Outline** - Navigate through your document easily
 5. **Export Options** - HTML and PDF with beautiful styling
-6. **Open Source** - Free to use and contribute to on GitHub
-7. **Community Driven** - Anyone can participate and improve the project
+6. **Mermaid Diagrams** - Render flowcharts and more from fenced code blocks
+7. **Open Source** - Free to use and contribute to on GitHub
+8. **Community Driven** - Anyone can participate and improve the project
 
 ### 🚀 Try These Features
 
@@ -93,6 +94,18 @@ function createDocument(content: string): Document {
 }
 \`\`\`
 
+#### Mermaid Diagrams
+
+\`\`\`mermaid
+graph LR
+  A[Type Markdown] --> B[Live Preview]
+  B --> C{Export?}
+  C -->|HTML| D[Styled HTML]
+  C -->|PDF| E[Print-ready PDF]
+  C -->|Markdown| F[.md file]
+\`\`\`
+
+Diagrams render live as you type — theme any diagram with a \`%%{init}%%\` directive or YAML frontmatter.
 
 #### Tables Are Supported
 
@@ -137,6 +150,8 @@ export default function Home() {
   });
   const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
+  const charCount = debounced.length;
+  const wordCount = debounced.trim() ? debounced.trim().split(/\s+/).length : 0;
   const { setContent } = useContent();
   const { trackDocumentChange, trackReset, trackClear } = useAnalytics();
 
@@ -221,7 +236,11 @@ export default function Home() {
               <CardContent className="flex min-h-0 flex-1 flex-col">
                 <MarkdownEditor value={value} onChange={handleValueChange} />
               </CardContent>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {wordCount} {wordCount === 1 ? "word" : "words"} ·{" "}
+                  {charCount} {charCount === 1 ? "character" : "characters"}
+                </span>
                 <Button
                   variant="outline"
                   size="sm"

@@ -459,11 +459,26 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
   // Keyboard shortcuts
   useEffect(function setupKeyboardShortcuts() {
     function handleKeyDown(event: KeyboardEvent) {
+      if(!document.activeElement?.closest(".cm-editor")) return;
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
       if (!isCtrlOrCmd) return;
+      
+      // physical-key shortcuts 
+      if (event.shiftKey){
+        if (event.code.startsWith("Digit")){
+          const numericKey = Number(event.code.slice(-1));
+          if (numericKey >=1 && numericKey <=3){
+            event.preventDefault();
+            trackShortcut(`Cmd+Shift+${numericKey}`);
+            smartHeading(numericKey);
+            return;
+          }
+        }
+      }
 
+      // character shortcuts 
       switch (event.key.toLowerCase()) {
         case 'b':
           event.preventDefault();
@@ -489,27 +504,6 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
           event.preventDefault();
           trackShortcut('Cmd+`');
           smartInsert("`", "`", "code", "code");
-          break;
-        case '1':
-          if (event.shiftKey) {
-            event.preventDefault();
-            trackShortcut('Cmd+Shift+1');
-            smartHeading(1);
-          }
-          break;
-        case '2':
-          if (event.shiftKey) {
-            event.preventDefault();
-            trackShortcut('Cmd+Shift+2');
-            smartHeading(2);
-          }
-          break;
-        case '3':
-          if (event.shiftKey) {
-            event.preventDefault();
-            trackShortcut('Cmd+Shift+3');
-            smartHeading(3);
-          }
           break;
         case 'l':
           if (event.shiftKey) {
