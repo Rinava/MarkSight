@@ -122,11 +122,11 @@ Do not start a phase until the previous checkpoint is signed off.
 - [ ] `src/lib/markdown/metrics.ts` — pure `documentMetrics` (from `analytics.ts`), no GA side effects
 - [ ] Unit tests for each; verify HTML export + outline + metrics unchanged in app
 
-### Task 9 — MCP server endpoint (tool suite)  ·  Medium  ·  deps: 1, 11
-- [ ] Read current MCP TS SDK + Vercel MCP adapter docs first
-- [ ] `src/app/api/mcp/route.ts` — streamable HTTP; thin typed wrappers delegating to shared libs
-- [ ] Tools: `create_skill`, `validate_skill`, `markdown_to_html`, `document_outline`, `document_metrics`
-- [ ] Verify: `claude mcp add --transport http` / MCP Inspector lists + runs every tool; bundle passes `quick_validate.py`; outputs match in-app
+### Task 9 — MCP server endpoint (tool suite)  ·  done
+- [x] Read current `mcp-handler` README (createMcpHandler, `app/api/[transport]/route.ts`, registerTool) — built from docs, not memory
+- [x] `src/app/api/[transport]/route.ts` — streamable HTTP at `/api/mcp`; 5 thin typed wrappers (zod schemas, 500KB input cap) over shared libs
+- [x] Verify (MCP Inspector CLI): tools/list shows all 5; `create_skill` bundle decodes → `release-checklist/SKILL.md` → **official `quick_validate.py` passes**; outline/metrics/validate/html outputs correct
+- [x] Project `.mcp.json` (auto-wires the connector for cloners) + README connector section
 
 ### Task 10 — Document handoff bridge (token + KV)  ·  Medium  ·  deps: 9, 2 (+ KV store)
 - [ ] Provision Marketplace Redis/KV (Upstash) via `vercel:marketplace`

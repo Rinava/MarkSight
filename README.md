@@ -71,6 +71,22 @@ skill's frontmatter is preserved (frontmatter always overrides auto-derived
 metadata), bundled files like `references/` are carried through untouched, and
 you can edit the body and re-export.
 
+### MCP server (use MarkSight from Claude)
+
+MarkSight exposes its core as a remote [MCP](https://modelcontextprotocol.io)
+server at `/api/mcp` (streamable HTTP), so Claude and other MCP clients can
+call it directly:
+
+```bash
+claude mcp add --transport http marksight https://marksight.laramateo.com/api/mcp
+```
+
+Tools: `create_skill` (markdown → validated `.skill` bundle, base64),
+`validate_skill`, `markdown_to_html`, `document_outline`, `document_metrics` —
+all backed by the same `src/lib` code the editor uses. A project-scoped
+[`.mcp.json`](./.mcp.json) is included, so cloning this repo wires the
+connector automatically in Claude Code.
+
 ### Regenerating brand assets
 
 App icons and social images are generated from inline SVG with `sharp`:
