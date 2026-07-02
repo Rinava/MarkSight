@@ -5,6 +5,8 @@ import {
   BookOpen,
   Check,
   ChevronDown,
+  Copy,
+  FileDown,
   FileUp,
   Lightbulb,
   ListChecks,
@@ -24,6 +26,7 @@ import { useSkillMeta } from "@/contexts/skill-meta-context";
 import { downloadSkillBundle } from "@/lib/skill/download";
 import { skillQualityHints } from "@/lib/skill/hints";
 import { SKILL_TEMPLATE } from "@/lib/skill/template";
+import { buildSkillMd } from "@/lib/skill/build";
 import { knowledgeSkillBody } from "@/lib/skill/knowledge";
 import {
   importSkillBundle,
@@ -49,6 +52,7 @@ export function SkillPanel() {
     meta,
     validation,
     mode,
+    suggestedMode,
     extraFiles,
     setName,
     setDescription,
@@ -90,10 +94,49 @@ export function SkillPanel() {
   const descriptionErrors = validation.errors.filter((e) =>
     /description/i.test(e),
   );
-  const hint = skillQualityHints(
+  const hints = skillQualityHints(
     meta,
     mode === "knowledge" ? knowledgeSkillBody() : content,
-  )[0];
+  );
+  const skillMd = buildSkillMd(
+    meta,
+    mode === "knowledge" ? knowledgeSkillBody() : content,
+  );
+  const installCommand = `unzip -o ~/Downloads/${meta.name}.skill -d ~/.claude/skills/`;
+
+  async function copyText(text: string, message: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(message);
+      return true;
+    } catch {
+      toast.error("Couldn't copy to clipboard");
+      return false;
+    }
+  }
+
+  async function handleCopySkillMd() {
+    const copied = await copyText(
+      skillMd,
+      "SKILL.md copied — paste it into Claude or another assistant.",
+    );
+    if (copied) trackSkillAction("copy");
+  }
+
+  function handleDownloadSkillMd() {
+    const url = URL.createObjectURL(
+      new Blob([skillMd], { type: "text/markdown" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "SKILL.md";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("SKILL.md downloaded");
+    trackSkillAction("md");
+  }
 
   async function handleDownload() {
     setIsPackaging(true);
@@ -276,12 +319,17 @@ export function SkillPanel() {
               {error}
             </p>
           ))}
-          {!descriptionErrors.length && hint ? (
-            <p className="flex gap-1 text-xs text-amber-700 dark:text-amber-400">
-              <Lightbulb className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-              {hint.message}
-            </p>
-          ) : null}
+          {!descriptionErrors.length
+            ? hints.map((hint) => (
+                <p
+                  key={hint.id}
+                  className="flex gap-1 text-xs text-amber-700 dark:text-amber-400"
+                >
+                  <Lightbulb className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+                  {hint.message}
+                </p>
+              ))
+            : null}
         </div>
 
         <div
@@ -298,6 +346,9 @@ export function SkillPanel() {
             onClick={() => setUserMode("instruction")}
           >
             <ListChecks className="h-3 w-3" aria-hidden="true" /> Instructions
+            {suggestedMode === "instruction" ? (
+              <span className="text-muted-foreground">·sug.</span>
+            ) : null}
           </Button>
           <Button
             role="radio"
@@ -308,17 +359,29 @@ export function SkillPanel() {
             onClick={() => setUserMode("knowledge")}
           >
             <BookOpen className="h-3 w-3" aria-hidden="true" /> Knowledge
+            {suggestedMode === "knowledge" ? (
+              <span className="text-muted-foreground">·sug.</span>
+            ) : null}
           </Button>
         </div>
 
         {extraFiles.length > 0 ? (
           <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-            <span>{extraFiles.length} bundled file(s) kept</span>
+            <span className="font-medium">Kept files:</span>
+            {extraFiles.map((file) => (
+              <span
+                key={file.path}
+                className="max-w-full truncate rounded border bg-muted/40 px-1 py-0.5 font-mono"
+              >
+                {file.path}
+              </span>
+            ))}
             <Button
               variant="ghost"
               size="sm"
               className="h-5 px-1 text-xs"
               onClick={() => setExtraFiles([])}
+              aria-label="Clear kept files"
             >
               <X className="h-3 w-3" aria-hidden="true" />
             </Button>
@@ -334,6 +397,63 @@ export function SkillPanel() {
           <Package className="h-4 w-4" aria-hidden="true" />
           {isPackaging ? "Packaging…" : "Download .skill"}
         </Button>
+
+        <div className="flex justify-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-1.5 text-xs"
+            onClick={handleCopySkillMd}
+            disabled={!validation.valid}
+          >
+            <Copy className="h-3 w-3" aria-hidden="true" /> Copy SKILL.md
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-1.5 text-xs"
+            onClick={handleDownloadSkillMd}
+            disabled={!validation.valid}
+          >
+            <FileDown className="h-3 w-3" aria-hidden="true" /> SKILL.md only
+          </Button>
+        </div>
+
+        <details className="text-xs">
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+            Preview SKILL.md
+          </summary>
+          <pre className="mt-1.5 max-h-48 overflow-auto rounded-md border bg-muted/40 p-2 leading-relaxed break-words whitespace-pre-wrap">
+            {skillMd}
+          </pre>
+        </details>
+
+        <details className="text-xs">
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+            Add to Claude
+          </summary>
+          <div className="mt-1.5 space-y-1.5">
+            <div className="flex items-center gap-1">
+              <code className="min-w-0 flex-1 overflow-x-auto rounded-md border bg-muted/40 px-1.5 py-1 font-mono whitespace-nowrap">
+                {installCommand}
+              </code>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Copy install command"
+                className="h-6 w-6 shrink-0 p-0"
+                onClick={() => copyText(installCommand, "Command copied")}
+              >
+                <Copy className="h-3 w-3" aria-hidden="true" />
+              </Button>
+            </div>
+            <p className="text-muted-foreground">
+              Claude Code: run the command (loads next session or after{" "}
+              <span className="font-mono">/reload-plugins</span>). claude.ai:
+              Settings › Capabilities › Skills › Upload.
+            </p>
+          </div>
+        </details>
 
         <button
           type="button"
