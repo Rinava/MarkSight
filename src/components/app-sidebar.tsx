@@ -2,6 +2,7 @@
 
 import { DocumentOutline } from "@/components/document-outline";
 import { MarkdownHints } from "@/components/markdown-hints";
+import { SkillPanel } from "@/components/skill-panel";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +38,15 @@ export function AppSidebar({ content, onHeadingClick }: AppSidebarProps) {
               content={content}
               onHeadingClick={onHeadingClick}
             />
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Claude</SidebarGroupLabel>
+          <SidebarGroupContent className="min-w-0">
+            <SkillPanel />
           </SidebarGroupContent>
         </SidebarGroup>
 

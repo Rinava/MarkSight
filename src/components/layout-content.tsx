@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/footer";
 import { useContent } from "@/contexts/content-context";
+import { SkillMetaProvider } from "@/contexts/skill-meta-context";
 import { Toaster } from "sonner";
 import { SidebarTrigger, SidebarInset } from "./ui/sidebar";
 
@@ -16,6 +17,7 @@ export function LayoutContent({ children }: LayoutContentProps) {
   const { content } = useContent();
 
   return (
+    <SkillMetaProvider>
     <div className="flex min-h-dvh w-full bg-background">
       <SidebarInset className="flex-1">
         <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -33,5 +35,6 @@ export function LayoutContent({ children }: LayoutContentProps) {
       <AppSidebar content={content} />
       <Toaster />
     </div>
+    </SkillMetaProvider>
   );
 }

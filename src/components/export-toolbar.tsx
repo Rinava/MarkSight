@@ -1,26 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
-import { Download, FileDown, FileText, Printer, ExternalLink } from "lucide-react";
+import { Download, FileDown, FileText, Printer, ExternalLink, PackagePlus } from "lucide-react";
+import { toast } from "sonner";
 import { renderMarkdownToHtml } from "@/lib/markdown/to-html";
+import { downloadSkillBundle } from "@/lib/skill/download";
+import { useSkillMeta } from "@/contexts/skill-meta-context";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { SkillCreatorDialog } from "@/components/skill-creator-dialog";
 
 export interface ExportToolbarProps {
   content: string;
   filename?: string;
-  /** Replace the editor document (used by skill import). */
-  onImportDocument?: (markdown: string) => void;
 }
 
-export function ExportToolbar({ content, filename = "document", onImportDocument }: ExportToolbarProps) {
+export function ExportToolbar({ content, filename = "document" }: ExportToolbarProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
-  const { trackExportAction } = useAnalytics();
+  const { trackExportAction, trackSkillAction } = useAnalytics();
+  const { meta, validation, mode, extraFiles } = useSkillMeta();
 
   async function generateHTML(includeStyles = true) {
     return renderMarkdownToHtml(content, {
@@ -28,7 +29,6 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
       title: filename,
     });
   }
-
 
   function downloadFile(content: string, filename: string, mimeType: string) {
     const blob = new Blob([content], { type: mimeType });
@@ -41,6 +41,38 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
+
+  async function exportSkill() {
+    if (!validation.valid) {
+      toast.error("Skill metadata needs a fix", {
+        description: validation.errors[0],
+      });
+      return;
+    }
+    try {
+      await downloadSkillBundle({ meta, content, mode, extraFiles });
+      trackSkillAction("skill");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Export failed");
+    }
+  }
+
+  // ⌘⇧K / Ctrl+Shift+K — one-click skill export, same as the toolbar button.
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "k"
+      ) {
+        event.preventDefault();
+        exportSkill();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meta, validation, mode, extraFiles, content]);
 
   async function exportHTML() {
     setIsExporting(true);
@@ -55,7 +87,7 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
     try {
       const htmlContent = await generateHTML(true);
       setExportProgress(100);
-      
+
       setTimeout(() => {
         downloadFile(htmlContent, `${filename}.html`, 'text/html');
         clearInterval(progressInterval);
@@ -82,13 +114,13 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
     try {
       const htmlContent = await generateHTML(true);
       setExportProgress(100);
-      
+
       // Create a temporary window for printing
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(htmlContent);
         printWindow.document.close();
-        
+
         setTimeout(() => {
           printWindow.print();
           printWindow.close();
@@ -147,6 +179,12 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
       action: downloadMarkdown,
       shortcut: "⌘⇧S",
     },
+    {
+      icon: PackagePlus,
+      label: "Export as Claude Skill",
+      action: exportSkill,
+      shortcut: "⌘⇧K",
+    },
   ];
 
   return (
@@ -177,12 +215,10 @@ export function ExportToolbar({ content, filename = "document", onImportDocument
               </TooltipContent>
             </Tooltip>
           ))}
-          <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-          <SkillCreatorDialog content={content} onImportDocument={onImportDocument} />
         </div>
 
         {isExporting && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="flex items-center gap-2 ml-4"

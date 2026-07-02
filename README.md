@@ -42,17 +42,15 @@ npm run lint     # run ESLint
 
 ### Exporting a document as an Agent Skill
 
-Click the package icon in the preview toolbar (or press ⌘⇧K) to open the
-**Create Skill** wizard — three quick steps:
+One click: hit the package icon in the preview toolbar (or ⌘⇧K) and a
+validated `<name>.skill` bundle downloads immediately — metadata is derived
+from your document (first H1 → name, first paragraph → description) and the
+toast shows the add-to-Claude steps.
 
-1. **Pick what to do** — package the current document, import an existing
-   skill to edit, or start from a template.
-2. **Name it & say when Claude should use it** — the fields are pre-filled
-   from your document (first H1 → name, first paragraph → description) and
-   fully editable, with inline validation against the Agent Skill spec.
-3. **Get your skill** — download the packaged `<name>.skill` bundle (or just
-   the `SKILL.md`) with add-to-Claude steps right there.
-
+Everything optional lives in the **Agent Skill** sidebar card: edit the name
+and trigger description inline (validated as you type), switch between
+Instructions/Knowledge packaging, refine with AI, or import an existing skill
+from a `.skill` file or a GitHub marketplace to edit and re-export.
 Everything runs locally in your browser.
 
 To add the skill to Claude Code:

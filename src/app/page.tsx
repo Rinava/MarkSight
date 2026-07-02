@@ -137,7 +137,7 @@ export default function Home() {
   });
   const [previousValue, setPreviousValue] = useState<string>(value);
   const debounced = useDebouncedValue(value, { delayMs: 100 });
-  const { setContent } = useContent();
+  const { setContent, registerDocumentReplacer } = useContent();
   const { trackDocumentChange, trackReset, trackClear } = useAnalytics();
 
   // Update context content when debounced value changes
@@ -150,6 +150,13 @@ export default function Home() {
     setPreviousValue(value);
     setValue(newValue);
   };
+
+  // Let the sidebar skill panel replace the document (import / template),
+  // going through the same undo-friendly path as normal edits.
+  useEffect(() => {
+    registerDocumentReplacer(handleValueChange);
+    return () => registerDocumentReplacer(null);
+  });
   const handleUndo = () => {
     setValue(previousValue);
   };
@@ -238,7 +245,6 @@ export default function Home() {
                 <ExportToolbar
                   content={debounced}
                   filename="marksight-document"
-                  onImportDocument={handleValueChange}
                 />
               </CardHeader>
               <CardContent className="flex min-h-0 flex-1 flex-col overflow-auto">
