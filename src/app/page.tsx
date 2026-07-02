@@ -238,6 +238,7 @@ export default function Home() {
                 <ExportToolbar
                   content={debounced}
                   filename="marksight-document"
+                  onImportDocument={handleValueChange}
                 />
               </CardHeader>
               <CardContent className="flex min-h-0 flex-1 flex-col overflow-auto">

@@ -38,6 +38,37 @@ Do not start a phase until the previous checkpoint is signed off.
 - [x] `lint` + `build` clean, `test` green (34)
 - [ ] **Human review before Phase 2** ← awaiting your sign-off
 
+## Phase 1.5 — Usefulness (valid ≠ useful)
+
+### Task 12 — Knowledge-skill packaging mode  ·  implemented, gates pending
+- [x] `lib/skill/knowledge.ts`: `suggestSkillMode` heuristic, pointer `SKILL.md` builder, `references/document.md` payload (frontmatter stripped)
+- [x] Dialog radiogroup toggle (Instructions / Knowledge) with "suggested" badge; `.skill` download packages per mode
+- [ ] Verify: unit tests written (`usefulness.test.ts`) — run pending; knowledge bundle vs `quick_validate.py` pending
+
+### Task 13 — Trigger-quality hints  ·  implemented, gates pending
+- [x] `lib/skill/hints.ts`: no-use-when, generic-description, long-body (>500), no-instruction-headings — non-blocking amber list in dialog
+- [x] Hints computed against the effective body (knowledge pointer is clean by construction)
+- [ ] Note: went with hints instead of a separate "use when" input — the frontmatter-override rule already gives manual control; revisit if hints prove insufficient
+- [ ] Verify: unit tests written — run pending
+
+### Task 14 — "New skill" starter template  ·  implemented, gates pending
+- [x] `lib/skill/template.ts` + Template button in the dialog's import row (undoable, clears carried files)
+- [x] Template is valid + hint-clean + instruction-suggested **by test construction** (`usefulness.test.ts`)
+- [ ] Verify: test run pending
+
+### Task 15 — Import & modify skills  ·  implemented, gates pending
+- [x] 15A file import: `.skill`/`.zip`/`SKILL.md` → editor (`lib/skill/import.ts`); extras preserved via extended `packageSkill`; undoable (goes through `handleValueChange`)
+- [x] Frontmatter-aware metadata: document frontmatter overrides derivation (preserves imported names/trigger descriptions; also enables manual control)
+- [x] 15B marketplace import (`lib/skill/marketplace.ts`): any GitHub URL (repo/folder/SKILL.md) via contents API + raw; curated quick-picks (anthropics/skills, claude-plugins-public); skill discovery picker; 30-file/1MB caps; friendly rate-limit errors
+- [x] CSP: `api.github.com` + `raw.githubusercontent.com` added to `connect-src`
+- [x] ⌘⇧K conflict fix: toolbar `case 'k'` now shift-exclusive (was double-firing link-insert + dialog)
+- [ ] Gates: `test`/`lint`/`build` + browser verify — **pending (Bash blocked by transient classifier outage)**
+- [ ] Live marketplace fetch verified against real GitHub (CORS/layout) — pending same
+
+### ✅ Checkpoint A.5 — Useful + round-trip
+- [ ] Knowledge mode, hints, template, import all verified; `lint`/`build`/`test` green
+- [ ] **Human review**
+
 ## Phase 2 — Optional AI refinement
 
 ### Task 5 — `/api/skill/improve` route (AI Gateway)  ·  Medium  ·  deps: 1
@@ -60,23 +91,23 @@ Do not start a phase until the previous checkpoint is signed off.
 
 ## Phase 3 — Polish & docs
 
-### Task 7 — Analytics, shortcut, a11y, docs  ·  Small  ·  deps: 2–6
-- [ ] `trackSkillCreate(kind)` in `analytics.ts` + `use-analytics.ts`
-- [ ] Optional keyboard shortcut to open the dialog
-- [ ] Dialog a11y: focus trap, escape, labeled controls
-- [ ] Update `README.md` + `.env.example`
-- [ ] Verify: events fire; keyboard-only flow works; `lint` + `build` clean
+### Task 7 — Analytics, shortcut, a11y, docs  ·  mostly done (AI parts pend Phase 2)
+- [x] `trackSkillCreate(kind: 'copy' | 'md' | 'skill')` in `analytics.ts` + `trackSkillAction` in `use-analytics.ts`
+- [x] ⌘⇧K / Ctrl+Shift+K shortcut opens the dialog (matches toolbar tooltip)
+- [x] Dialog a11y: Radix focus trap/escape; aria-labels on icon buttons; labeled install section
+- [x] Update `README.md` (feature bullet + "Exporting a document as an Agent Skill" section)
+- [ ] `.env.example` — deferred to Phase 2 (no env vars exist yet)
 
 ### ✅ Checkpoint C — Feature complete (offline + AI)
 - [ ] All Phase 1–3 acceptance criteria met; docs updated
 
 ## Phase 4 — Distribution & easy-add (backend)
 
-### Task 8 — "Add to Claude" install panel  ·  Small  ·  deps: 4
-- [ ] Claude Code copyable cmd: `unzip -o ~/Downloads/<name>.skill -d ~/.claude/skills/`
-- [ ] claude.ai upload steps (Settings › Skills › Upload)
-- [ ] Interpolate real `<name>`; copy → toast
-- [ ] Verify: running the cmd yields `~/.claude/skills/<name>/SKILL.md` that validates
+### Task 8 — "Add to Claude" install panel  ·  done
+- [x] Claude Code copyable cmd: `unzip -o ~/Downloads/<name>.skill -d ~/.claude/skills/` + reload note
+- [x] claude.ai upload steps (Settings › Capabilities › Skills › Upload)
+- [x] Interpolates real `<name>`; copy → toast
+- [x] Verify (browser): panel renders, command interpolates derived name; zip layout matches (`<name>/SKILL.md`)
 
 ### Task 11 — Extract shared markdown core  ·  Small–Medium  ·  deps: none (prereq for 9)
 - [ ] `src/lib/markdown/to-html.ts` — `renderMarkdownToHtml` (lift from `export-toolbar.tsx`); toolbar imports it

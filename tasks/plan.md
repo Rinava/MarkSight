@@ -107,6 +107,25 @@ The output conforms to the official Agent Skill contract (verified against the
 - [ ] `npm run lint` and `npm run build` clean; `npm run test` green.
 - [ ] **Human review before Phase 2.**
 
+### Phase 1.5 — Usefulness (valid ≠ useful; close the gap)
+
+Rationale: a spec‑valid skill still fails if Claude never triggers it (bad description) or
+if the body is content rather than instructions. These tasks make generated skills
+*genuinely consumable* and make MarkSight a skill **editor**, not a one‑way converter.
+
+- [ ] **Task 12 — Knowledge‑skill packaging mode** — second bundle shape for non‑instruction documents: short generated `SKILL.md` pointer ("Read `references/document.md` when …") + the document at `references/document.md`. Mode toggle in the dialog with a heuristic default (imperative‑verb/heading density → instruction vs. knowledge).
+- [ ] **Task 13 — Trigger‑quality description + quality hints** — optional "When should Claude use this?" input appended as "Use this when …"; non‑blocking quality warnings beside the ✓ Valid badge (no use‑when language, generic first‑paragraph description, body > 500 lines, no imperative headings).
+- [ ] **Task 14 — "New skill" starter template** — a skill‑shaped starter document (H1 name, trigger‑description intro, `## When to use`, `## Steps`, `## Output format`) reachable from the editor (Reset/menu affordance).
+- [ ] **Task 15 — Import & modify skills (file/paste + common marketplaces)** — open an existing skill and edit it with live validation:
+  - **15A — Local import:** open/drop a `.skill`/`.zip` or paste a `SKILL.md`; frontmatter + body load into the editor; extra bundle files (e.g. `references/`, `scripts/`) are carried in memory and preserved on re‑export (with a visible file list); warn if anything can't be preserved.
+  - **15B — Marketplace import:** browse/fetch skills from the most common public sources (verified landscape research pending — candidates: the official `anthropics/skills` GitHub repo; Claude plugin marketplaces via `.claude-plugin/marketplace.json` → `skills/<name>/SKILL.md`; top community collections). Client‑side fetch via GitHub raw/API where CORS allows; requires adding `https://api.github.com https://raw.githubusercontent.com` (and/or jsDelivr) to CSP `connect-src` in `src/middleware.ts`. Provenance shown (source + path); imported skills are untrusted content — render as text, never execute.
+
+#### Checkpoint A.5 — Generated skills are useful, and existing skills round‑trip
+- [ ] A non‑instruction document packaged in knowledge mode yields `SKILL.md` + `references/document.md`, passes `quick_validate.py`.
+- [ ] Quality hints flag a generic description; adding "use when" text clears them.
+- [ ] A skill imported from a marketplace → edited → re‑exported passes `quick_validate.py` with extra files preserved.
+- [ ] `lint` + `build` clean, `test` green; **human review**.
+
 ### Phase 2 — Optional AI refinement
 
 - [ ] **Task 5 — `/api/skill/improve` route (Vercel AI Gateway)**

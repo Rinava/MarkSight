@@ -481,6 +481,8 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
           smartInsert("~~", "~~", "strikethrough text", "strikethrough");
           break;
         case 'k':
+          // ⌘⇧K belongs to the Skill Creator dialog
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+K');
           insertText("[", "](url)", "link text");

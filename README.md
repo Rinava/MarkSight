@@ -11,6 +11,7 @@ An open source markdown editor with real-time preview, a smart formatting toolba
 - **Keyboard shortcuts** — bold (⌘B), italic (⌘I), strikethrough (⌘U), link (⌘K), inline code (⌘`), headings (⌘⇧1–3), lists, and more
 - **Document outline** — auto-generated, clickable heading navigation that scrolls the preview
 - **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
+- **Skill Creator** — package your document as an [Agent Skill](https://code.claude.com/docs/en/skills) (⌘⇧K) that Claude and other AIs can receive: copy the generated `SKILL.md` or download a ready-to-install `.skill` bundle. Import existing skills from a `.skill`/`.zip` file or straight from GitHub-hosted marketplaces (like [anthropics/skills](https://github.com/anthropics/skills)), modify them, and re-export with bundled files preserved
 - **GitHub-flavored markdown** — tables, task lists, strikethrough (via `remark-gfm`)
 - **Syntax highlighting** — fenced code blocks rendered with Prism
 - **Light / dark theme** — system-aware, persisted across sessions
@@ -38,6 +39,32 @@ npm run build    # production build
 npm run start    # serve the production build
 npm run lint     # run ESLint
 ```
+
+### Exporting a document as an Agent Skill
+
+Click the package icon in the preview toolbar (or press ⌘⇧K) to open the
+**Create Skill** dialog. MarkSight derives the skill's `name` from your first
+H1 and its `description` from the first paragraph, validates the result
+against the Agent Skill spec, and shows a live `SKILL.md` preview. From there
+you can copy the `SKILL.md`, download it, or download a packaged
+`<name>.skill` bundle — everything runs locally in your browser.
+
+To add the skill to Claude Code:
+
+```bash
+unzip -o ~/Downloads/<name>.skill -d ~/.claude/skills/
+```
+
+It loads on the next session (or after `/reload-plugins`). On claude.ai,
+upload the `.skill` file under **Settings › Capabilities › Skills**.
+
+You can also **import an existing skill** from the same dialog: open a
+`.skill`/`.zip` bundle or `SKILL.md` file, or paste a GitHub URL (a repo, a
+folder, or a `SKILL.md` link — e.g. the official
+[anthropics/skills](https://github.com/anthropics/skills) collection). The
+skill's frontmatter is preserved (frontmatter always overrides auto-derived
+metadata), bundled files like `references/` are carried through untouched, and
+you can edit the body and re-export.
 
 ### Regenerating brand assets
 

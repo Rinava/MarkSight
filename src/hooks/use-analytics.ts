@@ -3,6 +3,7 @@ import {
   trackDocumentMetrics,
   calculateDocumentMetrics,
   trackExport,
+  trackSkillCreate,
   trackThemeToggle,
   trackEditorAction,
   trackToolbarAction,
@@ -22,6 +23,10 @@ export function useAnalytics() {
   const trackExportAction = useCallback((format: 'html' | 'pdf', content: string) => {
     const metrics = calculateDocumentMetrics(content);
     trackExport(format, metrics.wordCount);
+  }, []);
+
+  const trackSkillAction = useCallback((kind: 'copy' | 'md' | 'skill') => {
+    trackSkillCreate(kind);
   }, []);
 
   const trackThemeChange = useCallback((theme: 'light' | 'dark') => {
@@ -59,6 +64,7 @@ export function useAnalytics() {
   return {
     trackDocumentChange,
     trackExportAction,
+    trackSkillAction,
     trackThemeChange,
     trackEditorInteraction,
     trackToolbarInteraction,

@@ -42,6 +42,14 @@ export function trackExport(format: 'html' | 'pdf', wordCount: number) {
   });
 }
 
+export function trackSkillCreate(kind: 'copy' | 'md' | 'skill') {
+  trackEvent({
+    action: 'skill_create',
+    category: 'document',
+    label: kind,
+  });
+}
+
 export function trackThemeToggle(theme: 'light' | 'dark') {
   trackEvent({
     action: 'theme_toggle',

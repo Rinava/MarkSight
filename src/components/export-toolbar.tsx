@@ -15,9 +15,11 @@ import { SkillCreatorDialog } from "@/components/skill-creator-dialog";
 export interface ExportToolbarProps {
   content: string;
   filename?: string;
+  /** Replace the editor document (used by skill import). */
+  onImportDocument?: (markdown: string) => void;
 }
 
-export function ExportToolbar({ content, filename = "document" }: ExportToolbarProps) {
+export function ExportToolbar({ content, filename = "document", onImportDocument }: ExportToolbarProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const { trackExportAction } = useAnalytics();
@@ -296,7 +298,7 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
             </Tooltip>
           ))}
           <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-          <SkillCreatorDialog content={content} />
+          <SkillCreatorDialog content={content} onImportDocument={onImportDocument} />
         </div>
 
         {isExporting && (
