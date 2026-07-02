@@ -112,16 +112,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ enabled: true, name, description });
   } catch (error) {
     console.error("skill/improve failed:", error);
-    if (APICallError.isInstance(error)) {
-      const status = error.statusCode ?? 502;
-      const message =
-        status === 429
-          ? "AI rate limit reached — try again shortly"
-          : status === 402
-            ? "AI budget exhausted"
+    // Gateway errors may wrap APICallError (e.g. GatewayInternalServerError
+    // with the APICallError as `cause`) — look at both layers.
+    const apiError = APICallError.isInstance(error)
+      ? error
+      : error instanceof Error && APICallError.isInstance(error.cause)
+        ? error.cause
+        : null;
+    const status =
+      apiError?.statusCode ??
+      (typeof (error as { statusCode?: unknown })?.statusCode === "number"
+        ? (error as { statusCode: number }).statusCode
+        : undefined);
+
+    const message =
+      status === 429
+        ? "AI rate limit reached — try again shortly"
+        : status === 402
+          ? "AI budget exhausted"
+          : status === 403
+            ? "AI Gateway not activated for this team yet — add a card in Vercel's AI settings to unlock the free credits"
             : "AI provider error";
-      return NextResponse.json({ error: message }, { status: 502 });
-    }
-    return NextResponse.json({ error: "AI request failed" }, { status: 502 });
+    return NextResponse.json({ error: message }, { status: 502 });
   }
 }
