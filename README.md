@@ -43,11 +43,17 @@ npm run lint     # run ESLint
 ### Exporting a document as an Agent Skill
 
 Click the package icon in the preview toolbar (or press ⌘⇧K) to open the
-**Create Skill** dialog. MarkSight derives the skill's `name` from your first
-H1 and its `description` from the first paragraph, validates the result
-against the Agent Skill spec, and shows a live `SKILL.md` preview. From there
-you can copy the `SKILL.md`, download it, or download a packaged
-`<name>.skill` bundle — everything runs locally in your browser.
+**Create Skill** wizard — three quick steps:
+
+1. **Pick what to do** — package the current document, import an existing
+   skill to edit, or start from a template.
+2. **Name it & say when Claude should use it** — the fields are pre-filled
+   from your document (first H1 → name, first paragraph → description) and
+   fully editable, with inline validation against the Agent Skill spec.
+3. **Get your skill** — download the packaged `<name>.skill` bundle (or just
+   the `SKILL.md`) with add-to-Claude steps right there.
+
+Everything runs locally in your browser.
 
 To add the skill to Claude Code:
 
