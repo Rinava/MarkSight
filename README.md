@@ -58,6 +58,11 @@ unzip -o ~/Downloads/<name>.skill -d ~/.claude/skills/
 It loads on the next session (or after `/reload-plugins`). On claude.ai,
 upload the `.skill` file under **Settings › Capabilities › Skills**.
 
+Optionally, an **Improve with AI** button refines the skill's name and trigger
+description (via Vercel AI Gateway). It appears only when the backend has
+gateway credentials — see [`.env.example`](./.env.example); without them the
+whole Skill Creator keeps working offline.
+
 You can also **import an existing skill** from the same dialog: open a
 `.skill`/`.zip` bundle or `SKILL.md` file, or paste a GitHub URL (a repo, a
 folder, or a `SKILL.md` link — e.g. the official

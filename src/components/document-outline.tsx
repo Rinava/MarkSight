@@ -2,21 +2,14 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import GithubSlugger from "github-slugger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Hash } from "lucide-react";
+import { buildOutline, type OutlineHeading as Heading } from "@/lib/markdown/outline";
 
 export interface DocumentOutlineProps {
   content: string;
   onHeadingClick?: (headingId: string) => void;
-}
-
-interface Heading {
-  level: number;
-  text: string;
-  id: string;
-  line: number;
 }
 
 function getHeadingIcon() {
@@ -51,38 +44,7 @@ function getHeadingIconSize(level: number) {
 }
 
 export function DocumentOutline({ content, onHeadingClick }: DocumentOutlineProps) {
-  const headings = useMemo(function extractHeadings() {
-    const lines = content.split('\n');
-    const headingRegex = /^(#{1,6})\s+(.+)$/;
-    const extracted: Heading[] = [];
-    // Same slugger rehype-slug uses in the preview, so outline links match the
-    // rendered heading ids (including duplicate-heading numbering).
-    const slugger = new GithubSlugger();
-    let insideFence = false;
-
-    lines.forEach(function processLine(line, index) {
-      if (/^\s*```/.test(line)) {
-        insideFence = !insideFence;
-        return;
-      }
-      if (insideFence) return;
-      const match = line.match(headingRegex);
-      if (match) {
-        const level = match[1].length;
-        const text = match[2].trim();
-        const id = slugger.slug(text);
-
-        extracted.push({
-          level,
-          text,
-          id,
-          line: index + 1
-        });
-      }
-    });
-
-    return extracted;
-  }, [content]);
+  const headings = useMemo(() => buildOutline(content), [content]);
 
   function handleHeadingClick(heading: Heading) {
     onHeadingClick?.(heading.id);

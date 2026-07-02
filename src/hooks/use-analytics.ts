@@ -25,7 +25,7 @@ export function useAnalytics() {
     trackExport(format, metrics.wordCount);
   }, []);
 
-  const trackSkillAction = useCallback((kind: 'copy' | 'md' | 'skill') => {
+  const trackSkillAction = useCallback((kind: 'copy' | 'md' | 'skill' | 'ai-improve') => {
     trackSkillCreate(kind);
   }, []);
 

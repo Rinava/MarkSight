@@ -10,6 +10,7 @@ import {
   FileUp,
   Import,
   Lightbulb,
+  Sparkles,
   ListChecks,
   Loader2,
   Package,
@@ -94,8 +95,27 @@ export function SkillCreatorDialog({
     skills: DiscoveredSkill[];
   } | null>(null);
   const [userMode, setUserMode] = useState<SkillMode | null>(null);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [isImproving, setIsImproving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { trackSkillAction } = useAnalytics();
+
+  // Feature-detect the AI backend once per dialog open; hidden when disabled.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    fetch("/api/skill/improve")
+      .then((r) => (r.ok ? r.json() : { enabled: false }))
+      .then((d) => {
+        if (!cancelled) setAiEnabled(Boolean(d.enabled));
+      })
+      .catch(() => {
+        if (!cancelled) setAiEnabled(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   const { meta, skillMd, validation, hints, mode, suggestedMode } = useMemo(() => {
     // Explicit frontmatter in the document wins (preserves imported/hand-written
@@ -201,6 +221,38 @@ export function SkillCreatorDialog({
       toast.error("Couldn't package the skill");
     } finally {
       setIsPackaging(false);
+    }
+  }
+
+  async function handleImproveWithAi() {
+    if (!onImportDocument) return;
+    setIsImproving(true);
+    try {
+      const response = await fetch("/api/skill/improve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.enabled === false || !data.name) {
+        toast.error(data.error ?? "AI refinement unavailable");
+        return;
+      }
+      // Write the refined metadata into the document's frontmatter — it flows
+      // through the frontmatter-override rule and stays undoable.
+      onImportDocument(
+        buildSkillMd({ ...meta, name: data.name, description: data.description }, content),
+      );
+      trackSkillAction("ai-improve");
+      toast.success("Metadata refined", {
+        description: data.repaired
+          ? "Parts of the AI output failed validation and were kept from the original."
+          : "Refined name and trigger description written to the document frontmatter.",
+      });
+    } catch {
+      toast.error("AI refinement failed");
+    } finally {
+      setIsImproving(false);
     }
   }
 
@@ -406,6 +458,22 @@ export function SkillCreatorDialog({
         ) : null}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          {aiEnabled && onImportDocument ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleImproveWithAi}
+              disabled={isImproving}
+              className="sm:mr-auto"
+            >
+              {isImproving ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+              )}
+              {isImproving ? "Improving…" : "Improve with AI"}
+            </Button>
+          ) : null}
           <Button
             variant="outline"
             size="sm"

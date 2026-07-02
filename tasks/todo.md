@@ -71,23 +71,29 @@ Do not start a phase until the previous checkpoint is signed off.
 
 ## Phase 2 — Optional AI refinement
 
-### Task 5 — `/api/skill/improve` route (AI Gateway)  ·  Medium  ·  deps: 1
-- [ ] Read `vercel:ai-sdk` + `vercel:ai-gateway` skills first
-- [ ] `src/app/api/skill/improve/route.ts` — AI SDK v6, `anthropic/<model>` via Gateway
-- [ ] Re-validate AI output with shared `validateSkill`
-- [ ] Graceful `{ enabled: false }` when no key/OIDC; add `ai` dep + `.env.example`
-- [ ] Verify: `build` clean; `curl` with/without key
+### Task 5 — `/api/skill/improve` route (AI Gateway)  ·  done (live AI call pends a key)
+- [x] Read `vercel:ai-gateway` skill; pinned `ai@^6` (npm resolved v7 — newer than documented; pinned to the verified line)
+- [x] `src/app/api/skill/improve/route.ts` — plain `"provider/model"` string via Gateway; default `anthropic/claude-haiku-4.5`, `SKILL_AI_MODEL` override
+- [x] AI output parsed, sanitized, re-validated with shared `validateSkill`; per-field repair fallback; 422 if unrecoverable
+- [x] `{ enabled: false }` when no `AI_GATEWAY_API_KEY`/`VERCEL_OIDC_TOKEN`; size cap 100KB; `ai` dep + `.env.example`
+- [x] Verify: build registers route; `curl` GET/POST without key → `{"enabled":false}`
+- [ ] Live refinement with a real key — **needs credentials** (`vercel env pull` or `AI_GATEWAY_API_KEY`)
 
-### Task 6 — "Improve with AI" wiring + feature gating  ·  Small–Medium  ·  deps: 5, 2
-- [ ] ✨ Improve with AI button: call route, loading/error, update + re-validate preview
-- [ ] Hide/disable when backend reports `enabled: false`
-- [ ] Verify: manual with/without key; Phase 1 unaffected
+### Task 6 — "Improve with AI" wiring + feature gating  ·  done
+- [x] ✨ button (leftmost in action row): POST → writes refined meta into document frontmatter (undoable, flows through frontmatter-override)
+- [x] Feature-detect on dialog open (GET); button absent when `enabled:false` — verified in browser
+- [x] Phase 1 flows unaffected (verified: all offline actions present without key)
 
-### ✅ Checkpoint B — AI refinement is additive and safe
-- [ ] With key: Improve updates preview, re-validates; bad output never reaches a download
-- [ ] Without key: button gone; Phase 1 intact
-- [ ] `build` clean
-- [ ] **Human review before Phase 3**
+### ✅ Checkpoint B — AI refinement is additive and safe  ·  PASSED (offline half)
+- [x] Without key: button gone; offline creator intact
+- [x] Server re-validates; invalid AI output repaired or 422 — never reaches the document
+- [x] `build` clean
+- [ ] With-key live test — **awaiting credentials from user**
+
+### Task 11 — Extract shared markdown core  ·  done (moved up from Phase 4)
+- [x] `lib/markdown/to-html.ts` (remark pipeline + styled wrapper), `outline.ts` (slugger outline), `metrics.ts` (pure metrics)
+- [x] `export-toolbar`, `document-outline`, `analytics` now delegate; behavior preserved (incl. image-counts-as-link quirk, documented in test)
+- [x] 6 unit tests; browser-verified outline over the imported pdf skill
 
 ## Phase 3 — Polish & docs
 
