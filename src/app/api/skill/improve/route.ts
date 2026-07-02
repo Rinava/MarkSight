@@ -1,25 +1,43 @@
 import { NextResponse } from "next/server";
-import { generateText, APICallError } from "ai";
+import { generateText, APICallError, type LanguageModel } from "ai";
+import { google } from "@ai-sdk/google";
 import { validateSkill } from "@/lib/skill/validate";
 import { deriveSkillMeta } from "@/lib/skill/derive";
 
 /**
- * AI refinement for skill metadata, via Vercel AI Gateway (plain
- * "provider/model" strings route through the gateway in AI SDK v6).
+ * AI refinement for skill metadata. Two provider paths, checked in order:
  *
- * Feature-gated: when no gateway credentials are configured the route reports
+ * 1. `GOOGLE_GENERATIVE_AI_API_KEY` → direct Gemini (free AI Studio tier;
+ *    `SKILL_AI_MODEL` is a bare Gemini id, default `gemini-3-flash`).
+ * 2. `AI_GATEWAY_API_KEY` / `VERCEL_OIDC_TOKEN` → Vercel AI Gateway (plain
+ *    "provider/model" slug, default `anthropic/claude-haiku-4.5`).
+ *
+ * Feature-gated: with neither configured the route reports
  * `{ enabled: false }` and the UI hides the button — the offline creator is
  * never affected. AI output is re-validated with the shared `validateSkill`;
  * invalid output is repaired or rejected, never passed through.
  */
 
 const MAX_CONTENT_BYTES = 100_000;
-const MODEL = process.env.SKILL_AI_MODEL || "anthropic/claude-haiku-4.5";
+
+function resolveModel(): { model: LanguageModel; viaGateway: boolean } | null {
+  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return {
+      model: google(process.env.SKILL_AI_MODEL || "gemini-3-flash"),
+      viaGateway: false,
+    };
+  }
+  if (process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) {
+    return {
+      model: process.env.SKILL_AI_MODEL || "anthropic/claude-haiku-4.5",
+      viaGateway: true,
+    };
+  }
+  return null;
+}
 
 function aiEnabled(): boolean {
-  return Boolean(
-    process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN,
-  );
+  return resolveModel() !== null;
 }
 
 export async function GET() {
@@ -27,7 +45,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!aiEnabled()) {
+  const resolved = resolveModel();
+  if (!resolved) {
     return NextResponse.json({ enabled: false });
   }
 
@@ -48,7 +67,7 @@ export async function POST(request: Request) {
 
   try {
     const { text } = await generateText({
-      model: MODEL,
+      model: resolved.model,
       prompt: [
         "You are refining metadata for an Agent Skill (a SKILL.md Claude uses).",
         "Given the document below, produce improved skill metadata.",
@@ -68,9 +87,9 @@ export async function POST(request: Request) {
         "",
         'Reply with ONLY a JSON object, no code fences: {"name": "...", "description": "..."}',
       ].join("\n"),
-      providerOptions: {
-        gateway: { tags: ["feature:skill-creator"] },
-      },
+      ...(resolved.viaGateway
+        ? { providerOptions: { gateway: { tags: ["feature:skill-creator"] } } }
+        : {}),
     });
 
     const raw = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
