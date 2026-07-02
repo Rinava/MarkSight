@@ -23,7 +23,7 @@ const MAX_CONTENT_BYTES = 100_000;
 function resolveModel(): { model: LanguageModel; viaGateway: boolean } | null {
   if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return {
-      model: google(process.env.SKILL_AI_MODEL || "gemini-3-flash"),
+      model: google(process.env.SKILL_AI_MODEL || "gemini-flash-latest"),
       viaGateway: false,
     };
   }

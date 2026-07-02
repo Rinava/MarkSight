@@ -84,11 +84,12 @@ Do not start a phase until the previous checkpoint is signed off.
 - [x] Feature-detect on dialog open (GET); button absent when `enabled:false` — verified in browser
 - [x] Phase 1 flows unaffected (verified: all offline actions present without key)
 
-### ✅ Checkpoint B — AI refinement is additive and safe  ·  PASSED (offline half)
+### ✅ Checkpoint B — AI refinement is additive and safe  ·  PASSED (fully)
 - [x] Without key: button gone; offline creator intact
 - [x] Server re-validates; invalid AI output repaired or 422 — never reaches the document
 - [x] `build` clean
-- [ ] With-key live test — **awaiting credentials from user**
+- [x] Live test on the **free Gemini path** (`GOOGLE_GENERATIVE_AI_API_KEY`, `gemini-flash-latest`): curl returns refined trigger-optimized metadata; browser ✨ button → "Metadata refined" → frontmatter updated
+- [x] Dual-provider routing: Google direct (free) checked first; AI Gateway (OIDC/key) fallback; gateway 403 activation error surfaced with actionable message
 
 ### Task 11 — Extract shared markdown core  ·  done (moved up from Phase 4)
 - [x] `lib/markdown/to-html.ts` (remark pipeline + styled wrapper), `outline.ts` (slugger outline), `metrics.ts` (pure metrics)
