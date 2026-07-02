@@ -24,7 +24,21 @@ export function Footer() {
           </div>
           <div className="flex items-center gap-4">
             <Link
-              href="https://github.com/rinava/MarkSight"
+              href="/about"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="https://github.com/Rinava/MarkSight/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Community
+            </Link>
+            <Link
+              href="https://github.com/Rinava/MarkSight"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
