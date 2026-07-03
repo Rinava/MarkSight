@@ -29,12 +29,20 @@ function escapeCssString(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\s+/g, " ");
 }
 
-// Print-on-load + close-on-afterprint. Injected only for PDF export so it never
-// ends up in a saved .html file. Replaces the old fixed 500ms close timer.
-const PRINT_SCRIPT = `<script>
-  window.addEventListener("load", function () { window.focus(); window.print(); });
-  window.addEventListener("afterprint", function () { window.close(); });
-</script>`;
+// Print-on-load + close-on-afterprint, driven from the opener. The page's CSP
+// (nonce + strict-dynamic) is inherited by the about:blank print window and
+// blocks nonce-less inline scripts, so a <script> injected into the written
+// document would never run. Same-origin calls from the opener are not subject
+// to the window's script-src, and nothing print-related leaks into saved .html.
+function printWhenLoaded(printWindow: Window) {
+  const print = () => {
+    printWindow.addEventListener("afterprint", () => printWindow.close());
+    printWindow.focus();
+    printWindow.print();
+  };
+  if (printWindow.document.readyState === "complete") print();
+  else printWindow.addEventListener("load", print);
+}
 
 /**
  * Wrap a rendered markdown body in a self-contained, print-ready HTML document:
@@ -42,7 +50,7 @@ const PRINT_SCRIPT = `<script>
  * running header/footer with the document title and page numbers, and a
  * portable font set.
  */
-function buildDocument(body: string, title: string, autoPrint: boolean): string {
+function buildDocument(body: string, title: string): string {
   const safeTitle = escapeHtml(title);
   const cssTitle = escapeCssString(title);
 
@@ -153,7 +161,6 @@ function buildDocument(body: string, title: string, autoPrint: boolean): string 
 </head>
 <body>
     ${body}
-${autoPrint ? PRINT_SCRIPT : ""}
 </body>
 </html>`;
 }
@@ -166,10 +173,10 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
   // Render the markdown body (highlighting + mermaid) and wrap it in the print
   // document. The renderer is imported lazily so react-dom/server and the
   // markdown pipeline stay out of the initial bundle.
-  async function generateDocument({ autoPrint = false }: { autoPrint?: boolean } = {}) {
+  async function generateDocument() {
     const { renderExportBody } = await import("@/lib/export-markdown");
     const body = await renderExportBody(content);
-    return buildDocument(body, filename, autoPrint);
+    return buildDocument(body, filename);
   }
 
   function downloadFile(data: string, name: string, mimeType: string) {
@@ -221,13 +228,13 @@ export function ExportToolbar({ content, filename = "document" }: ExportToolbarP
     }
 
     try {
-      const doc = await generateDocument({ autoPrint: true });
+      const doc = await generateDocument();
       setExportProgress(90);
       printWindow.document.open();
       printWindow.document.write(doc);
       printWindow.document.close();
+      printWhenLoaded(printWindow);
       setExportProgress(100);
-      // The injected script triggers print() on load and close() on afterprint.
     } catch (error) {
       console.error("PDF export failed:", error);
       printWindow.close();
