@@ -14,6 +14,9 @@ export function useLocalStorage({ key, defaultValue = "" }: UseLocalStorageOptio
     try {
       const item = window.localStorage.getItem(key);
       if (item !== null) {
+        // Seed from storage after mount, not during render, so the first client
+        // render matches the server's defaultValue and doesn't hydration-mismatch.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {

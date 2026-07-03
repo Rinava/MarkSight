@@ -1,20 +1,20 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
 import { useAnalytics } from "@/hooks/use-analytics";
 
+// Server renders false, client renders true after hydration — gates theme UI
+// until we can read the resolved theme without a hydration mismatch.
+const emptySubscribe = () => () => {};
+
 export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const { trackThemeChange } = useAnalytics();
-
-  useEffect(function mount() {
-    setMounted(true);
-  }, []);
 
   const next = useCallback(function nextTheme() {
     const current = theme === "system" ? systemTheme ?? "light" : theme ?? "light";
