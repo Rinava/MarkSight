@@ -1,9 +1,9 @@
 "use client";
 
 import { toast } from "sonner";
-import { packageSkill } from "./package";
-import { knowledgeDocFile, knowledgeSkillBody, type SkillMode } from "./knowledge";
-import type { SkillMeta } from "./types";
+import { packageSkillForMode } from "./draft";
+import { type SkillMode } from "./knowledge";
+import type { SkillExtraFile, SkillMeta } from "./types";
 
 /**
  * One-click skill export shared by the toolbar button and the sidebar panel:
@@ -19,15 +19,9 @@ export async function downloadSkillBundle({
   meta: SkillMeta;
   content: string;
   mode: SkillMode;
-  extraFiles?: { path: string; data: Uint8Array }[];
+  extraFiles?: SkillExtraFile[];
 }): Promise<void> {
-  const bytes =
-    mode === "knowledge"
-      ? await packageSkill(meta, knowledgeSkillBody(), [
-          knowledgeDocFile(content),
-          ...extraFiles,
-        ])
-      : await packageSkill(meta, content, extraFiles);
+  const bytes = await packageSkillForMode(meta, content, mode, extraFiles);
 
   const url = URL.createObjectURL(
     new Blob([bytes as BlobPart], { type: "application/zip" }),

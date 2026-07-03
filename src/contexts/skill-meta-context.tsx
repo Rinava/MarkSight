@@ -10,11 +10,10 @@ import {
   ReactNode,
 } from "react";
 import { useContent } from "@/contexts/content-context";
-import { deriveSkillMeta } from "@/lib/skill/derive";
-import { parseSkillFrontmatter, stripLeadingFrontmatter } from "@/lib/skill/build";
+import { seedSkillMeta } from "@/lib/skill/draft";
 import { validateSkill } from "@/lib/skill/validate";
 import { suggestSkillMode, type SkillMode } from "@/lib/skill/knowledge";
-import type { SkillMeta, ValidationResult } from "@/lib/skill/types";
+import type { SkillExtraFile, SkillMeta, ValidationResult } from "@/lib/skill/types";
 
 /**
  * Shared Agent Skill state: the toolbar's one-click export and the sidebar
@@ -27,7 +26,7 @@ interface SkillMetaContextType {
   validation: ValidationResult;
   mode: SkillMode;
   suggestedMode: SkillMode;
-  extraFiles: { path: string; data: Uint8Array }[];
+  extraFiles: SkillExtraFile[];
   setName: (name: string) => void;
   setDescription: (description: string) => void;
   /** Set both fields programmatically (import, AI refine) and stop reseeding. */
@@ -35,36 +34,24 @@ interface SkillMetaContextType {
   /** Resume seeding from the document (used after loading a template). */
   resetToDerived: () => void;
   setUserMode: (mode: SkillMode | null) => void;
-  setExtraFiles: (files: { path: string; data: Uint8Array }[]) => void;
+  setExtraFiles: (files: SkillExtraFile[]) => void;
 }
 
 const SkillMetaContext = createContext<SkillMetaContextType | undefined>(
   undefined,
 );
 
-function seedFromDocument(content: string) {
-  const { frontmatter } = stripLeadingFrontmatter(content);
-  const fm = frontmatter ? parseSkillFrontmatter(frontmatter) : {};
-  const derived = deriveSkillMeta(content);
-  return {
-    name: fm.name?.trim() || derived.name,
-    description: fm.description?.trim() || derived.description,
-  };
-}
-
 export function SkillMetaProvider({ children }: { children: ReactNode }) {
   const { content } = useContent();
   const [name, setNameState] = useState("");
   const [description, setDescriptionState] = useState("");
   const [userMode, setUserMode] = useState<SkillMode | null>(null);
-  const [extraFiles, setExtraFiles] = useState<
-    { path: string; data: Uint8Array }[]
-  >([]);
+  const [extraFiles, setExtraFiles] = useState<SkillExtraFile[]>([]);
   const dirtyRef = useRef(false);
 
   useEffect(() => {
     if (dirtyRef.current) return;
-    const seeded = seedFromDocument(content);
+    const seeded = seedSkillMeta(content);
     setNameState(seeded.name);
     setDescriptionState(seeded.description);
   }, [content]);
@@ -95,7 +82,7 @@ export function SkillMetaProvider({ children }: { children: ReactNode }) {
       },
       resetToDerived: () => {
         dirtyRef.current = false;
-        const seeded = seedFromDocument(content);
+        const seeded = seedSkillMeta(content);
         setNameState(seeded.name);
         setDescriptionState(seeded.description);
       },

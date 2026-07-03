@@ -42,3 +42,9 @@ export interface ValidationResult {
   valid: boolean;
   errors: string[];
 }
+
+/** A bundle file carried alongside `SKILL.md` (e.g. `references/`, `scripts/`). */
+export interface SkillExtraFile {
+  path: string;
+  data: Uint8Array;
+}

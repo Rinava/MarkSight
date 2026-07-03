@@ -24,10 +24,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useContent } from "@/contexts/content-context";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
 import { downloadSkillBundle } from "@/lib/skill/download";
+import { buildSkillMdForMode, effectiveSkillBody } from "@/lib/skill/draft";
 import { skillQualityHints } from "@/lib/skill/hints";
 import { SKILL_TEMPLATE } from "@/lib/skill/template";
-import { buildSkillMd } from "@/lib/skill/build";
-import { knowledgeSkillBody } from "@/lib/skill/knowledge";
 import {
   importSkillBundle,
   importSkillMd,
@@ -94,14 +93,8 @@ export function SkillPanel() {
   const descriptionErrors = validation.errors.filter((e) =>
     /description/i.test(e),
   );
-  const hints = skillQualityHints(
-    meta,
-    mode === "knowledge" ? knowledgeSkillBody() : content,
-  );
-  const skillMd = buildSkillMd(
-    meta,
-    mode === "knowledge" ? knowledgeSkillBody() : content,
-  );
+  const hints = skillQualityHints(meta, effectiveSkillBody(content, mode));
+  const skillMd = buildSkillMdForMode(meta, content, mode);
   const installCommand = `unzip -o ~/Downloads/${meta.name}.skill -d ~/.claude/skills/`;
 
   async function copyText(text: string, message: string) {
