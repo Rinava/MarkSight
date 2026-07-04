@@ -44,7 +44,13 @@ function jumpToHeading(id: string) {
   }
 }
 
-export function OutlineRail({ content }: { content: string }) {
+export function OutlineRail({
+  content,
+  onOpenGuide,
+}: {
+  content: string;
+  onOpenGuide?: () => void;
+}) {
   const outline = useMemo(() => buildOutline(content), [content]);
 
   return (
@@ -79,8 +85,19 @@ export function OutlineRail({ content }: { content: string }) {
 
         <div className="mx-1 my-4 h-px bg-ms-border" />
 
-        <div className="px-1.5 pb-2.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
-          Cheat sheet
+        <div className="flex items-center justify-between px-1.5 pb-2.5">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
+            Cheat sheet
+          </span>
+          {onOpenGuide && (
+            <button
+              type="button"
+              onClick={onOpenGuide}
+              className="text-[11px] font-medium text-ms-primary-ink transition-colors hover:underline"
+            >
+              Full guide →
+            </button>
+          )}
         </div>
         {HINTS.map((hint) => (
           <div

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  BookOpen,
   CircleCheck,
   Github,
   RotateCcw,
@@ -25,6 +26,7 @@ import { SkillInspector } from "./skill-inspector";
 import { ExportMenu } from "./export-menu";
 import { OpenSkillMenu } from "./open-skill-menu";
 import { ViewSwitch, type ViewMode } from "./view-switch";
+import { MarkdownGuide } from "./markdown-guide";
 
 import { useContent } from "@/contexts/content-context";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
@@ -81,6 +83,9 @@ Happy writing.`;
 const ICON_BTN =
   "flex h-9 w-9 items-center justify-center rounded-[9px] border border-ms-border-2 bg-ms-surface text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink";
 
+const TOOLBAR_BTN =
+  "flex h-[34px] flex-none items-center gap-1.5 rounded-[9px] border px-2.5 text-[12.5px] font-medium transition-colors";
+
 function frontmatterBlock(md: string) {
   const match = md.match(/^---\n[\s\S]*?\n---/);
   return match ? match[0] : "";
@@ -101,6 +106,7 @@ export function Workspace() {
   const [skillMode, setSkillMode] = useState(false);
   const [view, setView] = useState<ViewMode>("split");
   const [ratio, setRatio] = useState(50);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   const editorRef = useRef<MarkdownEditorRef | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
@@ -249,6 +255,15 @@ export function Workspace() {
 
           <div className="h-[22px] w-px bg-ms-border" />
 
+          <button
+            type="button"
+            onClick={() => setGuideOpen(true)}
+            className="hidden items-center gap-1.5 text-[13px] font-medium text-ms-label transition-colors hover:text-ms-primary-ink sm:inline-flex"
+          >
+            <BookOpen className="h-[15px] w-[15px]" aria-hidden="true" />
+            Guide
+          </button>
+
           <Link
             href="/about"
             className="hidden text-[13px] font-medium text-ms-label transition-colors hover:text-ms-primary-ink sm:inline"
@@ -283,6 +298,29 @@ export function Workspace() {
           ) : (
             <div className="flex-1" />
           )}
+          <div className="flex flex-none items-center gap-1.5">
+            <Tip label="Reset to the welcome guide">
+              <button
+                type="button"
+                onClick={handleReset}
+                className={`${TOOLBAR_BTN} border-ms-border-2 text-ms-muted-3 hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink`}
+              >
+                <RotateCcw className="h-[15px] w-[15px]" aria-hidden="true" />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
+            </Tip>
+            <Tip label="Clear the document">
+              <button
+                type="button"
+                onClick={handleClear}
+                className={`${TOOLBAR_BTN} border-ms-border-2 text-ms-danger hover:border-ms-danger-border hover:bg-ms-danger-bg`}
+              >
+                <Trash2 className="h-[15px] w-[15px]" aria-hidden="true" />
+                <span className="hidden sm:inline">Clear</span>
+              </button>
+            </Tip>
+          </div>
+          <div className="h-[22px] w-px flex-none bg-ms-border" />
           <ViewSwitch view={view} onChange={setView} />
           <ExportMenu
             skillMode={skillMode}
@@ -358,7 +396,10 @@ export function Workspace() {
           {skillMode ? (
             <SkillInspector onExit={() => setSkillMode(false)} />
           ) : (
-            <OutlineRail content={debounced} />
+            <OutlineRail
+              content={debounced}
+              onOpenGuide={() => setGuideOpen(true)}
+            />
           )}
         </div>
 
@@ -423,26 +464,9 @@ export function Workspace() {
               © {currentYear}
             </span>
           </div>
-
-          <div className="hidden h-4 w-px bg-ms-border lg:block" />
-
-          <button
-            type="button"
-            onClick={handleReset}
-            className="flex items-center gap-1.5 rounded-lg border border-ms-border-2 px-2.5 py-1.5 font-medium text-ms-muted-3 transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink"
-          >
-            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Reset</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex items-center gap-1.5 rounded-lg border border-ms-border-2 px-2.5 py-1.5 font-medium text-ms-danger transition-colors hover:border-ms-danger-border hover:bg-ms-danger-bg"
-          >
-            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Clear</span>
-          </button>
         </footer>
+
+        <MarkdownGuide open={guideOpen} onOpenChange={setGuideOpen} />
       </div>
     </TooltipProvider>
   );
