@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tip } from "@/components/ui/base/tooltip";
 import { useAnalytics } from "@/hooks/use-analytics";
 import {
   Bold,
@@ -410,51 +408,53 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     },
   ];
 
-  const formatButtons = buttons.slice(0, 3);
-  const headingButtons = buttons.slice(3, 6);
-  const listButtons = buttons.slice(6, 9);
-  const blockButtons = buttons.slice(9, 12);
-  const linkButtons = buttons.slice(12, 14);
-  const miscButtons = buttons.slice(14);
+  // Groups mirror MarkSight.dc.html: format · headings · lists · blocks · media.
+  // (The inline "Code block" action stays reachable via ``` but isn't in the row.)
+  const groups: ToolbarButton[][] = [
+    [buttons[0], buttons[1], buttons[2]], // bold, italic, strikethrough
+    [buttons[3], buttons[4], buttons[5]], // h1, h2, h3
+    [buttons[6], buttons[7], buttons[8]], // list, ordered list, task list
+    [buttons[9], buttons[10], buttons[15]], // quote, inline code, divider
+    [buttons[12], buttons[13], buttons[14]], // link, image, table
+  ];
 
-  const renderButtonGroup = (buttonGroup: ToolbarButton[]) => {
-    const activeFormats = getActiveFormatting();
-    
-    return buttonGroup.map((button) => {
-      const isActive = button.formatType ? activeFormats.includes(button.formatType) : false;
-      
+  const renderButtonGroup = (
+    buttonGroup: ToolbarButton[],
+    activeFormats: string[],
+  ) =>
+    buttonGroup.map((button) => {
+      const isActive = button.formatType
+        ? activeFormats.includes(button.formatType)
+        : false;
+
       return (
-        <Tooltip key={button.label}>
-          <TooltipTrigger asChild>
-            <Button
-              variant={isActive ? "default" : "ghost"}
-              size="sm"
-              onClick={button.action}
-              aria-label={button.label}
-              aria-pressed={button.formatType ? isActive : undefined}
-              className={`h-8 w-8 p-0 transition-all duration-200 ${
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              <button.icon className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>
+        <Tip
+          key={button.label}
+          label={
+            <span>
               {button.label}
               {button.shortcut && (
-                <span className="ml-2 text-xs text-muted-foreground">
-                  {button.shortcut}
-                </span>
+                <span className="ml-2 text-[#9db392]">{button.shortcut}</span>
               )}
-            </p>
-          </TooltipContent>
-        </Tooltip>
+            </span>
+          }
+        >
+          <button
+            type="button"
+            onClick={button.action}
+            aria-label={button.label}
+            aria-pressed={button.formatType ? isActive : undefined}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+              isActive
+                ? "bg-ms-tint-3 text-ms-primary-strong"
+                : "text-ms-toolbar-ink hover:bg-ms-tint-3 hover:text-ms-primary-strong"
+            }`}
+          >
+            <button.icon className="h-4 w-4" />
+          </button>
+        </Tip>
       );
     });
-  };
 
   // Keyboard shortcuts
   useEffect(function setupKeyboardShortcuts() {
@@ -538,33 +538,22 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     };
   }, [insertLine, insertText, smartHeading, smartInsert, trackShortcut]);
 
+  const activeFormats = getActiveFormatting();
+
   return (
-    <TooltipProvider>
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-background/50 backdrop-blur-sm">
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(formatButtons)}
+    <div
+      role="toolbar"
+      aria-label="Markdown formatting"
+      className="flex flex-1 flex-wrap items-center gap-2"
+    >
+      {groups.map((group, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-0.5 border-r border-ms-border pr-2"
+        >
+          {renderButtonGroup(group, activeFormats)}
         </div>
-        <Separator orientation="vertical" className="h-6 hidden sm:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(headingButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden sm:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(listButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden md:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(blockButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden md:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(linkButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden lg:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(miscButtons)}
-        </div>
-      </div>
-    </TooltipProvider>
+      ))}
+    </div>
   );
 }

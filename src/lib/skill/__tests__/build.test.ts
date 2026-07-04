@@ -72,6 +72,31 @@ describe("buildSkillMd", () => {
     );
   });
 
+  it("nests version and tags under the allowed metadata key", () => {
+    const md = buildSkillMd(
+      {
+        name: "my-skill",
+        description: "Does a thing.",
+        version: "2.3.0",
+        tags: ["pdf", "ocr"],
+      },
+      "# Body",
+    );
+    // Nested under `metadata` (a spec-allowed key), not as top-level frontmatter
+    // keys — so a real YAML validator sees only {name, description, metadata}.
+    expect(md).toContain("metadata:\n  version: 2.3.0\n  tags: [pdf, ocr]");
+    expect(md).not.toMatch(/^version:/m);
+    expect(md).not.toMatch(/^tags:/m);
+  });
+
+  it("omits the metadata block when version and tags are absent", () => {
+    const md = buildSkillMd(
+      { name: "my-skill", description: "Does a thing." },
+      "# Body",
+    );
+    expect(md).not.toContain("metadata:");
+  });
+
   it("auto-derived metadata builds a spec-valid SKILL.md", () => {
     const doc = "# Welcome to MarkSight 🌿\n\nAn open source markdown editor.";
     const md = buildSkillMd(deriveSkillMeta(doc), doc);

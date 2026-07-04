@@ -29,6 +29,10 @@ export interface SkillMeta {
   allowedTools?: string;
   /** Optional, serialized as `compatibility`; ≤ 500 chars. */
   compatibility?: string;
+  /** Optional; serialized under the spec-allowed `metadata` key (not a top-level key). */
+  version?: string;
+  /** Optional; serialized under `metadata.tags`. */
+  tags?: string[];
 }
 
 /** A draft skill: derived metadata plus the markdown body it was built from. */

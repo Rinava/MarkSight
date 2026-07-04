@@ -9,6 +9,49 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* MarkSight workspace palette → Tailwind color utilities (bg-ms-*, text-ms-*, border-ms-*).
+     Mapped `inline` so utilities resolve the live var and honour the .dark overrides. */
+  --color-ms-app: var(--ms-app-bg);
+  --color-ms-surface: var(--ms-surface);
+  --color-ms-surface-2: var(--ms-surface-2);
+  --color-ms-surface-editor: var(--ms-surface-editor);
+  --color-ms-border: var(--ms-border);
+  --color-ms-border-2: var(--ms-border-2);
+  --color-ms-border-3: var(--ms-border-3);
+  --color-ms-border-hover: var(--ms-border-hover);
+  --color-ms-primary: var(--ms-primary);
+  --color-ms-primary-ink: var(--ms-primary-ink);
+  --color-ms-primary-strong: var(--ms-primary-strong);
+  --color-ms-ink: var(--ms-ink);
+  --color-ms-ink-strong: var(--ms-ink-strong);
+  --color-ms-ink-body: var(--ms-ink-body);
+  --color-ms-ink-2: var(--ms-ink-2);
+  --color-ms-ink-3: var(--ms-ink-3);
+  --color-ms-muted: var(--ms-muted);
+  --color-ms-muted-2: var(--ms-muted-2);
+  --color-ms-muted-3: var(--ms-muted-3);
+  --color-ms-label: var(--ms-label);
+  --color-ms-toolbar-ink: var(--ms-toolbar-ink);
+  --color-ms-tint: var(--ms-tint);
+  --color-ms-tint-2: var(--ms-tint-2);
+  --color-ms-tint-3: var(--ms-tint-3);
+  --color-ms-panel: var(--ms-panel);
+  --color-ms-panel-border: var(--ms-panel-border);
+  --color-ms-hover: var(--ms-hover);
+  --color-ms-hover-2: var(--ms-hover-2);
+  --color-ms-chip: var(--ms-chip);
+  --color-ms-warn: var(--ms-warn);
+  --color-ms-warn-strong: var(--ms-warn-strong);
+  --color-ms-warn-bg: var(--ms-warn-bg);
+  --color-ms-warn-border: var(--ms-warn-border);
+  --color-ms-danger: var(--ms-danger);
+  --color-ms-danger-strong: var(--ms-danger-strong);
+  --color-ms-danger-border: var(--ms-danger-border);
+  --color-ms-danger-bg: var(--ms-danger-bg);
+  --color-ms-ok-border: var(--ms-ok-border);
+  --color-ms-ok-input-border: var(--ms-ok-input-border);
+  --color-ms-code: var(--ms-code-bg);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,6 +89,52 @@
 
 :root {
   --radius: 0.625rem;
+
+  /* ── MarkSight workspace palette (light) — exact hues from MarkSight.dc.html ── */
+  --ms-app-bg: #f5f8f1;
+  --ms-surface: #ffffff;        /* header, footer, preview pane */
+  --ms-surface-2: #fbfcf8;      /* toolbar row, right rail */
+  --ms-surface-editor: #fcfdfa; /* editor pane */
+  --ms-border: #e4ebdd;
+  --ms-border-2: #e0e9d6;       /* controls / cards */
+  --ms-border-3: #edf1e7;       /* pane header divider */
+  --ms-border-hover: #c4d6b8;
+  --ms-primary: #3f7d44;
+  --ms-primary-ink: #3f7d44;    /* icon/text accent */
+  --ms-primary-strong: #2e4f2d; /* headings, logo */
+  --ms-ink: #1b2e1e;
+  --ms-ink-strong: #23331e;
+  --ms-ink-body: #33452c;
+  --ms-ink-2: #2a3a24;
+  --ms-ink-3: #3a4a33;
+  --ms-muted: #9aae8e;
+  --ms-muted-2: #8aa07f;
+  --ms-muted-3: #6b7c62;
+  --ms-label: #5f7059;
+  --ms-toolbar-ink: #5a6b52;
+  --ms-tint: #eaf0e3;
+  --ms-tint-2: #eef3e8;
+  --ms-tint-3: #e7efdf;
+  --ms-panel: #f3f7ef;          /* frontmatter / skill card bg */
+  --ms-panel-border: #dfead6;
+  --ms-hover: #f3f7ef;
+  --ms-hover-2: #eef3e8;
+  --ms-chip: #e3eed9;
+  --ms-warn: #a07b2e;
+  --ms-warn-strong: #c79a34;
+  --ms-warn-bg: #f6eedd;
+  --ms-warn-border: #eadfc2;
+  --ms-danger: #a85a4a;
+  --ms-danger-strong: #b24a38;
+  --ms-danger-border: #e4b7ae;
+  --ms-danger-bg: #fbf0ee;
+  --ms-ok-border: #d6e9ce;
+  --ms-ok-input-border: #b7d3ac;
+  --ms-scroll-thumb: #cbdabf;
+  --ms-code-bg: #e2eae0;
+  --ms-shadow-menu: 0 12px 30px rgba(31, 50, 25, 0.14);
+  --ms-shadow-primary: 0 2px 8px rgba(46, 79, 45, 0.28);
+
   --background: oklch(0.98 0.02 120);
   --foreground: oklch(0.15 0.05 120);
   --card: oklch(1 0 0);
@@ -80,6 +169,51 @@
 }
 
 .dark {
+  /* ── MarkSight workspace palette (dark) — a coherent forest translation ── */
+  --ms-app-bg: #12190f;
+  --ms-surface: #19231a;
+  --ms-surface-2: #161f13;
+  --ms-surface-editor: #182216;
+  --ms-border: #2b3a28;
+  --ms-border-2: #33432f;
+  --ms-border-3: #24301f;
+  --ms-border-hover: #46603f;
+  --ms-primary: #4c9a56;
+  --ms-primary-ink: #7fc489;
+  --ms-primary-strong: #a8c0a0;
+  --ms-ink: #e6f0e2;
+  --ms-ink-strong: #eaf3e6;
+  --ms-ink-body: #c7d6c0;
+  --ms-ink-2: #d3e0cc;
+  --ms-ink-3: #b9c9b1;
+  --ms-muted: #6e8168;
+  --ms-muted-2: #7c9074;
+  --ms-muted-3: #8a9b80;
+  --ms-label: #93a788;
+  --ms-toolbar-ink: #9aad8f;
+  --ms-tint: #24301f;
+  --ms-tint-2: #26331f;
+  --ms-tint-3: #2a3823;
+  --ms-panel: #1e2a1a;
+  --ms-panel-border: #33432f;
+  --ms-hover: #22301e;
+  --ms-hover-2: #26331f;
+  --ms-chip: #2c3a24;
+  --ms-warn: #d8b45f;
+  --ms-warn-strong: #e0c274;
+  --ms-warn-bg: #2f2a17;
+  --ms-warn-border: #4a4227;
+  --ms-danger: #e39a8b;
+  --ms-danger-strong: #eb8b7b;
+  --ms-danger-border: #5c3a33;
+  --ms-danger-bg: #2a1a16;
+  --ms-ok-border: #2f5233;
+  --ms-ok-input-border: #3f7a48;
+  --ms-scroll-thumb: #3c5a40;
+  --ms-code-bg: #263323;
+  --ms-shadow-menu: 0 12px 30px rgba(0, 0, 0, 0.45);
+  --ms-shadow-primary: 0 2px 8px rgba(0, 0, 0, 0.4);
+
   --background: oklch(0.15 0.05 120);
   --foreground: oklch(0.9 0.02 120);
   --card: oklch(0.2 0.05 120);
@@ -196,3 +330,110 @@
     }
   }
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   MarkSight workspace — animations, interactive states, preview typography.
+   Ported from MarkSight.dc.html and made theme-aware via the --ms-* tokens.
+   ──────────────────────────────────────────────────────────────────────── */
+
+@keyframes msPop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes msSlide {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.ms-pop   { animation: msPop 0.14s ease; }
+.ms-slide { animation: msSlide 0.2s ease; }
+
+/* Custom scrollbar for workspace scroll regions. */
+.ms-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.ms-scroll::-webkit-scrollbar-track { background: transparent; }
+.ms-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--ms-scroll-thumb);
+  border-radius: 9999px;
+}
+
+/* Text inputs / textareas in the skill inspector (Tailwind handles the rest). */
+.ms-in:focus {
+  outline: none;
+  border-color: var(--ms-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ms-primary) 16%, transparent);
+}
+
+/* ── Preview typography (mirrors .msprev in the design, theme-aware) ── */
+.ms-prose {
+  color: var(--ms-ink-body);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: none;
+}
+.ms-prose > :first-child { margin-top: 0; }
+.ms-prose :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--ms-primary-strong);
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 1.6em 0 0.6em;
+  letter-spacing: -0.01em;
+}
+.ms-prose h1 { font-size: 1.9em; margin-top: 0.2em; }
+.ms-prose h2 {
+  font-size: 1.45em;
+  padding-bottom: 0.24em;
+  border-bottom: 1px solid var(--ms-border);
+}
+.ms-prose h3 { font-size: 1.15em; }
+.ms-prose p { margin: 0.85em 0; }
+.ms-prose a {
+  color: var(--ms-primary-ink);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--ms-primary-ink) 45%, transparent);
+}
+.ms-prose strong { color: var(--ms-ink-strong); font-weight: 650; }
+.ms-prose ul, .ms-prose ol { margin: 0.85em 0; padding-left: 1.5em; }
+.ms-prose li { margin: 0.35em 0; }
+.ms-prose blockquote {
+  margin: 1em 0;
+  padding: 0.4em 1em;
+  border-left: 3px solid color-mix(in srgb, var(--ms-primary) 70%, transparent);
+  background: var(--ms-tint-2);
+  color: var(--ms-ink-body);
+  border-radius: 0 8px 8px 0;
+}
+.ms-prose :not(pre) > code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.86em;
+  background: var(--ms-code-bg);
+  padding: 0.12em 0.38em;
+  border-radius: 5px;
+  color: var(--ms-primary-strong);
+}
+.ms-prose pre {
+  background: var(--ms-tint);
+  border: 1px solid var(--ms-border-2);
+  border-radius: 9px;
+  padding: 0.9em 1.05em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.ms-prose pre code { background: none; padding: 0; font-size: 0.85em; line-height: 1.6; }
+.ms-prose table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.92em;
+}
+.ms-prose :is(th, td) {
+  border: 1px solid var(--ms-border-2);
+  padding: 0.45em 0.8em;
+  text-align: left;
+}
+.ms-prose th {
+  background: var(--ms-tint-2);
+  color: var(--ms-primary-strong);
+  font-weight: 600;
+}
+.ms-prose hr { border: none; border-top: 1px solid var(--ms-border-2); margin: 1.6em 0; }
+.ms-prose input[type="checkbox"] { accent-color: var(--ms-primary); margin-right: 0.4em; }
+.ms-prose img { max-width: 100%; border-radius: 8px; }

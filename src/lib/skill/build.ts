@@ -67,6 +67,18 @@ export function buildSkillMd(meta: SkillMeta, markdown: string): string {
     lines.push(`compatibility: ${yamlString(meta.compatibility)}`);
   }
 
+  // version/tags aren't top-level Agent Skill keys, so nest them under the
+  // spec-allowed `metadata` dict (keeps validateSkill happy).
+  const version = meta.version?.trim();
+  const tags = (meta.tags ?? []).map((t) => t.trim()).filter(Boolean);
+  if (version || tags.length > 0) {
+    lines.push("metadata:");
+    if (version) lines.push(`  version: ${yamlString(version)}`);
+    if (tags.length > 0) {
+      lines.push(`  tags: [${tags.map((t) => yamlString(t)).join(", ")}]`);
+    }
+  }
+
   const trimmedBody = body.replace(/^\s+/, "").replace(/\s+$/, "");
   return `---\n${lines.join("\n")}\n---\n\n${trimmedBody}\n`;
 }
