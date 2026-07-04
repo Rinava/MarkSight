@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { renderMarkdownToHtml } from "@/lib/markdown/to-html";
+import { renderMermaid } from "@/lib/mermaid";
 import { buildSkillMdForMode } from "@/lib/skill/draft";
 import { downloadSkillBundle } from "@/lib/skill/download";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
@@ -24,6 +25,66 @@ export interface ExportMenuProps {
   skillMode: boolean;
   content: string;
   filename?: string;
+}
+
+const MERMAID_BLOCK =
+  /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g;
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// remark-html entity-escapes code-block contents; decode so mermaid receives
+// the original source (including any frontmatter / %%{init}%% directives).
+function decodeHtmlEntities(value: string): string {
+  const el = document.createElement("textarea");
+  el.innerHTML = value;
+  return el.value;
+}
+
+function mermaidErrorHTML(error: unknown): string {
+  const message = escapeHtml(
+    error instanceof Error ? error.message : String(error),
+  );
+  return `<div class="mermaid-error"><strong>Failed to render Mermaid diagram</strong><pre>${message}</pre></div>`;
+}
+
+// Replace each mermaid block with inline SVG so exports are self-contained.
+// Light theme matches the export page; sequential because mermaid relies on
+// shared global/DOM state. Browser-only — the shared to-html renderer stays
+// server-safe for the MCP tool.
+async function inlineMermaidDiagrams(html: string): Promise<string> {
+  const matches = [...html.matchAll(MERMAID_BLOCK)];
+  if (matches.length === 0) return html;
+
+  const replacements: string[] = [];
+  for (const match of matches) {
+    const code = decodeHtmlEntities(match[1]);
+    try {
+      const svg = await renderMermaid(code, false);
+      replacements.push(`<div class="mermaid-diagram">${svg}</div>`);
+    } catch (error) {
+      replacements.push(mermaidErrorHTML(error));
+    }
+  }
+
+  let index = 0;
+  return html.replace(MERMAID_BLOCK, () => replacements[index++]);
+}
+
+// Styled export document with any mermaid diagrams inlined as SVG.
+async function renderExportHtml(
+  content: string,
+  filename: string,
+): Promise<string> {
+  const html = await renderMarkdownToHtml(content, {
+    styled: true,
+    title: filename,
+  });
+  return inlineMermaidDiagrams(html);
 }
 
 const ITEM_CLASS =
@@ -51,7 +112,7 @@ export function ExportMenu({
   async function exportHTML() {
     trackExportAction("html", content);
     downloadBlob(
-      await renderMarkdownToHtml(content, { styled: true, title: filename }),
+      await renderExportHtml(content, filename),
       `${filename}.html`,
       "text/html",
     );
@@ -60,10 +121,7 @@ export function ExportMenu({
 
   async function exportPDF() {
     trackExportAction("pdf", content);
-    const html = await renderMarkdownToHtml(content, {
-      styled: true,
-      title: filename,
-    });
+    const html = await renderExportHtml(content, filename);
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       toast.error("Allow pop-ups to export as PDF");
@@ -77,10 +135,7 @@ export function ExportMenu({
   }
 
   async function previewHTML() {
-    const html = await renderMarkdownToHtml(content, {
-      styled: true,
-      title: filename,
-    });
+    const html = await renderExportHtml(content, filename);
     const newWindow = window.open("", "_blank");
     if (!newWindow) {
       toast.error("Allow pop-ups to preview HTML");

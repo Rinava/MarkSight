@@ -3,13 +3,16 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Per-request nonce + Content-Security-Policy.
  *
+ * Runs in Next.js's `proxy` (the renamed `middleware` convention as of v16),
+ * which executes on the Node.js runtime.
+ *
  * Uses a nonce with `strict-dynamic` so only first-party scripts that carry the
  * nonce (Next.js framework bootstrap, next/script-loaded Google Analytics, the
  * next-themes inline script, and our JSON-LD) can execute, and any scripts they
  * load are trusted transitively. `style-src` keeps `'unsafe-inline'` because
  * CodeMirror, Prism, and Tailwind inject inline styles that cannot be nonced.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID());
 
   const csp = [

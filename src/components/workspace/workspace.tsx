@@ -61,6 +61,19 @@ function greet(name) {
 }
 \`\`\`
 
+## Diagrams
+
+Fenced \`mermaid\` blocks render live — and export as inline SVG:
+
+\`\`\`mermaid
+graph LR
+  A[Type Markdown] --> B[Live Preview]
+  B --> C{Export?}
+  C -->|HTML| D[Styled HTML]
+  C -->|PDF| E[Print-ready PDF]
+  C -->|Skill| F[SKILL.md]
+\`\`\`
+
 ---
 
 Happy writing.`;

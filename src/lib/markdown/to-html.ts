@@ -124,6 +124,34 @@ export async function renderMarkdownToHtml(
             text-decoration: underline;
         }
 
+        .mermaid-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .mermaid-diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .mermaid-error {
+            border: 1px solid #f56565;
+            background: #fff5f5;
+            color: #c53030;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .mermaid-error pre {
+            background: none;
+            color: inherit;
+            padding: 0;
+            margin: 0.5rem 0 0;
+            white-space: pre-wrap;
+        }
+
         @media print {
             body {
                 max-width: none;
