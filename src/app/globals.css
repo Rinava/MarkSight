@@ -275,6 +275,9 @@
   a { color: #3F7D44; }
   .dark a { color: #5BA875; }
 
+  /* Buttons don't get a pointer cursor by default; disabled ones stay default. */
+  button:not(:disabled) { cursor: pointer; }
+
   pre, code {
     font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }

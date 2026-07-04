@@ -152,7 +152,7 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
           render={
             <button
               type="button"
-              className="flex h-9 cursor-pointer items-center gap-[7px] rounded-[9px] border border-ms-border-2 bg-ms-surface px-[13px] text-[13px] font-medium text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover"
+              className="flex h-9 items-center gap-[7px] rounded-[9px] border border-ms-border-2 bg-ms-surface px-[13px] text-[13px] font-medium text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover"
             />
           }
         >

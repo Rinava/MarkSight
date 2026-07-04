@@ -228,7 +228,7 @@ export function ExportMenu({
         render={
           <button
             type="button"
-            className="flex h-[34px] cursor-pointer items-center gap-[7px] rounded-[9px] bg-ms-primary px-[13px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
+            className="flex h-[34px] items-center gap-[7px] rounded-[9px] bg-ms-primary px-[13px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
           />
         }
       >

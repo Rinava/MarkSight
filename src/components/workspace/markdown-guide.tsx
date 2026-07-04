@@ -5,6 +5,7 @@ import {
   Bold,
   CheckSquare,
   Code,
+  ExternalLink,
   Heading1,
   Image as ImageIcon,
   Italic,
@@ -25,6 +26,7 @@ interface GuideItem {
   title: string;
   description: string;
   syntax: string;
+  learnMore?: { label: string; href: string }[];
 }
 
 interface GuideCategory {
@@ -75,7 +77,7 @@ const CATEGORIES: GuideCategory[] = [
     title: "Tables & diagrams",
     items: [
       { Icon: TableIcon, title: "Table", description: "Pipes for columns, dashes for the header row.", syntax: "| Feature | Status |\n|---------|--------|\n| Preview | Live   |\n| Export  | HTML   |" },
-      { Icon: Share2, title: "Mermaid diagram", description: "Fenced `mermaid` blocks render as diagrams.", syntax: "```mermaid\ngraph LR\n  A[Write] --> B[Preview]\n```" },
+      { Icon: Share2, title: "Mermaid diagram", description: "Fenced `mermaid` blocks render as diagrams.", syntax: "```mermaid\ngraph LR\n  A[Write] --> B[Preview]\n```", learnMore: [{ label: "About Mermaid", href: "https://mermaid.js.org/intro/" }, { label: "Flowchart syntax", href: "https://mermaid.js.org/syntax/flowchart.html" }] },
     ],
   },
 ];
@@ -139,6 +141,22 @@ export function MarkdownGuide({
                           />
                         </div>
                       </div>
+                      {item.learnMore && (
+                        <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                          {item.learnMore.map((link) => (
+                            <a
+                              key={link.href}
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[12px] font-medium text-ms-primary-ink transition-colors hover:underline"
+                            >
+                              {link.label}
+                              <ExternalLink className="h-[13px] w-[13px]" aria-hidden="true" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

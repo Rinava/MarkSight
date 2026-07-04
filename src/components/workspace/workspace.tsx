@@ -243,9 +243,9 @@ export function Workspace() {
           <button
             type="button"
             onClick={toggleSkill}
-            className={`flex h-[34px] cursor-pointer items-center gap-[7px] rounded-[9px] text-[13px] font-semibold ${
+            className={`flex h-[34px] items-center gap-[7px] rounded-[9px] text-[13px] font-semibold ${
               skillMode
-                ? "border border-ms-border-hover bg-ms-tint px-[13px] text-ms-primary-ink"
+                ? "border border-ms-border-hover bg-ms-tint px-[13px] text-ms-primary-ink transition-colors hover:border-ms-primary hover:bg-ms-tint-3"
                 : "bg-ms-primary px-[15px] text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07]"
             }`}
           >
