@@ -1,19 +1,11 @@
 import { sendGAEvent } from "@next/third-parties/google";
+import { documentMetrics, type DocumentMetrics } from "@/lib/markdown/metrics";
 
 interface AnalyticsEvent {
   action: string;
   category: string;
   label?: string;
   value?: number;
-}
-
-interface DocumentMetrics {
-  wordCount: number;
-  characterCount: number;
-  lineCount: number;
-  headingCount: number;
-  linkCount: number;
-  imageCount: number;
 }
 
 export function trackEvent(event: AnalyticsEvent) {
@@ -42,6 +34,14 @@ export function trackExport(format: 'html' | 'pdf', wordCount: number) {
   });
 }
 
+export function trackSkillCreate(kind: 'copy' | 'md' | 'skill' | 'ai-improve') {
+  trackEvent({
+    action: 'skill_create',
+    category: 'document',
+    label: kind,
+  });
+}
+
 export function trackThemeToggle(theme: 'light' | 'dark') {
   trackEvent({
     action: 'theme_toggle',
@@ -50,11 +50,14 @@ export function trackThemeToggle(theme: 'light' | 'dark') {
   });
 }
 
-export function trackEditorAction(action: string, details?: string) {
+// Privacy: the label is a stable action constant only — document/user text
+// must never be forwarded off-device (the app promises nothing leaves the
+// browser). Deliberately takes no content payload.
+export function trackEditorAction(action: string) {
   trackEvent({
     action: 'editor_action',
     category: 'editor',
-    label: details ? `${action}: ${details}` : action,
+    label: action,
   });
 }
 
@@ -106,20 +109,4 @@ export function trackSidebarToggle() {
   });
 }
 
-export function calculateDocumentMetrics(content: string): DocumentMetrics {
-  const lines = content.split('\n');
-  const words = content.split(/\s+/).filter(word => word.length > 0);
-  const characters = content.length;
-  const headings = (content.match(/^#+\s/gm) || []).length;
-  const links = (content.match(/\[([^\]]+)\]\([^)]+\)/g) || []).length;
-  const images = (content.match(/!\[([^\]]*)\]\([^)]+\)/g) || []).length;
-
-  return {
-    wordCount: words.length,
-    characterCount: characters,
-    lineCount: lines.length,
-    headingCount: headings,
-    linkCount: links,
-    imageCount: images,
-  };
-}
+export const calculateDocumentMetrics = documentMetrics;

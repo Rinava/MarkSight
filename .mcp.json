@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "marksight": {
+      "type": "http",
+      "url": "https://marksight.laramateo.com/api/mcp"
+    }
+  }
+}

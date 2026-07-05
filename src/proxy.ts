@@ -21,7 +21,9 @@ export function proxy(request: NextRequest) {
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https:`,
     `font-src 'self' data:`,
-    `connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.vercel-insights.com https://*.vercel-scripts.com`,
+    // api.github.com + raw.githubusercontent.com: client-side skill import
+    // from GitHub-hosted marketplaces (public repos, unauthenticated).
+    `connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.vercel-insights.com https://*.vercel-scripts.com https://api.github.com https://raw.githubusercontent.com`,
     `frame-ancestors 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,

@@ -1,26 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { cookies, headers } from "next/headers";
-import { Nunito, Fira_Code } from "next/font/google";
+import { headers } from "next/headers";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContentProvider } from "@/contexts/content-context";
-import { LayoutContent } from "@/components/layout-content";
+import { SkillMetaProvider } from "@/contexts/skill-meta-context";
+import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 
-const nunito = Nunito({
+const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
 });
 
-const firaCode = Fira_Code({
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -96,8 +94,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   const structuredData = {
@@ -150,13 +146,14 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${nunito.variable} ${firaCode.variable} antialiased min-h-dvh bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh bg-background text-foreground`}
       >
         <ThemeProvider nonce={nonce}>
           <ContentProvider>
-            <SidebarProvider defaultOpen={defaultOpen}>
-              <LayoutContent>{children}</LayoutContent>
-            </SidebarProvider>
+            <SkillMetaProvider>
+              {children}
+              <Toaster position="bottom-center" />
+            </SkillMetaProvider>
           </ContentProvider>
         </ThemeProvider>
         <Analytics />
