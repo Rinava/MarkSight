@@ -4,6 +4,14 @@ An open source markdown editor with real-time preview, a smart formatting toolba
 
 🔗 **Live:** [marksight.laramateo.com](https://marksight.laramateo.com)
 
+## About
+
+MarkSight is a free, open source markdown editor that runs entirely in your
+browser — no account, no server-side storage. Documents are persisted to
+`localStorage` and exports are generated client-side, so your writing never
+leaves your device. It was created by [Lara Mateo](https://laramateo.com) and
+is developed in the open with the help of community contributors.
+
 ## Features
 
 - **Live preview** — CodeMirror editor with an instantly-rendered preview pane
@@ -136,6 +144,29 @@ to set up the project and submit changes, and please follow our
 
 New here? Look for issues labelled
 [`good first issue`](https://github.com/Rinava/MarkSight/issues?q=is%3Aopen+label%3A%22good+first+issue%22).
+
+## Community
+
+Questions, ideas, or just want to show what you built with MarkSight? Join the
+conversation in [GitHub Discussions](https://github.com/Rinava/MarkSight/discussions).
+For bugs and feature requests, open an
+[issue](https://github.com/Rinava/MarkSight/issues).
+
+## Contributors
+
+Thanks to everyone who has helped make MarkSight better:
+
+<a href="https://github.com/Rinava/MarkSight/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Rinava/MarkSight" alt="MarkSight contributors" />
+</a>
+
+Want to see yourself here? Start with the
+[contributing guide](./CONTRIBUTING.md).
+
+## Author
+
+MarkSight was created and is maintained by
+**[Lara Mateo](https://laramateo.com)** ([@Rinava](https://github.com/Rinava)).
 
 ## License
 
