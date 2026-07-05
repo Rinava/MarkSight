@@ -27,6 +27,11 @@ export function stripLeadingFrontmatter(markdown: string): {
   };
 }
 
+// Bare scalars a YAML loader would read as a bool/null or a number, not a
+// string — so `# No` must serialize as `name: "no"`, never `name: no`.
+const YAML_RESERVED_RE = /^(?:true|false|yes|no|on|off|null|~)$/i;
+const YAML_NUMBER_RE = /^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?$/;
+
 /** Serialize a string as a YAML scalar, double-quoting only when necessary. */
 export function yamlString(value: string): string {
   const needsQuote =
@@ -36,7 +41,9 @@ export function yamlString(value: string): string {
     value.includes(": ") ||
     value.includes(" #") ||
     /[:#[\]{}",]/.test(value) ||
-    /[\n\t]/.test(value);
+    /[\n\t]/.test(value) ||
+    YAML_RESERVED_RE.test(value) ||
+    YAML_NUMBER_RE.test(value);
 
   if (!needsQuote) return value;
 
@@ -83,30 +90,63 @@ export function buildSkillMd(meta: SkillMeta, markdown: string): string {
   return `---\n${lines.join("\n")}\n---\n\n${trimmedBody}\n`;
 }
 
+/** Unquote a scalar, unescaping in a single pass so `\\` isn't re-consumed. */
+function unquoteScalar(value: string): string {
+  if (!(value.startsWith('"') && value.endsWith('"') && value.length >= 2)) {
+    return value;
+  }
+  return value.slice(1, -1).replace(/\\(.)/g, (_, ch: string) => {
+    if (ch === "n") return "\n";
+    if (ch === "t") return "\t";
+    return ch; // \" -> ", \\ -> \, and any other escaped char verbatim
+  });
+}
+
+/** A `[a, b]` flow sequence becomes an array; anything else stays a scalar. */
+function parseFlowValue(value: string): string | string[] {
+  if (value.startsWith("[") && value.endsWith("]")) {
+    const inner = value.slice(1, -1).trim();
+    if (!inner) return [];
+    return inner.split(",").map((item) => unquoteScalar(item.trim()));
+  }
+  return unquoteScalar(value);
+}
+
 /**
  * Minimal parser for the simple `key: value` frontmatter that `buildSkillMd`
- * emits. Sufficient for round-trip validation; not a full YAML parser.
+ * emits. Sufficient for round-trip validation; not a full YAML parser. The one
+ * nested block it understands is `metadata:` — its indented children land under
+ * a `metadata` object instead of leaking as bogus top-level keys.
  */
 export function parseSkillFrontmatter(
   frontmatter: string,
 ): Record<string, string> {
   const result: Record<string, string> = {};
+  let block: Record<string, unknown> | null = null;
+
   for (const rawLine of frontmatter.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith("#")) continue;
     const idx = line.indexOf(":");
     if (idx === -1) continue;
     const key = line.slice(0, idx).trim();
-    let value = line.slice(idx + 1).trim();
-    if (value.startsWith('"') && value.endsWith('"') && value.length >= 2) {
-      value = value
-        .slice(1, -1)
-        .replace(/\\n/g, "\n")
-        .replace(/\\t/g, "\t")
-        .replace(/\\"/g, '"')
-        .replace(/\\\\/g, "\\");
+    const rawValue = line.slice(idx + 1).trim();
+
+    // Indented children fold into the open block (e.g. `metadata:` sub-keys).
+    if (/^\s/.test(rawLine) && block) {
+      block[key] = parseFlowValue(rawValue);
+      continue;
     }
-    result[key] = value;
+    // A bare `key:` with no inline value opens a nested block.
+    if (rawValue === "") {
+      block = {};
+      // Escape hatch: the value is an object, not a string, but callers only
+      // read scalar entries; validateSkill accepts `metadata` as a whole.
+      (result as Record<string, unknown>)[key] = block;
+      continue;
+    }
+    block = null;
+    result[key] = unquoteScalar(rawValue);
   }
   return result;
 }

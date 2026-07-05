@@ -77,13 +77,30 @@ interface ContentsEntry {
   download_url: string | null;
 }
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 async function ghFetch(url: string): Promise<Response> {
-  const response = await fetch(url, {
-    headers: { Accept: "application/vnd.github.v3+json" },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { Accept: "application/vnd.github.v3+json" },
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error(
+        "GitHub request timed out — check your connection and try again",
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
   if (response.status === 403 || response.status === 429) {
     throw new Error(
-      "GitHub rate limit reached — wait a few minutes and try again",
+      "GitHub rate limit reached — unauthenticated browsing is capped at 60 requests/hour per IP; wait a few minutes and try again",
     );
   }
   if (response.status === 404) {
@@ -154,7 +171,7 @@ export async function fetchFromGitHub(
     };
   }
 
-  const skills = await discoverSkills(gh, entries);
+  const skills = await discoverSkills(gh);
   if (skills.length === 0) {
     throw new Error("No SKILL.md found at that location");
   }
@@ -197,31 +214,51 @@ export async function importSkillDir(
   return { ...imported, extraFiles, rootDir };
 }
 
-/** Find directories containing a SKILL.md, one level deep from the entries. */
-async function discoverSkills(
-  gh: GitHubRef,
-  entries: ContentsEntry[],
-): Promise<DiscoveredSkill[]> {
-  const dirs = entries.filter((e) => e.type === "dir").slice(0, 40);
-  const found: DiscoveredSkill[] = [];
+interface TreeEntry {
+  path: string;
+  type: "blob" | "tree" | "commit";
+}
 
-  const checks = await Promise.allSettled(
-    dirs.map(async (dir) => {
-      const children = await listDir(gh, dir.path);
-      if (children.some((c) => c.type === "file" && c.name === "SKILL.md")) {
-        found.push({ name: dir.name, path: dir.path });
-      } else {
-        // Common layout: a collection dir (skills/, plugins/…) one level up.
-        for (const child of children.filter((c) => c.type === "dir").slice(0, 20)) {
-          const grandchildren = await listDir(gh, child.path);
-          if (grandchildren.some((g) => g.type === "file" && g.name === "SKILL.md")) {
-            found.push({ name: child.name, path: child.path });
-          }
-        }
-      }
-    }),
+async function getDefaultBranch(gh: GitHubRef): Promise<string> {
+  const response = await ghFetch(`${API}/repos/${gh.owner}/${gh.repo}`);
+  const json = await response.json();
+  return typeof json?.default_branch === "string" ? json.default_branch : "main";
+}
+
+/**
+ * Find every directory containing a SKILL.md under the given scope.
+ *
+ * Uses the Git Trees API (one recursive request) instead of probing each
+ * directory: a large collection like anthropics/skills has hundreds of folders,
+ * and per-dir probing instantly exhausts GitHub's 60-req/hour unauthenticated
+ * limit. Any rate-limit / network error now propagates instead of being
+ * swallowed into a misleading "No SKILL.md found".
+ */
+async function discoverSkills(gh: GitHubRef): Promise<DiscoveredSkill[]> {
+  const ref = gh.ref ?? (await getDefaultBranch(gh));
+  const response = await ghFetch(
+    `${API}/repos/${gh.owner}/${gh.repo}/git/trees/${encodeURIComponent(ref)}?recursive=1`,
   );
-  void checks;
+  const json = (await response.json()) as { tree?: TreeEntry[] };
+  const tree = json.tree ?? [];
+
+  const scope = gh.path.replace(/\/+$/, "");
+  const prefix = scope ? `${scope}/` : "";
+
+  const found: DiscoveredSkill[] = [];
+  const seen = new Set<string>();
+  for (const entry of tree) {
+    if (entry.type !== "blob") continue;
+    if (!/(^|\/)SKILL\.md$/i.test(entry.path)) continue;
+    if (prefix && !entry.path.startsWith(prefix)) continue;
+
+    const slash = entry.path.lastIndexOf("/");
+    const dir = slash === -1 ? "" : entry.path.slice(0, slash);
+    // A SKILL.md at the scope root is handled by the caller as a single skill.
+    if (!dir || dir === scope || seen.has(dir)) continue;
+    seen.add(dir);
+    found.push({ name: dir.slice(dir.lastIndexOf("/") + 1), path: dir });
+  }
 
   return found.sort((a, b) => a.name.localeCompare(b.name));
 }

@@ -1,7 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { PanelRightClose, PanelRightOpen } from "lucide-react";
 import { buildOutline } from "@/lib/markdown/outline";
+
+const COLLAPSE_KEY = "ms-outline-collapsed";
 
 const HINTS = [
   { label: "Bold", syntax: "**text**" },
@@ -52,12 +55,56 @@ export function OutlineRail({
   onOpenGuide?: () => void;
 }) {
   const outline = useMemo(() => buildOutline(content), [content]);
+  // Read the persisted preference after mount to avoid an SSR hydration mismatch.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "1");
+  }, []);
+
+  function toggle() {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
+      } catch {
+        // Ignore storage failures (private mode / quota); collapse still works this session.
+      }
+      return next;
+    });
+  }
+
+  if (collapsed) {
+    return (
+      <aside className="flex w-[42px] flex-none flex-col items-center border-l border-ms-border bg-ms-surface-2 py-4">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label="Show outline"
+          title="Show outline"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-ms-border-2 bg-ms-surface text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink"
+        >
+          <PanelRightOpen className="h-[16px] w-[16px]" aria-hidden="true" />
+        </button>
+      </aside>
+    );
+  }
 
   return (
     <aside className="flex w-[258px] flex-none flex-col border-l border-ms-border bg-ms-surface-2">
       <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-3.5 py-4">
-        <div className="px-1.5 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
-          Outline
+        <div className="flex items-center justify-between px-1.5 pb-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
+            Outline
+          </span>
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label="Hide outline"
+            title="Hide outline"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-ms-muted transition-colors hover:bg-ms-hover-2 hover:text-ms-primary-ink"
+          >
+            <PanelRightClose className="h-[15px] w-[15px]" aria-hidden="true" />
+          </button>
         </div>
 
         {outline.length === 0 ? (

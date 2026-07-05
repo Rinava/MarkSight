@@ -57,64 +57,87 @@ export function SkillMetaProvider({ children }: { children: ReactNode }) {
   const [extraFiles, setExtraFiles] = useState<SkillExtraFile[]>([]);
   const dirtyRef = useRef(false);
 
+  // Latest document, read by content-seeded setters without making their
+  // identities depend on `content` (which would rebuild `value` — and re-render
+  // every consumer — on each debounced keystroke).
+  const contentRef = useRef(content);
+
   useEffect(() => {
+    contentRef.current = content;
     if (dirtyRef.current) return;
     const seeded = seedSkillMeta(content);
     setNameState(seeded.name);
     setDescriptionState(seeded.description);
   }, [content]);
 
-  const value = useMemo<SkillMetaContextType>(() => {
+  const meta = useMemo<SkillMeta>(() => {
     const trimmedLicense = license.trim();
     const trimmedVersion = version.trim();
     const cleanTags = tags.map((t) => t.trim()).filter(Boolean);
-    const meta: SkillMeta = {
+    return {
       name: name.trim(),
       description: description.trim(),
       ...(trimmedLicense ? { license: trimmedLicense } : {}),
       ...(trimmedVersion ? { version: trimmedVersion } : {}),
       ...(cleanTags.length ? { tags: cleanTags } : {}),
     };
-    return {
-      meta,
+  }, [name, description, license, version, tags]);
+
+  const validation = useMemo(
+    () =>
       // version/tags serialize under `metadata`, not as top-level frontmatter
       // keys, so validation only sees the real top-level fields.
-      validation: validateSkill({
+      validateSkill({
         name: meta.name,
         description: meta.description,
         ...(meta.license ? { license: meta.license } : {}),
       }),
-      mode: userMode ?? suggestSkillMode(content),
-      suggestedMode: suggestSkillMode(content),
-      extraFiles,
-      setName: (next) => {
+    [meta],
+  );
+
+  const suggestedMode = useMemo(() => suggestSkillMode(content), [content]);
+  const mode = userMode ?? suggestedMode;
+
+  // Setters never close over `content` (they read `contentRef`), so their
+  // identities are stable — keeping `value` referentially stable across
+  // keystrokes unless a derived value actually changes.
+  const setters = useMemo(
+    () => ({
+      setName: (next: string) => {
         dirtyRef.current = true;
         setNameState(next);
       },
-      setDescription: (next) => {
+      setDescription: (next: string) => {
         dirtyRef.current = true;
         setDescriptionState(next);
       },
       setLicense: setLicenseState,
       setVersion: setVersionState,
       setTags: setTagsState,
-      setMetaOverride: (next) => {
+      setMetaOverride: (next: { name: string; description: string }) => {
         dirtyRef.current = true;
         setNameState(next.name);
         setDescriptionState(next.description);
       },
       resetToDerived: () => {
         dirtyRef.current = false;
-        const seeded = seedSkillMeta(content);
+        const seeded = seedSkillMeta(contentRef.current);
         setNameState(seeded.name);
         setDescriptionState(seeded.description);
+        setLicenseState("");
         setVersionState("1.0.0");
         setTagsState([]);
       },
       setUserMode,
       setExtraFiles,
-    };
-  }, [name, description, license, version, tags, userMode, extraFiles, content]);
+    }),
+    [],
+  );
+
+  const value = useMemo<SkillMetaContextType>(
+    () => ({ meta, validation, mode, suggestedMode, extraFiles, ...setters }),
+    [meta, validation, mode, suggestedMode, extraFiles, setters],
+  );
 
   return (
     <SkillMetaContext.Provider value={value}>

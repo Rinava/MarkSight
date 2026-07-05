@@ -34,8 +34,15 @@ const LABEL_CLASS =
 
 export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
   const { replaceDocument } = useContent();
-  const { meta, setMetaOverride, resetToDerived, setExtraFiles, setUserMode } =
-    useSkillMeta();
+  const {
+    meta,
+    setMetaOverride,
+    resetToDerived,
+    setLicense,
+    setVersion,
+    setExtraFiles,
+    setUserMode,
+  } = useSkillMeta();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [importUrl, setImportUrl] = useState("");
@@ -56,6 +63,11 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
     } else {
       resetToDerived();
     }
+    // Preserve imported license/version when present. `frontmatter` is a flat
+    // string map, so these arrive as plain strings; `tags` only survives as an
+    // unparsed "[a, b]" literal, so it's left out rather than guessed at.
+    if (fm.license?.trim()) setLicense(fm.license.trim());
+    if (fm.version?.trim()) setVersion(fm.version.trim());
     setExtraFiles(imported.extraFiles);
     setUserMode("instruction");
     onEnterSkill();

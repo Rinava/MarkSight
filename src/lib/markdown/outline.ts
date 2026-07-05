@@ -15,6 +15,9 @@ export interface OutlineHeading {
 }
 
 const HEADING_RE = /^(#{1,6})\s+(.+)$/;
+const FENCE_RE = /^\s*(```|~~~)/;
+// Setext underline: a run of = (H1) or - (H2), up to 3 leading spaces.
+const SETEXT_RE = /^ {0,3}(=+|-+)[ \t]*$/;
 
 export function buildOutline(markdown: string): OutlineHeading[] {
   const lines = markdown.split("\n");
@@ -23,16 +26,30 @@ export function buildOutline(markdown: string): OutlineHeading[] {
   let insideFence = false;
 
   lines.forEach((line, index) => {
-    if (/^\s*```/.test(line)) {
+    if (FENCE_RE.test(line)) {
       insideFence = !insideFence;
       return;
     }
     if (insideFence) return;
+
     const match = line.match(HEADING_RE);
     if (match) {
       const level = match[1].length;
       const text = match[2].trim();
       extracted.push({ level, text, id: slugger.slug(text), line: index + 1 });
+      return;
+    }
+
+    // Setext heading: a non-blank text line followed by an =/- underline.
+    // rehype-slug renders+slugs these, so we must too or duplicate ids desync.
+    const setext = line.match(SETEXT_RE);
+    if (setext) {
+      const prev = lines[index - 1];
+      if (prev && prev.trim() && !HEADING_RE.test(prev) && !FENCE_RE.test(prev)) {
+        const level = setext[1][0] === "=" ? 1 : 2;
+        const text = prev.trim();
+        extracted.push({ level, text, id: slugger.slug(text), line: index });
+      }
     }
   });
 

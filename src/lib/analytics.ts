@@ -50,11 +50,14 @@ export function trackThemeToggle(theme: 'light' | 'dark') {
   });
 }
 
-export function trackEditorAction(action: string, details?: string) {
+// Privacy: the label is a stable action constant only — document/user text
+// must never be forwarded off-device (the app promises nothing leaves the
+// browser). Deliberately takes no content payload.
+export function trackEditorAction(action: string) {
   trackEvent({
     action: 'editor_action',
     category: 'editor',
-    label: details ? `${action}: ${details}` : action,
+    label: action,
   });
 }
 

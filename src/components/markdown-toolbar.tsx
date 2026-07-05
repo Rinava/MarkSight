@@ -24,6 +24,8 @@ import {
 export interface MarkdownToolbarProps {
   onInsert: (text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) => void;
   getCurrentContext?: () => { text: string; selection: { from: number; to: number } };
+  /** Bumped by the editor on CodeMirror selection change to re-eval active formatting. */
+  selectionVersion?: number;
 }
 
 interface ToolbarButton {
@@ -41,7 +43,7 @@ interface MarkdownPattern {
   after: string;
 }
 
-export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbarProps) {
+export function MarkdownToolbar({ onInsert, getCurrentContext, selectionVersion }: MarkdownToolbarProps) {
   const { trackToolbarInteraction, trackShortcut } = useAnalytics();
   const markdownPatterns = useMemo(() => [
     { pattern: /\*\*([^*]+)\*\*/g, type: 'bold', before: '**', after: '**' },
@@ -50,9 +52,9 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     { pattern: /`([^`]+)`/g, type: 'code', before: '`', after: '`' },
   ], []);
 
-  function getActiveFormatting(): string[] {
+  const getActiveFormatting = useCallback((): string[] => {
     if (!getCurrentContext) return [];
-    
+
     const context = getCurrentContext();
     const { text, selection } = context;
     const cursorPos = selection.from;
@@ -91,9 +93,9 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     if (headingMatch) {
       activeFormats.push(`heading${headingMatch[1].length}`);
     }
-    
+
     return activeFormats;
-  }
+  }, [getCurrentContext, markdownPatterns]);
 
 
   const findSurroundingMarkdown = useCallback((text: string, position: number): MarkdownPattern | null => {
@@ -240,10 +242,22 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
 
   const insertLine = useCallback((prefix: string, placeholder: string = "") => {
     trackToolbarInteraction('insert_line');
-    const text = placeholder ? `${prefix}${placeholder}` : prefix;
-    const cursorOffset = prefix.length;
-    onInsert(`\n${text}\n`, cursorOffset + 1);
-  }, [onInsert, trackToolbarInteraction]);
+    const body = placeholder ? `${prefix}${placeholder}` : prefix;
+
+    if (!getCurrentContext) {
+      onInsert(`${body}\n`, prefix.length);
+      return;
+    }
+
+    const { text, selection } = getCurrentContext();
+    // Break onto a fresh line only when the caret isn't already at the start of one,
+    // and only append a newline when text follows — avoids stray blank lines / splits.
+    const atLineStart = selection.from === 0 || text[selection.from - 1] === "\n";
+    const atLineEnd = selection.to >= text.length || text[selection.to] === "\n";
+    const leading = atLineStart ? "" : "\n";
+    const trailing = atLineEnd ? "" : "\n";
+    onInsert(`${leading}${body}${trailing}`, leading.length + prefix.length);
+  }, [getCurrentContext, onInsert, trackToolbarInteraction]);
 
   const smartHeading = useCallback((level: number) => {
     trackToolbarInteraction(`heading_${level}`);
@@ -465,32 +479,34 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
 
       if (!isCtrlOrCmd) return;
       
-      // physical-key shortcuts 
-      if (event.shiftKey){
-        if (event.code.startsWith("Digit")){
-          const numericKey = Number(event.code.slice(-1));
-          if (numericKey >=1 && numericKey <=3){
-            event.preventDefault();
-            trackShortcut(`Cmd+Shift+${numericKey}`);
-            smartHeading(numericKey);
-            return;
-          }
+      // physical-key shortcuts — headings on ⌘⇧1..3 (main row + numpad). Return so
+      // other Shift+letter combos (e.g. ⌘⇧I/DevTools) aren't swallowed below.
+      if (event.shiftKey && (event.code.startsWith("Digit") || event.code.startsWith("Numpad"))) {
+        const numericKey = Number(event.code.slice(-1));
+        if (numericKey >= 1 && numericKey <= 3) {
+          event.preventDefault();
+          trackShortcut(`Cmd+Shift+${numericKey}`);
+          smartHeading(numericKey);
         }
+        return;
       }
 
       // character shortcuts 
       switch (event.key.toLowerCase()) {
         case 'b':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+B');
           smartInsert("**", "**", "bold text", "bold");
           break;
         case 'i':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+I');
           smartInsert("*", "*", "italic text", "italic");
           break;
         case 'u':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+U');
           smartInsert("~~", "~~", "strikethrough text", "strikethrough");
@@ -503,6 +519,7 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
           insertText("[", "](url)", "link text");
           break;
         case '`':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+`');
           smartInsert("`", "`", "code", "code");
@@ -532,7 +549,14 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     };
   }, [insertLine, insertText, smartHeading, smartInsert, trackShortcut]);
 
-  const activeFormats = getActiveFormatting();
+  // Recompute when the doc changes (getCurrentContext identity) or the caret moves
+  // (selectionVersion) — CodeMirror selection lives outside React's render cycle, so
+  // selectionVersion is a signal-only dep the linter can't see through getCurrentContext.
+  const activeFormats = useMemo(
+    () => getActiveFormatting(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getActiveFormatting, selectionVersion],
+  );
 
   return (
     <div

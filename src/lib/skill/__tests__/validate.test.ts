@@ -39,6 +39,17 @@ describe("validateSkill", () => {
     expect(result.errors.some((e) => e.includes("Unexpected key"))).toBe(true);
   });
 
+  it("rejects blank or whitespace-only required fields", () => {
+    const result = validateSkill({ name: "   ", description: "" });
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) => /name/i.test(e) && /empty/i.test(e)),
+    ).toBe(true);
+    expect(
+      result.errors.some((e) => /description/i.test(e) && /empty/i.test(e)),
+    ).toBe(true);
+  });
+
   it("rejects non-kebab-case names", () => {
     expect(validateSkill({ name: "My_Skill", description: "x" }).valid).toBe(
       false,

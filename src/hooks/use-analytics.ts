@@ -34,7 +34,10 @@ export function useAnalytics() {
   }, []);
 
   const trackEditorInteraction = useCallback((action: string, details?: string) => {
-    trackEditorAction(action, details);
+    // `details` is accepted for call-site compatibility but intentionally
+    // dropped — document text must never reach analytics.
+    void details;
+    trackEditorAction(action);
   }, []);
 
   const trackToolbarInteraction = useCallback((action: string) => {

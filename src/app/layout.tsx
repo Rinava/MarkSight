@@ -5,7 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ContentProvider } from "@/contexts/content-context";
 import { SkillMetaProvider } from "@/contexts/skill-meta-context";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -152,7 +152,7 @@ export default async function RootLayout({
           <ContentProvider>
             <SkillMetaProvider>
               {children}
-              <Toaster position="bottom-center" theme="system" />
+              <Toaster position="bottom-center" />
             </SkillMetaProvider>
           </ContentProvider>
         </ThemeProvider>

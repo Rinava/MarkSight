@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Menu } from "@base-ui/react/menu";
 import {
   ChevronDown,
@@ -192,6 +192,13 @@ export function ExportMenu({
     }
   }
 
+  // Keep the latest packaging handler in a ref so the ⌘⇧K listener can register
+  // once instead of re-subscribing on every debounced value change.
+  const skillZipRef = useRef(downloadSkillZip);
+  useEffect(() => {
+    skillZipRef.current = downloadSkillZip;
+  });
+
   // ⌘⇧K / Ctrl+Shift+K — one-click skill package, matching the original app.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -201,13 +208,12 @@ export function ExportMenu({
         event.key.toLowerCase() === "k"
       ) {
         event.preventDefault();
-        downloadSkillZip();
+        skillZipRef.current();
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meta, validation, mode, extraFiles, content]);
+  }, []);
 
   const docItems = [
     { label: "Export HTML", sub: "Styled, self-contained", Icon: FileText, action: exportHTML },

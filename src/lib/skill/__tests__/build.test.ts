@@ -32,6 +32,14 @@ describe("yamlString", () => {
   it("quotes strings containing a colon", () => {
     expect(yamlString("Use this: now")).toBe('"Use this: now"');
   });
+
+  it("quotes YAML-reserved scalars and number-like strings", () => {
+    // A YAML loader would read these as a bool/null or a number, not a string.
+    expect(yamlString("no")).toBe('"no"');
+    expect(yamlString("True")).toBe('"True"');
+    expect(yamlString("123")).toBe('"123"');
+    expect(yamlString("~")).toBe('"~"');
+  });
 });
 
 describe("buildSkillMd", () => {
@@ -87,6 +95,35 @@ describe("buildSkillMd", () => {
     expect(md).toContain("metadata:\n  version: 2.3.0\n  tags: [pdf, ocr]");
     expect(md).not.toMatch(/^version:/m);
     expect(md).not.toMatch(/^tags:/m);
+  });
+
+  it("round-trips version + tags through parse and validate", () => {
+    const meta = {
+      name: "my-skill",
+      description: "Does a thing.",
+      version: "1.0",
+      tags: ["a", "b"],
+    };
+    const md = buildSkillMd(meta, "# Body");
+    const { frontmatter } = stripLeadingFrontmatter(md);
+    const parsed = parseSkillFrontmatter(frontmatter ?? "");
+    // The `metadata:` block round-trips instead of leaking bogus top-level keys.
+    expect(validateSkill(parsed).valid).toBe(true);
+    const metadata = parsed.metadata as unknown as {
+      version: string;
+      tags: string[];
+    };
+    expect(metadata.version).toBe("1.0");
+    expect(metadata.tags).toEqual(["a", "b"]);
+  });
+
+  it("round-trips a literal backslash (unescape order)", () => {
+    // `C:\newdir` forces quoting (colon) and a backslash followed by `n`.
+    const meta = { name: "my-skill", description: "C:\\newdir" };
+    const md = buildSkillMd(meta, "# Body");
+    const { frontmatter } = stripLeadingFrontmatter(md);
+    const parsed = parseSkillFrontmatter(frontmatter ?? "");
+    expect(parsed.description).toBe("C:\\newdir");
   });
 
   it("omits the metadata block when version and tags are absent", () => {

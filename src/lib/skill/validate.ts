@@ -53,7 +53,9 @@ export function validateSkill(
       errors.push(`Name must be a string, got ${typeof name}`);
     } else {
       const trimmed = name.trim();
-      if (trimmed) {
+      if (!trimmed) {
+        errors.push("Name cannot be empty");
+      } else {
         if (!NAME_PATTERN.test(trimmed)) {
           errors.push(
             `Name '${trimmed}' should be kebab-case (lowercase letters, digits, and hyphens only)`,
@@ -84,7 +86,9 @@ export function validateSkill(
       errors.push(`Description must be a string, got ${typeof description}`);
     } else {
       const trimmed = description.trim();
-      if (trimmed) {
+      if (!trimmed) {
+        errors.push("Description cannot be empty");
+      } else {
         if (trimmed.includes("<") || trimmed.includes(">")) {
           errors.push("Description cannot contain angle brackets (< or >)");
         }

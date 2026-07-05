@@ -45,6 +45,26 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // Lightweight same-origin guard against denial-of-wallet on the owner's LLM
+  // key: reject when a cross-origin browser sends a mismatched Origin. This is
+  // best-effort only — real abuse protection needs a shared rate-limit store,
+  // which a stateless route can't provide without external infra.
+  const origin = request.headers.get("origin");
+  if (origin) {
+    let originHost: string | null = null;
+    try {
+      originHost = new URL(origin).host;
+    } catch {
+      originHost = null;
+    }
+    if (originHost !== request.headers.get("host")) {
+      return NextResponse.json(
+        { error: "Cross-origin request rejected" },
+        { status: 403 },
+      );
+    }
+  }
+
   const resolved = resolveModel();
   if (!resolved) {
     return NextResponse.json({ enabled: false });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
@@ -110,6 +110,7 @@ export function Workspace() {
 
   const editorRef = useRef<MarkdownEditorRef | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
+  const resizeAbortRef = useRef<AbortController | null>(null);
 
   // Publish the (debounced) document to the shared content context.
   useEffect(() => {
@@ -162,7 +163,9 @@ export function Workspace() {
   const toolbarInsert = useCallback(
     (text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) => {
       editorRef.current?.insertText(text, cursorOffset, replaceFrom, replaceTo);
-      trackEditorInteraction("toolbar_insert", text);
+      // Log only the interaction kind — never the inserted text (it embeds
+      // the user's selected document content).
+      trackEditorInteraction("toolbar_insert");
     },
     [trackEditorInteraction],
   );
@@ -180,8 +183,23 @@ export function Workspace() {
     setSkillMode((on) => !on);
   }, []);
 
+  // Detach any in-flight drag listeners if we unmount mid-drag (the mouseup
+  // that normally removes them would never fire), and clear the body styles.
+  useEffect(
+    () => () => {
+      resizeAbortRef.current?.abort();
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    },
+    [],
+  );
+
   const startResize = useCallback((event: React.MouseEvent) => {
     event.preventDefault();
+    resizeAbortRef.current?.abort();
+    const controller = new AbortController();
+    resizeAbortRef.current = controller;
+    const { signal } = controller;
     const move = (moveEvent: MouseEvent) => {
       const rect = splitRef.current?.getBoundingClientRect();
       if (!rect || rect.width === 0) return;
@@ -189,18 +207,18 @@ export function Workspace() {
       setRatio(Math.min(80, Math.max(20, pct)));
     };
     const up = () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
+      controller.abort();
+      resizeAbortRef.current = null;
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
     };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+    window.addEventListener("mousemove", move, { signal });
+    window.addEventListener("mouseup", up, { signal });
     document.body.style.cursor = "col-resize";
     document.body.style.userSelect = "none";
   }, []);
 
-  const metrics = documentMetrics(value);
+  const metrics = useMemo(() => documentMetrics(value), [value]);
   const readingTime = Math.max(1, Math.round(metrics.wordCount / 200));
   const currentYear = new Date().getFullYear();
   const showEditor = view !== "preview";

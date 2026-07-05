@@ -28,6 +28,9 @@ export interface MarkdownEditorRef {
 export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   function MarkdownEditor({ value, onChange, showToolbar = true, bare = false }, ref) {
   const [isFocused, setIsFocused] = useState(false);
+  // Bumped on each CodeMirror selection change so the toolbar re-evaluates active
+  // formatting — selection updates don't flow through React's render cycle.
+  const [selectionVersion, setSelectionVersion] = useState(0);
   const editorViewRef = useRef<EditorView | null>(null);
   const { trackEditorInteraction } = useAnalytics();
   const { resolvedTheme } = useTheme();
@@ -37,6 +40,9 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       markdown({ base: markdownLanguage }),
       EditorView.lineWrapping,
       EditorView.contentAttributes.of({ "aria-label": "Markdown editor" }),
+      EditorView.updateListener.of((update) => {
+        if (update.selectionSet) setSelectionVersion((v) => v + 1);
+      }),
     ];
     if (bare) {
       base.push(
@@ -162,6 +168,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         <MarkdownToolbar
           onInsert={handleToolbarInsert}
           getCurrentContext={getCurrentContext}
+          selectionVersion={selectionVersion}
         />
       )}
       <div className="min-h-0 flex-1 overflow-hidden">{editor}</div>
