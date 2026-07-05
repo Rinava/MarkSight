@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -17,14 +18,23 @@ function isMermaidPre(node: unknown): boolean {
 
 export interface MarkdownPreviewProps {
   value: string;
+  className?: string;
 }
 
-export function MarkdownPreview({ value }: MarkdownPreviewProps) {
+/**
+ * Memoized: the parent re-renders on every keystroke, but the (debounced)
+ * `value` only changes ~10×/s — so react-markdown re-parses on prop changes,
+ * not on every keystroke. Theme changes still re-render via context.
+ */
+export const MarkdownPreview = memo(function MarkdownPreview({
+  value,
+  className = "ms-prose",
+}: MarkdownPreviewProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="prose prose-sm dark:prose-invert max-w-none">
+    <div className={className}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug]}
@@ -34,25 +44,21 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
             if (isMermaidPre(node)) return <>{children}</>;
             return <pre {...props}>{children}</pre>;
           },
-          code({ className, children }) {
-            const match = /language-(\w+)/.exec(className ?? "");
+          code({ className: codeClassName, children }) {
+            const match = /language-(\w+)/.exec(codeClassName ?? "");
 
             if (match?.[1] === "mermaid") {
               return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
             }
 
-            // In ReactMarkdown:
-            // - Inline code: no className
-            // - Code blocks: className like "language-js" or "language-undefined"
+            // ReactMarkdown: inline code has no className; code blocks carry a
+            // language- class or a trailing newline.
             const isCodeBlock =
-              Boolean(className) || String(children).includes("\n");
+              Boolean(codeClassName) || String(children).includes("\n");
 
             if (!isCodeBlock) {
-              return (
-                <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono border not-prose">
-                  {children}
-                </code>
-              );
+              // Styled by `.ms-prose :not(pre) > code` in globals.css.
+              return <code>{children}</code>;
             }
 
             return (
@@ -61,11 +67,13 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
                 language={match ? match[1] : "text"}
                 style={isDark ? oneDark : oneLight}
                 customStyle={{
-                  background: "var(--muted)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-md)",
-                  transition:
-                    "background-color 0.3s ease, box-shadow 0.3s ease",
+                  background: "var(--ms-tint)",
+                  border: "1px solid var(--ms-border-2)",
+                  borderRadius: "9px",
+                  padding: "0.9em 1.05em",
+                  margin: "1em 0",
+                  fontSize: "0.85em",
+                  transition: "background-color 0.3s ease",
                 }}
                 codeTagProps={{
                   style: {
@@ -84,4 +92,4 @@ export function MarkdownPreview({ value }: MarkdownPreviewProps) {
       </ReactMarkdown>
     </div>
   );
-}
+});

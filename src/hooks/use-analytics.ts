@@ -3,6 +3,7 @@ import {
   trackDocumentMetrics,
   calculateDocumentMetrics,
   trackExport,
+  trackSkillCreate,
   trackThemeToggle,
   trackEditorAction,
   trackToolbarAction,
@@ -24,12 +25,19 @@ export function useAnalytics() {
     trackExport(format, metrics.wordCount);
   }, []);
 
+  const trackSkillAction = useCallback((kind: 'copy' | 'md' | 'skill' | 'ai-improve') => {
+    trackSkillCreate(kind);
+  }, []);
+
   const trackThemeChange = useCallback((theme: 'light' | 'dark') => {
     trackThemeToggle(theme);
   }, []);
 
   const trackEditorInteraction = useCallback((action: string, details?: string) => {
-    trackEditorAction(action, details);
+    // `details` is accepted for call-site compatibility but intentionally
+    // dropped — document text must never reach analytics.
+    void details;
+    trackEditorAction(action);
   }, []);
 
   const trackToolbarInteraction = useCallback((action: string) => {
@@ -59,6 +67,7 @@ export function useAnalytics() {
   return {
     trackDocumentChange,
     trackExportAction,
+    trackSkillAction,
     trackThemeChange,
     trackEditorInteraction,
     trackToolbarInteraction,

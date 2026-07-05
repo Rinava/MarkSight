@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tip } from "@/components/ui/base/tooltip";
 import { useAnalytics } from "@/hooks/use-analytics";
 import {
   Bold,
@@ -26,6 +24,8 @@ import {
 export interface MarkdownToolbarProps {
   onInsert: (text: string, cursorOffset?: number, replaceFrom?: number, replaceTo?: number) => void;
   getCurrentContext?: () => { text: string; selection: { from: number; to: number } };
+  /** Bumped by the editor on CodeMirror selection change to re-eval active formatting. */
+  selectionVersion?: number;
 }
 
 interface ToolbarButton {
@@ -43,7 +43,7 @@ interface MarkdownPattern {
   after: string;
 }
 
-export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbarProps) {
+export function MarkdownToolbar({ onInsert, getCurrentContext, selectionVersion }: MarkdownToolbarProps) {
   const { trackToolbarInteraction, trackShortcut } = useAnalytics();
   const markdownPatterns = useMemo(() => [
     { pattern: /\*\*([^*]+)\*\*/g, type: 'bold', before: '**', after: '**' },
@@ -52,9 +52,9 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     { pattern: /`([^`]+)`/g, type: 'code', before: '`', after: '`' },
   ], []);
 
-  function getActiveFormatting(): string[] {
+  const getActiveFormatting = useCallback((): string[] => {
     if (!getCurrentContext) return [];
-    
+
     const context = getCurrentContext();
     const { text, selection } = context;
     const cursorPos = selection.from;
@@ -93,9 +93,9 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     if (headingMatch) {
       activeFormats.push(`heading${headingMatch[1].length}`);
     }
-    
+
     return activeFormats;
-  }
+  }, [getCurrentContext, markdownPatterns]);
 
 
   const findSurroundingMarkdown = useCallback((text: string, position: number): MarkdownPattern | null => {
@@ -242,10 +242,22 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
 
   const insertLine = useCallback((prefix: string, placeholder: string = "") => {
     trackToolbarInteraction('insert_line');
-    const text = placeholder ? `${prefix}${placeholder}` : prefix;
-    const cursorOffset = prefix.length;
-    onInsert(`\n${text}\n`, cursorOffset + 1);
-  }, [onInsert, trackToolbarInteraction]);
+    const body = placeholder ? `${prefix}${placeholder}` : prefix;
+
+    if (!getCurrentContext) {
+      onInsert(`${body}\n`, prefix.length);
+      return;
+    }
+
+    const { text, selection } = getCurrentContext();
+    // Break onto a fresh line only when the caret isn't already at the start of one,
+    // and only append a newline when text follows — avoids stray blank lines / splits.
+    const atLineStart = selection.from === 0 || text[selection.from - 1] === "\n";
+    const atLineEnd = selection.to >= text.length || text[selection.to] === "\n";
+    const leading = atLineStart ? "" : "\n";
+    const trailing = atLineEnd ? "" : "\n";
+    onInsert(`${leading}${body}${trailing}`, leading.length + prefix.length);
+  }, [getCurrentContext, onInsert, trackToolbarInteraction]);
 
   const smartHeading = useCallback((level: number) => {
     trackToolbarInteraction(`heading_${level}`);
@@ -410,51 +422,53 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     },
   ];
 
-  const formatButtons = buttons.slice(0, 3);
-  const headingButtons = buttons.slice(3, 6);
-  const listButtons = buttons.slice(6, 9);
-  const blockButtons = buttons.slice(9, 12);
-  const linkButtons = buttons.slice(12, 14);
-  const miscButtons = buttons.slice(14);
+  // Groups mirror MarkSight.dc.html: format · headings · lists · blocks · media.
+  // (The inline "Code block" action stays reachable via ``` but isn't in the row.)
+  const groups: ToolbarButton[][] = [
+    [buttons[0], buttons[1], buttons[2]], // bold, italic, strikethrough
+    [buttons[3], buttons[4], buttons[5]], // h1, h2, h3
+    [buttons[6], buttons[7], buttons[8]], // list, ordered list, task list
+    [buttons[9], buttons[10], buttons[15]], // quote, inline code, divider
+    [buttons[12], buttons[13], buttons[14]], // link, image, table
+  ];
 
-  const renderButtonGroup = (buttonGroup: ToolbarButton[]) => {
-    const activeFormats = getActiveFormatting();
-    
-    return buttonGroup.map((button) => {
-      const isActive = button.formatType ? activeFormats.includes(button.formatType) : false;
-      
+  const renderButtonGroup = (
+    buttonGroup: ToolbarButton[],
+    activeFormats: string[],
+  ) =>
+    buttonGroup.map((button) => {
+      const isActive = button.formatType
+        ? activeFormats.includes(button.formatType)
+        : false;
+
       return (
-        <Tooltip key={button.label}>
-          <TooltipTrigger asChild>
-            <Button
-              variant={isActive ? "default" : "ghost"}
-              size="sm"
-              onClick={button.action}
-              aria-label={button.label}
-              aria-pressed={button.formatType ? isActive : undefined}
-              className={`h-8 w-8 p-0 transition-all duration-200 ${
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              <button.icon className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>
+        <Tip
+          key={button.label}
+          label={
+            <span>
               {button.label}
               {button.shortcut && (
-                <span className="ml-2 text-xs text-muted-foreground">
-                  {button.shortcut}
-                </span>
+                <span className="ml-2 text-[#9db392]">{button.shortcut}</span>
               )}
-            </p>
-          </TooltipContent>
-        </Tooltip>
+            </span>
+          }
+        >
+          <button
+            type="button"
+            onClick={button.action}
+            aria-label={button.label}
+            aria-pressed={button.formatType ? isActive : undefined}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+              isActive
+                ? "bg-ms-tint-3 text-ms-primary-strong"
+                : "text-ms-toolbar-ink hover:bg-ms-tint-3 hover:text-ms-primary-strong"
+            }`}
+          >
+            <button.icon className="h-4 w-4" />
+          </button>
+        </Tip>
       );
     });
-  };
 
   // Keyboard shortcuts
   useEffect(function setupKeyboardShortcuts() {
@@ -465,42 +479,47 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
 
       if (!isCtrlOrCmd) return;
       
-      // physical-key shortcuts 
-      if (event.shiftKey){
-        if (event.code.startsWith("Digit")){
-          const numericKey = Number(event.code.slice(-1));
-          if (numericKey >=1 && numericKey <=3){
-            event.preventDefault();
-            trackShortcut(`Cmd+Shift+${numericKey}`);
-            smartHeading(numericKey);
-            return;
-          }
+      // physical-key shortcuts — headings on ⌘⇧1..3 (main row + numpad). Return so
+      // other Shift+letter combos (e.g. ⌘⇧I/DevTools) aren't swallowed below.
+      if (event.shiftKey && (event.code.startsWith("Digit") || event.code.startsWith("Numpad"))) {
+        const numericKey = Number(event.code.slice(-1));
+        if (numericKey >= 1 && numericKey <= 3) {
+          event.preventDefault();
+          trackShortcut(`Cmd+Shift+${numericKey}`);
+          smartHeading(numericKey);
         }
+        return;
       }
 
       // character shortcuts 
       switch (event.key.toLowerCase()) {
         case 'b':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+B');
           smartInsert("**", "**", "bold text", "bold");
           break;
         case 'i':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+I');
           smartInsert("*", "*", "italic text", "italic");
           break;
         case 'u':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+U');
           smartInsert("~~", "~~", "strikethrough text", "strikethrough");
           break;
         case 'k':
+          // ⌘⇧K belongs to the Skill Creator dialog
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+K');
           insertText("[", "](url)", "link text");
           break;
         case '`':
+          if (event.shiftKey) break;
           event.preventDefault();
           trackShortcut('Cmd+`');
           smartInsert("`", "`", "code", "code");
@@ -530,33 +549,29 @@ export function MarkdownToolbar({ onInsert, getCurrentContext }: MarkdownToolbar
     };
   }, [insertLine, insertText, smartHeading, smartInsert, trackShortcut]);
 
+  // Recompute when the doc changes (getCurrentContext identity) or the caret moves
+  // (selectionVersion) — CodeMirror selection lives outside React's render cycle, so
+  // selectionVersion is a signal-only dep the linter can't see through getCurrentContext.
+  const activeFormats = useMemo(
+    () => getActiveFormatting(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getActiveFormatting, selectionVersion],
+  );
+
   return (
-    <TooltipProvider>
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-background/50 backdrop-blur-sm">
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(formatButtons)}
+    <div
+      role="toolbar"
+      aria-label="Markdown formatting"
+      className="flex flex-1 flex-wrap items-center gap-2"
+    >
+      {groups.map((group, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-0.5 border-r border-ms-border pr-2"
+        >
+          {renderButtonGroup(group, activeFormats)}
         </div>
-        <Separator orientation="vertical" className="h-6 hidden sm:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(headingButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden sm:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(listButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden md:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(blockButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden md:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(linkButtons)}
-        </div>
-        <Separator orientation="vertical" className="h-6 hidden lg:block" />
-        <div className="flex items-center gap-1">
-          {renderButtonGroup(miscButtons)}
-        </div>
-      </div>
-    </TooltipProvider>
+      ))}
+    </div>
   );
 }
