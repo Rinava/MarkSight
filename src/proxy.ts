@@ -11,13 +11,20 @@ import { NextResponse, type NextRequest } from "next/server";
  * next-themes inline script, and our JSON-LD) can execute, and any scripts they
  * load are trusted transitively. `style-src` keeps `'unsafe-inline'` because
  * CodeMirror, Prism, and Tailwind inject inline styles that cannot be nonced.
+ *
+ * `'unsafe-eval'` is added to `script-src` in development only: Next.js's dev
+ * server (Turbopack HMR + React Fast Refresh) relies on `eval()`. It is never
+ * present in production.
  */
 export function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID());
+  const isDev = process.env.NODE_ENV === "development";
 
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline'${
+      isDev ? " 'unsafe-eval'" : ""
+    }`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https:`,
     `font-src 'self' data:`,
