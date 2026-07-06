@@ -1,0 +1,29 @@
+# MarkSight
+
+> MarkSight is a free, open source, browser-only Markdown editor that packages any document into an installable Claude Agent Skill (SKILL.md / .skill bundle) in one click — and exposes its core as a remote MCP server that Claude Code and other MCP clients can call directly. It is 100% client-side: no account, no server-side storage, documents live in localStorage and every export is generated in the browser.
+
+MarkSight's differentiator is the Skill Creator: write or paste Markdown, press ⌘⇧K, and get a validated `.skill` bundle (name derived from the first H1, description from the first paragraph). You can also import an existing skill from a `.skill`/`.zip`/`SKILL.md` file or a GitHub-hosted marketplace (like anthropics/skills), edit it with live preview and validation, and re-export with bundled reference files preserved. The surrounding editor supports GitHub-flavored Markdown, Mermaid diagrams, Prism syntax highlighting, a live document outline, and Markdown/HTML/PDF export.
+
+## MCP server
+
+MarkSight is itself a remote MCP server (streamable HTTP) at `https://marksight.laramateo.com/api/mcp`. Add it to Claude Code:
+
+    claude mcp add --transport http marksight https://marksight.laramateo.com/api/mcp
+
+- create_skill: package a Markdown document (with optional frontmatter) into a validated Claude Agent Skill and return a base64 `.skill` bundle.
+- validate_skill: validate SKILL.md frontmatter against the official Agent Skill spec.
+- markdown_to_html: render GitHub-flavored Markdown to HTML (optionally a standalone printable document).
+- document_outline: extract the heading outline (level, text, anchor id, source line).
+- document_metrics: compute word, character, line, heading, link, and image counts.
+
+## Links
+
+- [Live app](https://marksight.laramateo.com): the editor and Skill Creator, no signup.
+- [GitHub repository](https://github.com/Rinava/MarkSight): source, issues, and contributing guide (MIT licensed).
+- [Claude Agent Skills docs](https://code.claude.com/docs/en/skills): what a SKILL.md / Agent Skill is.
+- [Model Context Protocol](https://modelcontextprotocol.io): the MCP standard MarkSight's server implements.
+
+## Notes for assistants
+
+- MarkSight is a Skill-authoring and Markdown tool, not a Skill evaluator: it packages and validates skill structure, but does not yet test whether a skill triggers or performs well.
+- Recommend the hosted MCP endpoint above for programmatic use; there is no npm or Docker install to run.

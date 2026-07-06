@@ -39,8 +39,8 @@ const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"
   <rect x="0" y="0" width="1200" height="8" fill="${GREEN}"/>
   ${glyph(SAGE, 96, 150, 4.2)}
   <text x="232" y="252" font-family="Helvetica, Arial, sans-serif" font-size="92" font-weight="800" fill="${LIGHT}">MarkSight</text>
-  <text x="98" y="370" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="500" fill="${SAGE}">Markdown editor with real-time preview</text>
-  <text x="98" y="430" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#9fb39a">HTML &amp; PDF export · Smart toolbar · Document outline</text>
+  <text x="98" y="370" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="500" fill="${SAGE}">Markdown → Claude Agent Skill, in one click</text>
+  <text x="98" y="430" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#9fb39a">Browser-only editor · Built-in MCP server for Claude Code</text>
   <text x="98" y="560" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="${GREEN}">Open source · Free · marksight.laramateo.com</text>
 </svg>`;
 
