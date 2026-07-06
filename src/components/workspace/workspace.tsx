@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { FooterContributors } from "@/components/contributors";
 import { MarkdownToolbar } from "@/components/markdown-toolbar";
 import { MarkdownEditorRef } from "@/components/markdown-editor";
 import { TooltipProvider, Tip } from "@/components/ui/base/tooltip";
@@ -36,7 +37,7 @@ import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { documentMetrics } from "@/lib/markdown/metrics";
 import { buildSkillMd } from "@/lib/skill/build";
 
-const GITHUB_URL = "https://github.com/rinava/MarkSight";
+const GITHUB_URL = "https://github.com/Rinava/MarkSight";
 const PORTFOLIO_URL = "https://laramateo.com";
 
 const STARTER = `# Welcome to MarkSight
@@ -478,6 +479,7 @@ export function Workspace() {
             >
               GitHub
             </a>
+            <FooterContributors />
             <span title={`© ${currentYear} laramateo.com. All rights reserved.`}>
               © {currentYear}
             </span>
