@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Github } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Contributors, FooterContributors } from "@/components/contributors";
 
 const SITE_URL = "https://marksight.laramateo.com";
 const GITHUB_URL = "https://github.com/Rinava/MarkSight";
@@ -248,23 +249,7 @@ export default function AboutPage() {
               MarkSight is better because of the people who report bugs, suggest
               features, and open pull requests. Thank you!
             </p>
-            <a
-              href={`${GITHUB_URL}/graphs/contributors`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-[13px] border border-ms-border-2 bg-ms-surface p-4 transition-colors hover:border-ms-border-hover"
-            >
-              {/* Third-party dynamic image (contrib.rocks); next/image adds no value. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://contrib.rocks/image?repo=Rinava/MarkSight"
-                alt="Avatars of MarkSight contributors on GitHub"
-                width={300}
-                height={60}
-                loading="lazy"
-                className="max-w-full"
-              />
-            </a>
+            <Contributors />
             <p className="text-[15px] leading-[1.7] text-ms-ink-body">
               Want to join them? Look for issues labelled{" "}
               <ExternalLink
@@ -340,6 +325,9 @@ export default function AboutPage() {
         <Link href="/" className="transition-colors hover:text-ms-primary-ink">
           Editor
         </Link>
+        <FooterContributors
+          separator={<span aria-hidden="true">·</span>}
+        />
         <span aria-hidden="true">·</span>
         <span title={`© ${year} laramateo.com. All rights reserved.`}>
           © {year}
