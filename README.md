@@ -1,8 +1,28 @@
 # MarkSight
 
-An open source markdown editor with real-time preview, a smart formatting toolbar, keyboard shortcuts, a document outline, and Markdown/HTML/PDF export.
+**Turn any Markdown document into an installable [Claude Agent Skill](https://code.claude.com/docs/en/skills) — one click, in your browser.** MarkSight is a free, open source Markdown editor whose core doubles as a remote [MCP](https://modelcontextprotocol.io) server that Claude Code can call directly. Live preview, GFM, Mermaid diagrams, and Markdown/HTML/PDF export come with it.
 
-🔗 **Live:** [marksight.laramateo.com](https://marksight.laramateo.com)
+🔗 **Live (no signup):** [marksight.laramateo.com](https://marksight.laramateo.com)  ·  🧩 One-click `.skill` export  ·  🔌 Built-in MCP server  ·  🔒 100% client-side
+
+<!-- Demo GIF slot — drop a ≤2 MB clip at docs/demo.gif (type markdown → ⌘⇧K → .skill downloads → `claude mcp add`), then uncomment the line below. -->
+<!-- ![MarkSight: Markdown to a Claude Agent Skill in one click](docs/demo.gif) -->
+
+> ⭐ If MarkSight is useful to you, starring the repo helps others find it.
+
+## Quick start
+
+**Use it — nothing to install:**
+
+1. Open [marksight.laramateo.com](https://marksight.laramateo.com), write or paste Markdown, and press **⌘⇧K** — an installable `.skill` bundle downloads immediately.
+2. Or add MarkSight's MCP server to Claude Code and let Claude build and validate skills for you:
+
+   ```bash
+   claude mcp add --transport http marksight https://marksight.laramateo.com/api/mcp
+   ```
+
+   Then ask Claude to turn Markdown into a skill or convert it to HTML. Tools: `create_skill`, `validate_skill`, `markdown_to_html`, `document_outline`, `document_metrics`.
+
+Want to run MarkSight locally or contribute? See [Getting started](#getting-started).
 
 ## About
 
