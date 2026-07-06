@@ -5,7 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/private/", "/admin/"],
     },
     sitemap: "https://marksight.laramateo.com/sitemap.xml",
   };
