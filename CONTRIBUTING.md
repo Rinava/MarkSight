@@ -91,12 +91,13 @@ node scripts/generate-assets.mjs
 ```
 src/
 ├── app/              # App Router entry (layout, page, metadata, route assets)
+│   └── api/          # route handlers (MCP server, AI skill improvement)
 ├── components/       # UI components (editor, preview, toolbar, sidebar, …)
 │   └── ui/           # shadcn/ui primitives — avoid hand-editing; re-add via the CLI
 ├── contexts/         # React context providers
 ├── hooks/            # custom hooks
 ├── lib/              # utilities (slugify, local storage, syntax highlighter, …)
-└── middleware.ts     # security headers / CSP
+└── proxy.ts          # security headers / CSP
 ```
 
 ## Coding guidelines

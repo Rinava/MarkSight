@@ -39,7 +39,7 @@ graph LR
 
 ## Tech stack
 
-- [Next.js 15](https://nextjs.org/) (App Router) + [React 19](https://react.dev/)
+- [Next.js 16](https://nextjs.org/) (App Router) + [React 19](https://react.dev/)
 - [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) primitives
 - [CodeMirror](https://codemirror.net/) (`@uiw/react-codemirror`) for editing
 - [react-markdown](https://github.com/remarkjs/react-markdown) + `remark-gfm` for rendering
@@ -128,11 +128,13 @@ metadata images (`src/app/apple-icon.png`, `opengraph-image.png`, `twitter-image
 ```
 src/
 ├── app/              # App Router entry (layout, page, metadata, route assets)
+│   └── api/          # route handlers (MCP server, AI skill improvement)
 ├── components/       # UI components (editor, preview, toolbar, sidebar, …)
 │   └── ui/           # shadcn/ui primitives
 ├── contexts/         # React context providers
 ├── hooks/            # custom hooks
-└── lib/              # utilities (slugify, local storage, syntax highlighter, …)
+├── lib/              # utilities (slugify, local storage, syntax highlighter, …)
+└── proxy.ts          # security headers / CSP
 ```
 
 ## Contributing
