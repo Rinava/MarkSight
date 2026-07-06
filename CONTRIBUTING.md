@@ -60,6 +60,7 @@ That's it — edit a file under `src/` and the page hot-reloads.
 | `npm run build` | Production build                      |
 | `npm run start` | Serve the production build            |
 | `npm run lint`  | Run ESLint                            |
+| `npm test`      | Run the unit tests (Vitest)           |
 
 Brand assets (icons, social images) are generated from inline SVG:
 
@@ -77,10 +78,11 @@ node scripts/generate-assets.mjs
    ```
 
 2. Make your change in small, focused commits.
-3. Before pushing, make sure the project still builds and lints cleanly:
+3. Before pushing, make sure the project still lints, tests, and builds cleanly:
 
    ```bash
    npm run lint
+   npm test
    npm run build
    ```
 
@@ -139,12 +141,12 @@ Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
 2. Fill in the PR template — describe **what** changed and **why**, and link any
    related issue (e.g. `Closes #12`).
 3. Add before/after screenshots or a short clip for any visible UI change.
-4. Confirm `npm run lint` and `npm run build` pass locally.
+4. Confirm `npm run lint`, `npm test`, and `npm run build` pass locally.
 5. Keep the PR focused — one logical change per PR is much easier to review.
 
-A maintainer will review your PR, may suggest changes, and will merge it once
-it's ready. Don't be discouraged by review feedback — it's how we keep the
-codebase healthy.
+A maintainer aims to give every pull request a first response within a few days.
+They'll review your PR, may suggest changes, and will merge it once it's ready.
+Don't be discouraged by review feedback — it's how we keep the codebase healthy.
 
 ## Reporting bugs & requesting features
 
