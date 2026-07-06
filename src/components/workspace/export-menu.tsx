@@ -110,39 +110,51 @@ export function ExportMenu({
   const { trackExportAction, trackSkillAction } = useAnalytics();
 
   async function exportHTML() {
-    trackExportAction("html", content);
-    downloadBlob(
-      await renderExportHtml(content, filename),
-      `${filename}.html`,
-      "text/html",
-    );
-    toast.success("HTML exported");
+    try {
+      trackExportAction("html", content);
+      downloadBlob(
+        await renderExportHtml(content, filename),
+        `${filename}.html`,
+        "text/html",
+      );
+      toast.success("HTML exported");
+    } catch {
+      toast.error("Failed to export HTML");
+    }
   }
 
   async function exportPDF() {
-    trackExportAction("pdf", content);
-    const html = await renderExportHtml(content, filename);
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      toast.error("Allow pop-ups to export as PDF");
-      return;
+    try {
+      trackExportAction("pdf", content);
+      const html = await renderExportHtml(content, filename);
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        toast.error("Allow pop-ups to export as PDF");
+        return;
+      }
+      printWindow.document.write(html);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 400);
+    } catch {
+      toast.error("Failed to export PDF");
     }
-    printWindow.document.write(html);
-    printWindow.document.close();
-    setTimeout(() => {
-      printWindow.print();
-    }, 400);
   }
 
   async function previewHTML() {
-    const html = await renderExportHtml(content, filename);
-    const newWindow = window.open("", "_blank");
-    if (!newWindow) {
-      toast.error("Allow pop-ups to preview HTML");
-      return;
+    try {
+      const html = await renderExportHtml(content, filename);
+      const newWindow = window.open("", "_blank");
+      if (!newWindow) {
+        toast.error("Allow pop-ups to preview HTML");
+        return;
+      }
+      newWindow.document.write(html);
+      newWindow.document.close();
+    } catch {
+      toast.error("Failed to preview HTML");
     }
-    newWindow.document.write(html);
-    newWindow.document.close();
   }
 
   function downloadMarkdown() {
