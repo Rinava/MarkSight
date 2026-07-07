@@ -17,6 +17,7 @@ export function LogoMark({ className = "" }: { className?: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
+      focusable="false"
       className={`text-ms-primary-ink ${className}`}
     >
       <path d="M8 2v3" />
