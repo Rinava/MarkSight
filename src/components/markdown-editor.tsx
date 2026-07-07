@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, useRef, forwardRef, useImperativeHandle } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
-import { EditorView } from "@codemirror/view";
+import { EditorView, placeholder } from "@codemirror/view";
 import { MarkdownToolbar } from "./markdown-toolbar";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useTheme } from "next-themes";
@@ -38,6 +38,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   const extensions = useMemo(function mkExtensions() {
     const base = [
       markdown({ base: markdownLanguage }),
+      placeholder("Start typing Markdown… try **bold** or # Heading"),
       EditorView.lineWrapping,
       EditorView.contentAttributes.of({ "aria-label": "Markdown editor" }),
       EditorView.updateListener.of((update) => {
@@ -56,6 +57,9 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
           },
           "&.cm-focused": { outline: "none" },
           ".cm-content": { padding: "16px 20px", lineHeight: "1.75", caretColor: "var(--ms-primary)" },
+          ".cm-placeholder": {
+            color: "var(--muted-foreground)",
+            },
           ".cm-scroller": { lineHeight: "1.75" },
           ".cm-activeLine": { backgroundColor: "transparent" },
           ".cm-selectionBackground": { backgroundColor: "color-mix(in srgb, var(--ms-primary) 22%, transparent)" },
@@ -69,6 +73,9 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       EditorView.theme({
         "&": { fontSize: "14px", backgroundColor: "var(--card)", color: "var(--foreground)", fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" },
         ".cm-content": { padding: "12px" },
+        ".cm-placeholder": {
+          color: "var(--muted-foreground)",
+          },
         ".cm-gutters": { backgroundColor: "transparent", color: "var(--muted-foreground)", borderRight: "1px solid var(--border)" },
         ".cm-lineNumbers .cm-gutterElement": { padding: "0 8px" },
         ".cm-activeLine": { backgroundColor: "color-mix(in oklch, var(--muted) 100%, transparent)" },
