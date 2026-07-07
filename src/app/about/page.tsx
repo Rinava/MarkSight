@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { GithubIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Contributors, FooterContributors } from "@/components/contributors";
@@ -159,7 +160,7 @@ export default function AboutPage() {
           aria-label="View on GitHub"
           className={ICON_BTN}
         >
-          <Github className="h-[17px] w-[17px]" aria-hidden="true" />
+          <GithubIcon className="h-[17px] w-[17px]" aria-hidden="true" />
         </a>
       </header>
 

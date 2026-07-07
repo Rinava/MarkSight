@@ -8,8 +8,8 @@ import {
   FilePlus2,
   FileUp,
   FolderOpen,
-  Github,
 } from "lucide-react";
+import { GithubIcon } from "@/components/icons";
 import { toast } from "sonner";
 import { useContent } from "@/contexts/content-context";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
@@ -296,7 +296,7 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
                       className={ITEM_CLASS}
                     >
                       <span className="flex text-ms-primary-ink">
-                        <Github className="h-[18px] w-[18px]" aria-hidden="true" />
+                        <GithubIcon className="h-[18px] w-[18px]" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1 truncate">
                         <span className="block truncate text-[13px] font-medium">
