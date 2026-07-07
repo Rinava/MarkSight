@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   BookOpen,
   CircleCheck,
-  Github,
   RotateCcw,
   Sparkles,
   TriangleAlert,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { GithubIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { FooterContributors } from "@/components/contributors";
@@ -300,7 +300,7 @@ export function Workspace() {
               aria-label="View on GitHub"
               className={ICON_BTN}
             >
-              <Github className="h-[17px] w-[17px]" aria-hidden="true" />
+              <GithubIcon className="h-[17px] w-[17px]" aria-hidden="true" />
             </a>
           </Tip>
         </header>
