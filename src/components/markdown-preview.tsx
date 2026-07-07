@@ -44,11 +44,35 @@ export const MarkdownPreview = memo(function MarkdownPreview({
             if (isMermaidPre(node)) return <>{children}</>;
             return <pre {...props}>{children}</pre>;
           },
+          a({ href, children, ...props }) {
+            const isExternal = /^https?:\/\//.test(href ?? "");
+
+            if (isExternal) {
+              return (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  {...props}
+                >
+                  {children}
+                </a>
+              );
+            }
+
+            return (
+              <a href={href} {...props}>
+                {children}
+              </a>
+            );
+          },
           code({ className: codeClassName, children }) {
             const match = /language-(\w+)/.exec(codeClassName ?? "");
 
             if (match?.[1] === "mermaid") {
-              return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
+              return (
+                <MermaidDiagram code={String(children).replace(/\n$/, "")} />
+              );
             }
 
             // ReactMarkdown: inline code has no className; code blocks carry a
