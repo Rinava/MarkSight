@@ -75,7 +75,9 @@ export function OutlineRail({
 
   if (collapsed) {
     return (
-      <aside className="flex w-[42px] flex-none flex-col items-center border-l border-ms-border bg-ms-surface-2 py-4">
+      <aside 
+      aria-label="Document outline"
+      className="flex w-[42px] flex-none flex-col items-center border-l border-ms-border bg-ms-surface-2 py-4">
         <button
           type="button"
           onClick={toggle}
@@ -90,7 +92,9 @@ export function OutlineRail({
   }
 
   return (
-    <aside className="flex w-[258px] flex-none flex-col border-l border-ms-border bg-ms-surface-2">
+    <aside 
+    aria-label="Document outline"
+    className="flex w-[258px] flex-none flex-col border-l border-ms-border bg-ms-surface-2">
       <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-3.5 py-4">
         <div className="flex items-center justify-between px-1.5 pb-2">
           <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
