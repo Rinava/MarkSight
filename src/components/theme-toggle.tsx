@@ -32,7 +32,12 @@ export function ThemeToggle() {
 
   return (
     <Tip label="Toggle theme">
-      <button type="button" onClick={next} aria-label="Toggle theme" className={BTN}>
+      <button
+        type="button"
+        onClick={next}
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        className={BTN}
+      >
         {isDark ? (
           <Moon className="h-[17px] w-[17px]" />
         ) : (
