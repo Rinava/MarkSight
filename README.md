@@ -1,6 +1,13 @@
 # MarkSight
 
-**Turn any Markdown document into an installable [Claude Agent Skill](https://code.claude.com/docs/en/skills) — one click, in your browser.** MarkSight is a free, open source Markdown editor whose core doubles as a remote [MCP](https://modelcontextprotocol.io) server that Claude Code can call directly. Live preview, GFM, Mermaid diagrams, and Markdown/HTML/PDF export come with it.
+[![CI](https://github.com/Rinava/MarkSight/actions/workflows/ci.yml/badge.svg)](https://github.com/Rinava/MarkSight/actions/workflows/ci.yml)
+[![Contributors](https://img.shields.io/github/contributors/Rinava/MarkSight)](https://github.com/Rinava/MarkSight/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/Rinava/MarkSight)](https://github.com/Rinava/MarkSight/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/Rinava/MarkSight)](https://github.com/Rinava/MarkSight/commits/main)
+[![License](https://img.shields.io/github/license/Rinava/MarkSight)](./LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+
+**Turn any Markdown document into an installable [Claude Agent Skill](https://code.claude.com/docs/en/skills). One click, in your browser.** MarkSight is a free, open source Markdown editor whose core doubles as a remote [MCP](https://modelcontextprotocol.io) server that Claude Code can call directly. Live preview, GFM, Mermaid diagrams, and Markdown/HTML/PDF export come with it.
 
 🔗 **Live (no signup):** [marksight.laramateo.com](https://marksight.laramateo.com)  ·  🧩 One-click `.skill` export  ·  🔌 Built-in MCP server  ·  🔒 100% client-side
 
@@ -11,9 +18,9 @@
 
 ## Quick start
 
-**Use it — nothing to install:**
+**Use it (nothing to install):**
 
-1. Open [marksight.laramateo.com](https://marksight.laramateo.com), write or paste Markdown, and press **⌘⇧K** — an installable `.skill` bundle downloads immediately.
+1. Open [marksight.laramateo.com](https://marksight.laramateo.com), write or paste Markdown, and press **⌘⇧K**. An installable `.skill` bundle downloads immediately.
 2. Or add MarkSight's MCP server to Claude Code and let Claude build and validate skills for you:
 
    ```bash
@@ -26,11 +33,25 @@ Want to run MarkSight locally or contribute? See [Getting started](#getting-star
 
 ## About
 
-MarkSight is a free, open source markdown editor that runs entirely in your
-browser — no account, no server-side storage. Documents are persisted to
-`localStorage` and exports are generated client-side, so your writing never
-leaves your device. It was created by [Lara Mateo](https://laramateo.com) and
-is developed in the open with the help of community contributors.
+Every README I've ever written started the same way: type some Markdown into
+GitHub's editor, click Preview, spot something broken, click back to Write,
+fix it, click Preview again. Write, preview, write, preview. Tiny friction,
+repeated a thousand times, stops being tiny. So I did the most programmer
+thing possible: I built my own editor.
+
+MarkSight is the editor I wanted to exist: the preview lives right next to
+your words. No tabs, no round trips, everything rendering live as you type.
+I built it with React, Next.js, TypeScript, and CodeMirror, and obsessed
+over making it feel snappy. It runs entirely in your browser, with no
+account and no server-side storage: your document sits in `localStorage`,
+exports are generated on your machine, and your writing never leaves your
+device.
+
+I could have kept it as a private little tool that solved a private little
+annoyance. Instead I made it open source, free for anyone to use, fork,
+break, and improve. That decision turned out to matter more than any feature
+I shipped. The longer version of that story is on my blog:
+[Why I built an open source Markdown editor](https://laramateo.com/blog/open-source-markdown-editor).
 
 ## Features
 
@@ -84,9 +105,9 @@ npm run lint     # run ESLint
 ### Exporting a document as an Agent Skill
 
 One click: hit the package icon in the preview toolbar (or ⌘⇧K) and a
-validated `<name>.skill` bundle downloads immediately — metadata is derived
-from your document (first H1 → name, first paragraph → description) and the
-toast shows the add-to-Claude steps.
+validated `<name>.skill` bundle downloads immediately. The metadata comes
+from your document (the first H1 becomes the name, the first paragraph the
+description) and the toast shows the add-to-Claude steps.
 
 Everything optional lives in the **Agent Skill** sidebar card: edit the name
 and trigger description inline (validated as you type), switch between
@@ -105,12 +126,12 @@ upload the `.skill` file under **Settings › Capabilities › Skills**.
 
 Optionally, an **Improve with AI** button refines the skill's name and trigger
 description (via Vercel AI Gateway). It appears only when the backend has
-gateway credentials — see [`.env.example`](./.env.example); without them the
+gateway credentials (see [`.env.example`](./.env.example)); without them the
 whole Skill Creator keeps working offline.
 
 You can also **import an existing skill** from the same dialog: open a
 `.skill`/`.zip` bundle or `SKILL.md` file, or paste a GitHub URL (a repo, a
-folder, or a `SKILL.md` link — e.g. the official
+folder, or a `SKILL.md` link, e.g. the official
 [anthropics/skills](https://github.com/anthropics/skills) collection). The
 skill's frontmatter is preserved (frontmatter always overrides auto-derived
 metadata), bundled files like `references/` are carried through untouched, and
@@ -126,9 +147,9 @@ call it directly:
 claude mcp add --transport http marksight https://marksight.laramateo.com/api/mcp
 ```
 
-Tools: `create_skill` (markdown → validated `.skill` bundle, base64),
-`validate_skill`, `markdown_to_html`, `document_outline`, `document_metrics` —
-all backed by the same `src/lib` code the editor uses. A project-scoped
+Tools: `create_skill` (markdown in, validated `.skill` bundle out as base64),
+`validate_skill`, `markdown_to_html`, `document_outline`, and
+`document_metrics`, all backed by the same `src/lib` code the editor uses. A project-scoped
 [`.mcp.json`](./.mcp.json) is included, so cloning this repo wires the
 connector automatically in Claude Code.
 
@@ -159,13 +180,14 @@ src/
 
 ## Contributing
 
-Contributions are welcome — whether it's a bug report, a feature idea, a docs
+Contributions are welcome, whether it's a bug report, a feature idea, a docs
 fix, or a pull request. See the [contributing guide](./CONTRIBUTING.md) for how
 to set up the project and submit changes, and please follow our
 [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 New here? Look for issues labelled
 [`good first issue`](https://github.com/Rinava/MarkSight/issues?q=is%3Aopen+label%3A%22good+first+issue%22).
+Release history lives in the [changelog](./CHANGELOG.md).
 
 ## Community
 
@@ -176,14 +198,25 @@ For bugs and feature requests, open an
 
 ## Contributors
 
-Thanks to everyone who has helped make MarkSight better:
+Here's the thing nobody tells you about open sourcing a project: at some
+point, the code stops being the point. The first time a stranger opened a
+pull request here, I just sat there smiling at my screen. Every avatar below
+is someone who read the code, understood it, and spent their free time
+making it better:
 
 <a href="https://github.com/Rinava/MarkSight/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Rinava/MarkSight" alt="MarkSight contributors" />
 </a>
 
-Want to see yourself here? Start with the
-[contributing guide](./CONTRIBUTING.md).
+(Dependabot also sends its regards.)
+
+Contributors are credited in the app too, on the
+[About page](https://marksight.laramateo.com/about) and the workspace footer.
+Want in? The [contributing guide](./CONTRIBUTING.md) has everything you need,
+and
+[`good first issue`](https://github.com/Rinava/MarkSight/issues?q=is%3Aopen+label%3A%22good+first+issue%22)
+is the easiest way to start. PRs here get reviewed quickly instead of
+collecting dust.
 
 ## Author
 
@@ -192,4 +225,4 @@ MarkSight was created and is maintained by
 
 ## License
 
-See [LICENSE](./LICENSE).
+[MIT](./LICENSE).
