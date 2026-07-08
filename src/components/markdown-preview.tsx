@@ -117,6 +117,19 @@ export const MarkdownPreview = memo(function MarkdownPreview({
             if (isMermaidPre(node)) return <>{children}</>;
             return <pre {...props}>{children}</pre>;
           },
+          a({ href, children, ...props }) {
+            const isExternal = /^https?:\/\//.test(href ?? "");
+
+            const external = isExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {};
+
+            return (
+              <a href={href} {...external} {...props}>
+                {children}
+              </a>
+            );
+          },
           code({ className: codeClassName, children }) {
             const match = /language-(\w+)/.exec(codeClassName ?? "");
 
