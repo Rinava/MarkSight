@@ -1,6 +1,6 @@
 "use client";
 
-import { memo,useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -27,27 +27,38 @@ function CodeBlock({
   isDark: boolean;
 }) {
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
 
-      setTimeout(() => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
         setCopied(false);
       }, 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
     }
   }
-
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
   return (
     <div className="relative">
       <Button
         size="sm"
         variant="secondary"
         onClick={handleCopy}
-        aria-label="Copy code"
+        aria-label={copied ? "Copied" : "Copy code"}
         className="absolute right-2 top-2 z-10"
       >
         {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -88,7 +99,6 @@ export interface MarkdownPreviewProps {
  * `value` only changes ~10×/s — so react-markdown re-parses on prop changes,
  * not on every keystroke. Theme changes still re-render via context.
  */
-
 export const MarkdownPreview = memo(function MarkdownPreview({
   value,
   className = "ms-prose",
@@ -111,7 +121,9 @@ export const MarkdownPreview = memo(function MarkdownPreview({
             const match = /language-(\w+)/.exec(codeClassName ?? "");
 
             if (match?.[1] === "mermaid") {
-              return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
+              return (
+                <MermaidDiagram code={String(children).replace(/\n$/, "")} />
+              );
             }
 
             // ReactMarkdown: inline code has no className; code blocks carry a
