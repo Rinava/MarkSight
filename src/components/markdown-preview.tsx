@@ -47,21 +47,12 @@ export const MarkdownPreview = memo(function MarkdownPreview({
           a({ href, children, ...props }) {
             const isExternal = /^https?:\/\//.test(href ?? "");
 
-            if (isExternal) {
-              return (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  {...props}
-                >
-                  {children}
-                </a>
-              );
-            }
+            const external = isExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {};
 
             return (
-              <a href={href} {...props}>
+              <a href={href} {...external} {...props}>
                 {children}
               </a>
             );
