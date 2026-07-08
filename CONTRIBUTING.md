@@ -1,11 +1,11 @@
 # Contributing to MarkSight
 
 Thanks for taking the time to contribute! 🎉 MarkSight is an open source
-markdown editor, and contributions of every size are welcome — from fixing a
+markdown editor, and contributions of every size are welcome, from fixing a
 typo to building a new feature.
 
 This guide explains how to get set up and how to land a change. If anything
-here is unclear or out of date, that's a bug too — open an issue or PR.
+here is unclear or out of date, that's a bug too: open an issue or PR.
 
 ## Table of contents
 
@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-That's it — edit a file under `src/` and the page hot-reloads.
+That's it. Edit a file under `src/` and the page hot-reloads.
 
 ### Available scripts
 
@@ -110,12 +110,12 @@ src/
   [shadcn/ui](https://ui.shadcn.com/) primitives in `src/components/ui`. Add new
   primitives with the shadcn CLI rather than copying files by hand.
 - **Formatting:** an [`.editorconfig`](./.editorconfig) defines the basics
-  (2-space indent, LF line endings). Keep the diff small — match the style of
+  (2-space indent, LF line endings). Keep the diff small: match the style of
   the surrounding code and let ESLint guide you.
 - **Linting:** `npm run lint` must pass with no errors. Fix warnings you
   introduce.
-- **Accessibility:** keep it keyboard-navigable and screen-reader friendly —
-  label interactive controls, preserve focus order, and don't remove focus
+- **Accessibility:** keep it keyboard-navigable and screen-reader friendly.
+  Label interactive controls, preserve focus order, and don't remove focus
   outlines.
 - **Dependencies:** avoid adding a dependency for something small. If a new
   package is genuinely needed, mention why in the PR.
@@ -138,15 +138,17 @@ Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
 ## Opening a pull request
 
 1. Target the `main` branch.
-2. Fill in the PR template — describe **what** changed and **why**, and link any
+2. Fill in the PR template: describe **what** changed and **why**, and link any
    related issue (e.g. `Closes #12`).
 3. Add before/after screenshots or a short clip for any visible UI change.
-4. Confirm `npm run lint`, `npm test`, and `npm run build` pass locally.
-5. Keep the PR focused — one logical change per PR is much easier to review.
+4. If your change is user-facing, add a line to the **Unreleased** section of
+   [`CHANGELOG.md`](./CHANGELOG.md).
+5. Confirm `npm run lint`, `npm test`, and `npm run build` pass locally.
+6. Keep the PR focused. One logical change per PR is much easier to review.
 
 A maintainer aims to give every pull request a first response within a few days.
 They'll review your PR, may suggest changes, and will merge it once it's ready.
-Don't be discouraged by review feedback — it's how we keep the codebase healthy.
+Don't be discouraged by review feedback; it's how we keep the codebase healthy.
 
 ## Reporting bugs & requesting features
 
@@ -155,7 +157,7 @@ Use the issue templates so we get the details we need:
 - **Bugs:** include steps to reproduce, what you expected, what happened, and
   your browser/OS. A screenshot or console error helps a lot.
 - **Features:** describe the problem you're trying to solve, not just the
-  solution — it helps us find the best fit for the project.
+  solution. It helps us find the best fit for the project.
 
 Please search [existing issues](https://github.com/Rinava/MarkSight/issues)
 first to avoid duplicates.
