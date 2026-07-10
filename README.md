@@ -57,7 +57,7 @@ I shipped. The longer version of that story is on my blog:
 
 - **Live preview** — CodeMirror editor with an instantly-rendered preview pane
 - **Smart toolbar** — context-aware formatting that detects and toggles existing markdown
-- **Keyboard shortcuts** — bold (⌘B), italic (⌘I), strikethrough (⌘U), link (⌘K), inline code (⌘`), headings (⌘⇧1–3), lists, and more
+- **Keyboard shortcuts** — quick shortcuts for common Markdown formatting operations
 - **Document outline** — auto-generated, clickable heading navigation that scrolls the preview
 - **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
 - **Skill Creator** — package your document as an [Agent Skill](https://code.claude.com/docs/en/skills) (⌘⇧K) that Claude and other AIs can receive: copy the generated `SKILL.md` or download a ready-to-install `.skill` bundle. Import existing skills from a `.skill`/`.zip` file or straight from GitHub-hosted marketplaces (like [anthropics/skills](https://github.com/anthropics/skills)), modify them, and re-export with bundled files preserved
@@ -66,6 +66,30 @@ I shipped. The longer version of that story is on my blog:
 - **Mermaid diagrams** — fenced `mermaid` blocks render as live SVG in the preview and exports, themeable per diagram via `%%{init}%%` directives or YAML frontmatter
 - **Light / dark theme** — system-aware, persisted across sessions
 - **Local persistence** — your document is saved to `localStorage` automatically
+
+## Keyboard Shortcuts
+
+> **Note:** On macOS, use **⌘ (Command)**. On Windows and Linux, use **Ctrl**.
+
+| Action | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Bold | ⌘ B | Ctrl + B |
+| Italic | ⌘ I | Ctrl + I |
+| Strikethrough | ⌘ U | Ctrl + U |
+| Link | ⌘ K | Ctrl + K |
+| Inline Code | ⌘ ` | Ctrl + ` |
+| Unordered List | ⌘ ⇧ L | Ctrl + Shift + L |
+| Ordered List | ⌘ ⇧ O | Ctrl + Shift + O |
+
+## Editor Preview
+
+### Light Theme
+
+![MarkSight Editor - Light Theme](docs/editor-light.png)
+
+### Dark Theme
+
+![MarkSight Editor - Dark Theme](docs/editor-dark.png)
 
 A fenced `mermaid` block renders as a diagram:
 
