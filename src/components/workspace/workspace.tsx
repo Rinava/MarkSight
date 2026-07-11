@@ -233,6 +233,13 @@ export function Workspace() {
   return (
     <TooltipProvider>
       <div className="flex h-dvh flex-col overflow-hidden bg-ms-app font-sans text-ms-ink">
+        <a
+          href="#main-content"
+          className="sr-only rounded-[9px] border border-ms-border-hover bg-ms-surface px-4 py-2 text-[13px] font-semibold text-ms-primary-ink shadow-[var(--ms-shadow-primary)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:outline-2 focus:outline-offset-2 focus:outline-ms-primary"
+        >
+          Skip to main content
+        </a>
+
         {/* ── Header ── */}
         <header className="flex h-[58px] flex-none items-center gap-3.5 border-b border-ms-border bg-ms-surface px-[18px]">
           <Logo />
@@ -349,7 +356,11 @@ export function Workspace() {
         </div>
 
         {/* ── Body ── */}
-        <div className="flex min-h-0 flex-1">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex min-h-0 flex-1 focus:outline-none"
+        >
           <div ref={splitRef} className="flex min-w-0 flex-1">
             {showEditor && (
               <EditorPane
@@ -420,7 +431,7 @@ export function Workspace() {
               onOpenGuide={() => setGuideOpen(true)}
             />
           )}
-        </div>
+        </main>
 
         {/* ── Footer ── */}
         <footer className="flex h-[42px] flex-none items-center gap-3.5 border-t border-ms-border bg-ms-surface px-4 text-[12px] text-ms-muted-3">
