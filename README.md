@@ -57,7 +57,7 @@ I shipped. The longer version of that story is on my blog:
 
 - **Live preview** — CodeMirror editor with an instantly-rendered preview pane
 - **Smart toolbar** — context-aware formatting that detects and toggles existing markdown
-- **Keyboard shortcuts** — quick shortcuts for common Markdown formatting operations
+- **Keyboard shortcuts** — bold (⌘B), italic (⌘I), strikethrough (⌘U), link (⌘K), inline code (⌘`), headings (⌘⇧1–3), lists, and more
 - **Document outline** — auto-generated, clickable heading navigation that scrolls the preview
 - **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
 - **Skill Creator** — package your document as an [Agent Skill](https://code.claude.com/docs/en/skills) (⌘⇧K) that Claude and other AIs can receive: copy the generated `SKILL.md` or download a ready-to-install `.skill` bundle. Import existing skills from a `.skill`/`.zip` file or straight from GitHub-hosted marketplaces (like [anthropics/skills](https://github.com/anthropics/skills)), modify them, and re-export with bundled files preserved
@@ -78,6 +78,9 @@ I shipped. The longer version of that story is on my blog:
 | Strikethrough | ⌘ U | Ctrl + U |
 | Link | ⌘ K | Ctrl + K |
 | Inline Code | ⌘ ` | Ctrl + ` |
+| Heading 1 | ⌘⇧1 | Ctrl+Shift+1 |
+| Heading 2 | ⌘⇧2 | Ctrl+Shift+2 |
+| Heading 3 | ⌘⇧3 | Ctrl+Shift+3 |
 | Unordered List | ⌘ ⇧ L | Ctrl + Shift + L |
 | Ordered List | ⌘ ⇧ O | Ctrl + Shift + O |
 
