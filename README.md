@@ -67,6 +67,33 @@ I shipped. The longer version of that story is on my blog:
 - **Light / dark theme** — system-aware, persisted across sessions
 - **Local persistence** — your document is saved to `localStorage` automatically
 
+## Keyboard Shortcuts
+
+> **Note:** On macOS, use **⌘ (Command)**. On Windows and Linux, use **Ctrl**.
+
+| Action | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Bold | ⌘ B | Ctrl + B |
+| Italic | ⌘ I | Ctrl + I |
+| Strikethrough | ⌘ U | Ctrl + U |
+| Link | ⌘ K | Ctrl + K |
+| Inline Code | ⌘ ` | Ctrl + ` |
+| Heading 1 | ⌘⇧1 | Ctrl+Shift+1 |
+| Heading 2 | ⌘⇧2 | Ctrl+Shift+2 |
+| Heading 3 | ⌘⇧3 | Ctrl+Shift+3 |
+| Unordered List | ⌘ ⇧ L | Ctrl + Shift + L |
+| Ordered List | ⌘ ⇧ O | Ctrl + Shift + O |
+
+## Editor Preview
+
+### Light Theme
+
+![MarkSight Editor - Light Theme](docs/editor-light.png)
+
+### Dark Theme
+
+![MarkSight Editor - Dark Theme](docs/editor-dark.png)
+
 A fenced `mermaid` block renders as a diagram:
 
 ```mermaid
