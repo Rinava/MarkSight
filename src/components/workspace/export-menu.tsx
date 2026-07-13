@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
 import {
   ChevronDown,
@@ -90,6 +90,11 @@ async function renderExportHtml(
 const ITEM_CLASS =
   "flex w-full cursor-default items-center gap-[11px] rounded-lg px-2.5 py-[9px] text-left text-ms-ink-2 outline-none transition-colors data-[highlighted]:bg-ms-hover-2 data-[disabled]:opacity-45";
 
+function sanitizeFilename(value: string): string {
+  const cleaned = value.replace(/[/\\:*?"<>|]/g, "").trim();
+  return cleaned || "document";
+}
+
 function downloadBlob(data: BlobPart, name: string, mime: string) {
   const url = URL.createObjectURL(new Blob([data], { type: mime }));
   const link = document.createElement("a");
@@ -108,13 +113,15 @@ export function ExportMenu({
 }: ExportMenuProps) {
   const { meta, validation, mode, extraFiles } = useSkillMeta();
   const { trackExportAction, trackSkillAction } = useAnalytics();
+  const [name, setName] = useState(filename);
+  const safeName = sanitizeFilename(name);
 
   async function exportHTML() {
     try {
       trackExportAction("html", content);
       downloadBlob(
-        await renderExportHtml(content, filename),
-        `${filename}.html`,
+        await renderExportHtml(content, safeName),
+        `${safeName}.html`,
         "text/html",
       );
       toast.success("HTML exported");
@@ -126,7 +133,7 @@ export function ExportMenu({
   async function exportPDF() {
     try {
       trackExportAction("pdf", content);
-      const html = await renderExportHtml(content, filename);
+      const html = await renderExportHtml(content, safeName);
       const printWindow = window.open("", "_blank");
       if (!printWindow) {
         toast.error("Allow pop-ups to export as PDF");
@@ -144,7 +151,7 @@ export function ExportMenu({
 
   async function previewHTML() {
     try {
-      const html = await renderExportHtml(content, filename);
+      const html = await renderExportHtml(content, safeName);
       const newWindow = window.open("", "_blank");
       if (!newWindow) {
         toast.error("Allow pop-ups to preview HTML");
@@ -158,7 +165,7 @@ export function ExportMenu({
   }
 
   function downloadMarkdown() {
-    downloadBlob(content, `${filename}.md`, "text/markdown");
+    downloadBlob(content, `${safeName}.md`, "text/markdown");
     toast.success("Markdown downloaded");
   }
 
@@ -260,6 +267,19 @@ export function ExportMenu({
             <div className="px-2.5 pt-1.5 pb-1 text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
               {skillMode ? "Package skill" : "Export document"}
             </div>
+            {!skillMode && (
+              <div className="px-2.5 pb-1.5 pt-0.5" onKeyDown={(e) => e.stopPropagation()}>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="document"
+                  aria-label="Export file name"
+                  className="ms-in w-full rounded-md border border-ms-border-2 bg-ms-surface px-2 py-1.5 text-[12px] text-ms-ink-2"
+                />
+              </div>
+            )}
             {items.map((item) => (
               <Menu.Item
                 key={item.label}
