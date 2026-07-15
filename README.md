@@ -59,7 +59,7 @@ I shipped. The longer version of that story is on my blog:
 - **Smart toolbar** — context-aware formatting that detects and toggles existing markdown
 - **Keyboard shortcuts** — bold (⌘B), italic (⌘I), strikethrough (⌘U), link (⌘K), inline code (⌘`), headings (⌘⇧1–3), lists, and more
 - **Document outline** — auto-generated, clickable heading navigation that scrolls the preview
-- **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab
+- **Export** — download the raw Markdown source or styled HTML, print to PDF, or preview the HTML in a new tab; set a custom file name before exporting
 - **Skill Creator** — package your document as an [Agent Skill](https://code.claude.com/docs/en/skills) (⌘⇧K) that Claude and other AIs can receive: copy the generated `SKILL.md` or download a ready-to-install `.skill` bundle. Import existing skills from a `.skill`/`.zip` file or straight from GitHub-hosted marketplaces (like [anthropics/skills](https://github.com/anthropics/skills)), modify them, and re-export with bundled files preserved
 - **GitHub-flavored markdown** — tables, task lists, strikethrough (via `remark-gfm`)
 - **Syntax highlighting** — fenced code blocks rendered with Prism

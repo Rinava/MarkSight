@@ -8,7 +8,7 @@ import { deriveSkillMeta } from "@/lib/skill/derive";
  * AI refinement for skill metadata. Two provider paths, checked in order:
  *
  * 1. `GOOGLE_GENERATIVE_AI_API_KEY` → direct Gemini (free AI Studio tier;
- *    `SKILL_AI_MODEL` is a bare Gemini id, default `gemini-3-flash`).
+ *    `SKILL_AI_MODEL` is a bare Gemini id, default `gemini-flash-latest`).
  * 2. `AI_GATEWAY_API_KEY` / `VERCEL_OIDC_TOKEN` → Vercel AI Gateway (plain
  *    "provider/model" slug, default `anthropic/claude-haiku-4.5`).
  *
