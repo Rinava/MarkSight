@@ -32,15 +32,36 @@ export function importSkillMd(text: string): ImportedSkill {
 
 const SKILL_MD_RE = /(^|\/)SKILL\.md$/;
 
+const MAX_BUNDLE_FILES = 30;
+const MAX_FILE_BYTES = 1_000_000;
+
+function isBundleEntry(name: string): boolean {
+  return !name.endsWith("/") && !name.split("/").includes("__MACOSX");
+}
+
 export async function importSkillBundle(
   bytes: Uint8Array,
 ): Promise<ImportedSkill> {
   const { unzipSync, strFromU8 } = await import("fflate");
-  const entries = unzipSync(bytes);
 
-  const paths = Object.keys(entries).filter(
-    (p) => !p.endsWith("/") && !p.split("/").includes("__MACOSX"),
-  );
+  let fileCount = 0;
+  const entries = unzipSync(bytes, {
+    filter(file) {
+      if (!isBundleEntry(file.name)) return false;
+      fileCount += 1;
+      if (fileCount > MAX_BUNDLE_FILES) {
+        throw new Error(
+          `Bundle has too many files to import (limit ${MAX_BUNDLE_FILES}).`,
+        );
+      }
+      if (file.originalSize > MAX_FILE_BYTES) {
+        throw new Error(`"${file.name}" is too large to import (limit 1 MB).`);
+      }
+      return true;
+    },
+  });
+
+  const paths = Object.keys(entries);
   const skillMdPath = paths
     .filter((p) => SKILL_MD_RE.test(p))
     // Prefer the shallowest SKILL.md (the skill root, not a nested example).
