@@ -19,6 +19,15 @@ import { FooterContributors } from "@/components/contributors";
 import { MarkdownToolbar } from "@/components/markdown-toolbar";
 import { MarkdownEditorRef } from "@/components/markdown-editor";
 import { TooltipProvider, Tip } from "@/components/ui/base/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 import { EditorPane } from "./editor-pane";
 import { PreviewPane } from "./preview-pane";
@@ -108,6 +117,7 @@ export function Workspace() {
   const [view, setView] = useState<ViewMode>("split");
   const [ratio, setRatio] = useState(50);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
   const editorRef = useRef<MarkdownEditorRef | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
@@ -133,7 +143,7 @@ export function Workspace() {
     return () => registerDocumentReplacer(null);
   }, [registerDocumentReplacer, handleValueChange]);
 
-  const handleClear = useCallback(() => {
+  const executeClear = useCallback(() => {
     // Snapshot the pre-clear text so Undo restores it even if the user keeps
     // typing while the toast is still visible.
     const snapshot = value;
@@ -146,7 +156,18 @@ export function Workspace() {
         onClick: () => setValue(snapshot),
       },
     });
+    setClearDialogOpen(false);
   }, [value, setValue, trackClear]);
+
+  // Only interrupt when there's something to lose; empty documents clear
+  // silently.
+  const handleClear = useCallback(() => {
+    if (value.trim() !== "") {
+      setClearDialogOpen(true);
+    } else {
+      executeClear();
+    }
+  }, [value, executeClear]);
 
   const handleReset = useCallback(() => {
     const snapshot = value;
@@ -498,6 +519,25 @@ export function Workspace() {
         </footer>
 
         <MarkdownGuide open={guideOpen} onOpenChange={setGuideOpen} />
+        <Dialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Clear the document?</DialogTitle>
+              <DialogDescription>
+                This removes all content from the editor. You can undo
+                immediately after.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setClearDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={executeClear}>
+                Clear
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   );
