@@ -136,7 +136,9 @@ export function ExportMenu({
       const html = await renderExportHtml(content, safeName);
       const printWindow = window.open("", "_blank");
       if (!printWindow) {
-        toast.error("Allow pop-ups to export as PDF");
+        toast.error(
+          "Couldn't open the export window. Please allow popups for this site and try again.",
+        );
         return;
       }
       printWindow.document.write(html);
@@ -154,7 +156,9 @@ export function ExportMenu({
       const html = await renderExportHtml(content, safeName);
       const newWindow = window.open("", "_blank");
       if (!newWindow) {
-        toast.error("Allow pop-ups to preview HTML");
+        toast.error(
+          "Couldn't open the export window. Please allow popups for this site and try again.",
+        );
         return;
       }
       newWindow.document.write(html);
