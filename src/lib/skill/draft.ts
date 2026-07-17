@@ -1,8 +1,4 @@
-import {
-  buildSkillMd,
-  parseSkillFrontmatter,
-  stripLeadingFrontmatter,
-} from "./build";
+import { buildSkillMd, parseSkillFrontmatter, stripLeadingFrontmatter } from "./build";
 import { deriveSkillMeta } from "./derive";
 import { knowledgeDocFile, knowledgeSkillBody, type SkillMode } from "./knowledge";
 import { packageSkill } from "./package";
@@ -38,11 +34,7 @@ export function effectiveSkillBody(content: string, mode: SkillMode): string {
 }
 
 /** The generated `SKILL.md` for the given metadata, document, and packaging mode. */
-export function buildSkillMdForMode(
-  meta: SkillMeta,
-  content: string,
-  mode: SkillMode,
-): string {
+export function buildSkillMdForMode(meta: SkillMeta, content: string, mode: SkillMode): string {
   return buildSkillMd(meta, effectiveSkillBody(content, mode));
 }
 
@@ -51,12 +43,9 @@ export function packageSkillForMode(
   meta: SkillMeta,
   content: string,
   mode: SkillMode,
-  extraFiles: SkillExtraFile[] = [],
+  extraFiles: SkillExtraFile[] = []
 ): Promise<Uint8Array> {
   return mode === "knowledge"
-    ? packageSkill(meta, knowledgeSkillBody(), [
-        knowledgeDocFile(content),
-        ...extraFiles,
-      ])
+    ? packageSkill(meta, knowledgeSkillBody(), [knowledgeDocFile(content), ...extraFiles])
     : packageSkill(meta, content, extraFiles);
 }

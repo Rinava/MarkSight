@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, ReactNode } from "react";
 import { useContent } from "@/contexts/content-context";
 import { seedSkillMeta } from "@/lib/skill/draft";
 import { validateSkill } from "@/lib/skill/validate";
@@ -37,14 +29,10 @@ interface SkillMetaContextType {
   /** Resume seeding from the document (used after loading a template). */
   resetToDerived: () => void;
   setUserMode: (mode: SkillMode | null) => void;
-  setExtraFiles: (
-    files: SkillExtraFile[] | ((prev: SkillExtraFile[]) => SkillExtraFile[]),
-  ) => void;
+  setExtraFiles: (files: SkillExtraFile[] | ((prev: SkillExtraFile[]) => SkillExtraFile[])) => void;
 }
 
-const SkillMetaContext = createContext<SkillMetaContextType | undefined>(
-  undefined,
-);
+const SkillMetaContext = createContext<SkillMetaContextType | undefined>(undefined);
 
 export function SkillMetaProvider({ children }: { children: ReactNode }) {
   const { content } = useContent();
@@ -92,7 +80,7 @@ export function SkillMetaProvider({ children }: { children: ReactNode }) {
         description: meta.description,
         ...(meta.license ? { license: meta.license } : {}),
       }),
-    [meta],
+    [meta]
   );
 
   const suggestedMode = useMemo(() => suggestSkillMode(content), [content]);
@@ -131,19 +119,15 @@ export function SkillMetaProvider({ children }: { children: ReactNode }) {
       setUserMode,
       setExtraFiles,
     }),
-    [],
+    []
   );
 
   const value = useMemo<SkillMetaContextType>(
     () => ({ meta, validation, mode, suggestedMode, extraFiles, ...setters }),
-    [meta, validation, mode, suggestedMode, extraFiles, setters],
+    [meta, validation, mode, suggestedMode, extraFiles, setters]
   );
 
-  return (
-    <SkillMetaContext.Provider value={value}>
-      {children}
-    </SkillMetaContext.Provider>
-  );
+  return <SkillMetaContext.Provider value={value}>{children}</SkillMetaContext.Provider>;
 }
 
 export function useSkillMeta() {

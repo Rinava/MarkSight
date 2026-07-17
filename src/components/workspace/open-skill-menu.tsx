@@ -2,23 +2,13 @@
 
 import { useRef, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import {
-  ChevronDown,
-  ChevronLeft,
-  FilePlus2,
-  FileUp,
-  FolderOpen,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, FilePlus2, FileUp, FolderOpen } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import { toast } from "sonner";
 import { useContent } from "@/contexts/content-context";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
 import { SKILL_TEMPLATE } from "@/lib/skill/template";
-import {
-  importSkillBundle,
-  importSkillMd,
-  type ImportedSkill,
-} from "@/lib/skill/import";
+import { importSkillBundle, importSkillMd, type ImportedSkill } from "@/lib/skill/import";
 import {
   fetchFromGitHub,
   importSkillDir,
@@ -164,7 +154,7 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
           render={
             <button
               type="button"
-              className="flex h-9 items-center gap-[7px] rounded-[9px] border border-ms-border-2 bg-ms-surface px-[13px] text-[13px] font-medium text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover"
+              className="border-ms-border-2 bg-ms-surface text-ms-label hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover flex h-9 items-center gap-[7px] rounded-[9px] border px-[13px] text-[13px] font-medium transition-colors"
             />
           }
         >
@@ -174,19 +164,19 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
         </Menu.Trigger>
         <Menu.Portal>
           <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
-            <Menu.Popup className="ms-pop w-[290px] origin-[var(--transform-origin)] rounded-xl border border-ms-border-2 bg-ms-surface p-1.5 shadow-[var(--ms-shadow-menu)] outline-none">
+            <Menu.Popup className="ms-pop border-ms-border-2 bg-ms-surface w-[290px] origin-[var(--transform-origin)] rounded-xl border p-1.5 shadow-[var(--ms-shadow-menu)] outline-none">
               {discovered ? (
                 <>
                   <div className="flex items-center justify-between px-1 pt-0.5 pb-1">
                     <button
                       type="button"
                       onClick={() => setDiscovered(null)}
-                      className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium text-ms-muted-3 transition-colors hover:bg-ms-hover-2 hover:text-ms-primary-ink"
+                      className="text-ms-muted-3 hover:bg-ms-hover-2 hover:text-ms-primary-ink flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium transition-colors"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
                       Back
                     </button>
-                    <span className="pr-1 text-[10.5px] font-medium text-ms-muted">
+                    <span className="text-ms-muted pr-1 text-[10.5px] font-medium">
                       {discovered.skills.length} skills
                     </span>
                   </div>
@@ -199,7 +189,7 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
                         disabled={busy}
                         className={ITEM_CLASS}
                       >
-                        <span className="flex text-ms-primary-ink">
+                        <span className="text-ms-primary-ink flex">
                           <FolderOpen className="h-[16px] w-[16px]" aria-hidden="true" />
                         </span>
                         <span className="min-w-0 flex-1 truncate font-mono text-[12.5px]">
@@ -212,19 +202,13 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
               ) : (
                 <>
                   <div className={LABEL_CLASS}>Start a skill</div>
-                  <Menu.Item
-                    onClick={startTemplate}
-                    disabled={busy}
-                    className={ITEM_CLASS}
-                  >
-                    <span className="flex text-ms-primary-ink">
+                  <Menu.Item onClick={startTemplate} disabled={busy} className={ITEM_CLASS}>
+                    <span className="text-ms-primary-ink flex">
                       <FilePlus2 className="h-[18px] w-[18px]" aria-hidden="true" />
                     </span>
                     <span className="flex-1">
-                      <span className="block text-[13px] font-medium">
-                        Blank template
-                      </span>
-                      <span className="block text-[11px] text-ms-muted-3">
+                      <span className="block text-[13px] font-medium">Blank template</span>
+                      <span className="text-ms-muted-3 block text-[11px]">
                         Skill-shaped starter document
                       </span>
                     </span>
@@ -234,29 +218,24 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
                     disabled={busy}
                     className={ITEM_CLASS}
                   >
-                    <span className="flex text-ms-primary-ink">
+                    <span className="text-ms-primary-ink flex">
                       <FileUp className="h-[18px] w-[18px]" aria-hidden="true" />
                     </span>
                     <span className="flex-1">
-                      <span className="block text-[13px] font-medium">
-                        Open file…
-                      </span>
-                      <span className="block text-[11px] text-ms-muted-3">
+                      <span className="block text-[13px] font-medium">Open file…</span>
+                      <span className="text-ms-muted-3 block text-[11px]">
                         .skill bundle or SKILL.md
                       </span>
                     </span>
                   </Menu.Item>
 
-                  <Menu.Separator className="mx-1 my-1.5 h-px bg-ms-border" />
+                  <Menu.Separator className="bg-ms-border mx-1 my-1.5 h-px" />
 
                   <div className={LABEL_CLASS}>Open from GitHub</div>
                   {/* Free-form URL import. Keydown/pointer events are isolated
                       so the menu's typeahead and roving focus don't hijack the
                       input. */}
-                  <div
-                    className="flex gap-1.5 px-2.5 py-1"
-                    onKeyDown={(e) => e.stopPropagation()}
-                  >
+                  <div className="flex gap-1.5 px-2.5 py-1" onKeyDown={(e) => e.stopPropagation()}>
                     <input
                       type="url"
                       inputMode="url"
@@ -272,17 +251,16 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
                       placeholder="Paste any GitHub link…"
                       aria-label="GitHub URL of a skill, folder, or repository"
                       disabled={busy}
-                      className="ms-in min-w-0 flex-1 rounded-md border border-ms-border-2 bg-ms-surface px-2 py-1.5 text-[12px] text-ms-ink-2"
+                      className="ms-in border-ms-border-2 bg-ms-surface text-ms-ink-2 min-w-0 flex-1 rounded-md border px-2 py-1.5 text-[12px]"
                     />
                     <button
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() =>
-                        importUrl.trim() &&
-                        importFromUrl(importUrl.trim(), "GitHub link")
+                        importUrl.trim() && importFromUrl(importUrl.trim(), "GitHub link")
                       }
                       disabled={busy || !importUrl.trim()}
-                      className="rounded-md bg-ms-primary px-2.5 text-[12px] font-semibold text-white transition-[filter] hover:brightness-[1.07] disabled:opacity-50"
+                      className="bg-ms-primary rounded-md px-2.5 text-[12px] font-semibold text-white transition-[filter] hover:brightness-[1.07] disabled:opacity-50"
                     >
                       Fetch
                     </button>
@@ -295,14 +273,14 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
                       disabled={busy}
                       className={ITEM_CLASS}
                     >
-                      <span className="flex text-ms-primary-ink">
+                      <span className="text-ms-primary-ink flex">
                         <GithubIcon className="h-[18px] w-[18px]" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1 truncate">
                         <span className="block truncate text-[13px] font-medium">
                           {source.label}
                         </span>
-                        <span className="block text-[11px] text-ms-muted-3">
+                        <span className="text-ms-muted-3 block text-[11px]">
                           Browse and import a skill
                         </span>
                       </span>

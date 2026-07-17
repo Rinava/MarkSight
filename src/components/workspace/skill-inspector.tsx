@@ -28,8 +28,7 @@ const MODE_OPTIONS = [
   { value: "instruction" as const, label: "Instructions", Icon: ListChecks },
   { value: "knowledge" as const, label: "Knowledge", Icon: BookOpen },
 ];
-const SECTION_LABEL =
-  "text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted";
+const SECTION_LABEL = "text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted";
 const FIELD_LABEL = "text-[12.5px] font-semibold text-ms-ink-3";
 const TEXT_INPUT =
   "ms-in w-full rounded-[9px] border border-ms-border-2 bg-ms-surface px-3 py-2.5 text-[13px] text-ms-ink-2";
@@ -132,11 +131,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
       ? "border-ms-ok-input-border"
       : "border-ms-danger-border";
   const descCountColor =
-    descLen > 1024
-      ? "text-ms-danger-strong"
-      : descLen > 900
-        ? "text-ms-warn"
-        : "text-ms-muted";
+    descLen > 1024 ? "text-ms-danger-strong" : descLen > 900 ? "text-ms-warn" : "text-ms-muted";
 
   function addTag(raw: string) {
     const tag = raw.trim().toLowerCase();
@@ -153,7 +148,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
       Array.from(files).map(async (file) => ({
         path: file.name,
         data: new Uint8Array(await file.arrayBuffer()),
-      })),
+      }))
     );
     // Approximate count for the toast (render-time snapshot)…
     const existingNow = new Set(extraFiles.map((f) => f.path));
@@ -173,17 +168,13 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
       ok: nameOk,
       warn: false,
       label: "Name",
-      detail: nameOk
-        ? "Valid skill identifier."
-        : "Required — lowercase, hyphenated, ≤64 chars.",
+      detail: nameOk ? "Valid skill identifier." : "Required — lowercase, hyphenated, ≤64 chars.",
     },
     {
       ok: descOk,
       warn: false,
       label: "Description",
-      detail: descOk
-        ? `${descLen} / 1024 characters.`
-        : "Required — 1 to 1024 characters.",
+      detail: descOk ? `${descLen} / 1024 characters.` : "Required — 1 to 1024 characters.",
     },
     {
       ok: descWhen,
@@ -197,9 +188,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
       ok: bodyOk,
       warn: false,
       label: "Instructions",
-      detail: bodyOk
-        ? "Document body has content."
-        : "Write instructions in the editor.",
+      detail: bodyOk ? "Document body has content." : "Write instructions in the editor.",
     },
     {
       ok: filesCount > 0,
@@ -228,17 +217,15 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
   }
 
   return (
-    <aside className="ms-slide ms-scroll w-[344px] flex-none overflow-y-auto border-l border-ms-border bg-ms-surface-2">
+    <aside className="ms-slide ms-scroll border-ms-border bg-ms-surface-2 w-[344px] flex-none overflow-y-auto border-l">
       <div className="p-[18px]">
         <div className="mb-1 flex items-center gap-2">
-          <Sparkles className="h-[13px] w-[13px] text-ms-primary-ink" aria-hidden="true" />
-          <span className="text-[14px] font-bold text-ms-ink-strong">
-            Skill inspector
-          </span>
+          <Sparkles className="text-ms-primary-ink h-[13px] w-[13px]" aria-hidden="true" />
+          <span className="text-ms-ink-strong text-[14px] font-bold">Skill inspector</span>
         </div>
-        <p className="mb-[18px] text-[12px] leading-[1.5] text-ms-muted-2">
-          Your document is the skill body. Add the metadata that tells an agent
-          what it does and when to use it.
+        <p className="text-ms-muted-2 mb-[18px] text-[12px] leading-[1.5]">
+          Your document is the skill body. Add the metadata that tells an agent what it does and
+          when to use it.
         </p>
 
         <div className={`${SECTION_LABEL} mb-3`}>Metadata</div>
@@ -247,18 +234,16 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
         <label className="mb-[15px] block">
           <span className="mb-1.5 flex items-center justify-between">
             <span className={FIELD_LABEL}>Name</span>
-            <span className="text-[11px] font-medium text-ms-danger">required</span>
+            <span className="text-ms-danger text-[11px] font-medium">required</span>
           </span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. pdf-processing"
             spellCheck={false}
-            className={`ms-in w-full rounded-[9px] border bg-ms-surface px-3 py-2.5 font-mono text-[13px] text-ms-ink-2 ${nameBorder}`}
+            className={`ms-in bg-ms-surface text-ms-ink-2 w-full rounded-[9px] border px-3 py-2.5 font-mono text-[13px] ${nameBorder}`}
           />
-          <span className={`mt-1.5 block text-[11px] ${nameHintColor}`}>
-            {nameHint}
-          </span>
+          <span className={`mt-1.5 block text-[11px] ${nameHintColor}`}>{nameHint}</span>
         </label>
 
         {/* Description */}
@@ -272,7 +257,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                   onClick={improveWithAi}
                   disabled={isImproving}
                   aria-label="Refine name and description with AI"
-                  className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-ms-primary-ink transition-colors hover:bg-ms-tint-2 disabled:opacity-50"
+                  className="text-ms-primary-ink hover:bg-ms-tint-2 flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold transition-colors disabled:opacity-50"
                 >
                   {isImproving ? (
                     <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
@@ -282,18 +267,16 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                   AI
                 </button>
               )}
-              <span className={`text-[11px] font-medium ${descCountColor}`}>
-                {descLen} / 1024
-              </span>
+              <span className={`text-[11px] font-medium ${descCountColor}`}>{descLen} / 1024</span>
             </span>
           </span>
           <textarea
             value={meta.description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe what the skill does AND when the agent should use it…"
-            className="ms-in ms-scroll min-h-[88px] w-full resize-y rounded-[9px] border border-ms-border-2 bg-ms-surface px-3 py-2.5 text-[13px] leading-[1.5] text-ms-ink-2"
+            className="ms-in ms-scroll border-ms-border-2 bg-ms-surface text-ms-ink-2 min-h-[88px] w-full resize-y rounded-[9px] border px-3 py-2.5 text-[13px] leading-[1.5]"
           />
-          <span className="mt-1.5 block text-[11px] text-ms-muted-2">
+          <span className="text-ms-muted-2 mt-1.5 block text-[11px]">
             Start with a verb, name the trigger — “Use when the user asks to…”.
           </span>
         </label>
@@ -323,18 +306,18 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
         {/* Tags */}
         <div className="mb-[15px]">
           <span className={`mb-1.5 block ${FIELD_LABEL}`}>Tags</span>
-          <div className="flex flex-wrap items-center gap-1.5 rounded-[9px] border border-ms-border-2 bg-ms-surface px-2.5 py-[7px]">
+          <div className="border-ms-border-2 bg-ms-surface flex flex-wrap items-center gap-1.5 rounded-[9px] border px-2.5 py-[7px]">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1.5 rounded-md bg-ms-tint-2 py-[3px] pr-1.5 pl-2.5 text-[11.5px] font-medium text-ms-ink-3"
+                className="bg-ms-tint-2 text-ms-ink-3 inline-flex items-center gap-1.5 rounded-md py-[3px] pr-1.5 pl-2.5 text-[11.5px] font-medium"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
                   aria-label={`Remove ${tag}`}
-                  className="flex text-ms-muted-2 hover:text-ms-danger-strong"
+                  className="text-ms-muted-2 hover:text-ms-danger-strong flex"
                 >
                   <X className="h-3 w-3" aria-hidden="true" />
                 </button>
@@ -351,7 +334,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                 }
               }}
               placeholder="add tag…"
-              className="ms-in min-w-20 flex-1 border-none bg-transparent py-[3px] text-[12.5px] text-ms-ink-2"
+              className="ms-in text-ms-ink-2 min-w-20 flex-1 border-none bg-transparent py-[3px] text-[12.5px]"
             />
           </div>
         </div>
@@ -361,11 +344,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
           <span className={`mb-1.5 flex items-center justify-between ${FIELD_LABEL}`}>
             Packaging
           </span>
-          <div
-            role="radiogroup"
-            aria-label="Packaging mode"
-            className="flex gap-1.5"
-          >
+          <div role="radiogroup" aria-label="Packaging mode" className="flex gap-1.5">
             {MODE_OPTIONS.map(({ value, label, Icon }) => {
               const active = mode === value;
               return (
@@ -384,13 +363,13 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                   <Icon className="h-[14px] w-[14px]" aria-hidden="true" />
                   {label}
                   {suggestedMode === value && (
-                    <span className="text-[10px] text-ms-muted">· sug.</span>
+                    <span className="text-ms-muted text-[10px]">· sug.</span>
                   )}
                 </button>
               );
             })}
           </div>
-          <span className="mt-1.5 block text-[11px] text-ms-muted-2">
+          <span className="text-ms-muted-2 mt-1.5 block text-[11px]">
             {mode === "knowledge"
               ? "Ships a short pointer SKILL.md plus your document as a bundled reference."
               : "Uses your document itself as the skill instructions."}
@@ -403,14 +382,14 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 text-[12px] font-semibold text-ms-primary-ink hover:brightness-95"
+            className="text-ms-primary-ink flex items-center gap-1 text-[12px] font-semibold hover:brightness-95"
           >
             <Plus className="h-[13px] w-[13px]" aria-hidden="true" /> Add
           </button>
         </div>
         <div className="flex flex-col gap-[7px]">
           {filesCount === 0 ? (
-            <p className="text-[11.5px] text-ms-muted-2">
+            <p className="text-ms-muted-2 text-[11.5px]">
               No bundled files. Scripts and references are optional.
             </p>
           ) : (
@@ -420,7 +399,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
               return (
                 <div
                   key={file.path}
-                  className="flex items-center gap-2.5 rounded-[9px] border border-ms-border-2 bg-ms-surface px-[11px] py-[9px]"
+                  className="border-ms-border-2 bg-ms-surface flex items-center gap-2.5 rounded-[9px] border px-[11px] py-[9px]"
                 >
                   <span
                     className={`flex ${script ? "text-[#3e6da6] dark:text-[#7ba4d6]" : "text-ms-primary-ink"}`}
@@ -428,21 +407,19 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                     <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate font-mono text-[12.5px] text-ms-ink-2">
+                    <div className="text-ms-ink-2 truncate font-mono text-[12.5px]">
                       {file.path}
                     </div>
-                    <div className="text-[10.5px] text-ms-muted">
+                    <div className="text-ms-muted text-[10.5px]">
                       {script ? "Script" : "Reference"} ·{" "}
                       {(file.path.split(".").pop() ?? "").toUpperCase()}
                     </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setExtraFiles((prev) => prev.filter((_, i) => i !== index))
-                    }
+                    onClick={() => setExtraFiles((prev) => prev.filter((_, i) => i !== index))}
                     aria-label={`Remove ${file.path}`}
-                    className="flex p-1 text-ms-muted hover:text-ms-danger-strong"
+                    className="text-ms-muted hover:text-ms-danger-strong flex p-1"
                   >
                     <Trash2 className="h-[15px] w-[15px]" aria-hidden="true" />
                   </button>
@@ -470,16 +447,14 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
             return (
               <div
                 key={check.label}
-                className={`flex items-start gap-[9px] rounded-[10px] border bg-ms-surface px-[11px] py-2.5 ${borderColor}`}
+                className={`bg-ms-surface flex items-start gap-[9px] rounded-[10px] border px-[11px] py-2.5 ${borderColor}`}
               >
                 <span className={`mt-px flex ${iconColor}`}>
                   <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
                 </span>
                 <div className="flex-1">
-                  <div className="text-[12.5px] font-semibold text-ms-ink-body">
-                    {check.label}
-                  </div>
-                  <div className="mt-0.5 text-[11.5px] leading-[1.4] text-ms-muted-3">
+                  <div className="text-ms-ink-body text-[12.5px] font-semibold">{check.label}</div>
+                  <div className="text-ms-muted-3 mt-0.5 text-[11.5px] leading-[1.4]">
                     {check.detail}
                   </div>
                 </div>
@@ -490,7 +465,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
 
         {/* Skill folder */}
         <div className={`${SECTION_LABEL} mt-[22px] mb-2.5`}>Skill folder</div>
-        <div className="rounded-[11px] border border-ms-border-2 bg-ms-surface px-[13px] py-3 font-mono text-[12px] leading-[1.9] text-ms-label">
+        <div className="border-ms-border-2 bg-ms-surface text-ms-label rounded-[11px] border px-[13px] py-3 font-mono text-[12px] leading-[1.9]">
           {treeLines.map((line, index) => (
             <div key={index} className="whitespace-nowrap">
               {line}
@@ -500,28 +475,28 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
 
         {/* Add to Claude */}
         <div className={`${SECTION_LABEL} mt-[22px] mb-2.5`}>Add to Claude</div>
-        <div className="flex items-center gap-2 rounded-[9px] border border-ms-border-2 bg-ms-surface px-[11px] py-2.5">
-          <code className="ms-scroll min-w-0 flex-1 overflow-x-auto font-mono text-[11.5px] whitespace-nowrap text-ms-label">
+        <div className="border-ms-border-2 bg-ms-surface flex items-center gap-2 rounded-[9px] border px-[11px] py-2.5">
+          <code className="ms-scroll text-ms-label min-w-0 flex-1 overflow-x-auto font-mono text-[11.5px] whitespace-nowrap">
             {installCommand}
           </code>
           <button
             type="button"
             onClick={() => copyText(installCommand)}
             aria-label="Copy install command"
-            className="flex shrink-0 text-ms-muted transition-colors hover:text-ms-primary-ink"
+            className="text-ms-muted hover:text-ms-primary-ink flex shrink-0 transition-colors"
           >
             <Copy className="h-[15px] w-[15px]" aria-hidden="true" />
           </button>
         </div>
-        <p className="mt-1.5 text-[11px] leading-[1.4] text-ms-muted-2">
-          Export the .skill, then run the command (Claude Code) or upload it in
-          claude.ai → Settings → Capabilities → Skills.
+        <p className="text-ms-muted-2 mt-1.5 text-[11px] leading-[1.4]">
+          Export the .skill, then run the command (Claude Code) or upload it in claude.ai → Settings
+          → Capabilities → Skills.
         </p>
 
         <button
           type="button"
           onClick={onExit}
-          className="mt-[18px] w-full rounded-[9px] border border-ms-border-2 py-2.5 text-[12.5px] font-medium text-ms-muted-3 transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink"
+          className="border-ms-border-2 text-ms-muted-3 hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink mt-[18px] w-full rounded-[9px] border py-2.5 text-[12.5px] font-medium transition-colors"
         >
           Exit skill mode
         </button>

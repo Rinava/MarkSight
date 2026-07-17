@@ -1,10 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { skillQualityHints } from "../hints";
-import {
-  suggestSkillMode,
-  knowledgeDocFile,
-  KNOWLEDGE_DOC_PATH,
-} from "../knowledge";
+import { suggestSkillMode, knowledgeDocFile, KNOWLEDGE_DOC_PATH } from "../knowledge";
 import { SKILL_TEMPLATE } from "../template";
 import { deriveSkillMeta } from "../derive";
 import { validateSkill } from "../validate";
@@ -37,7 +33,7 @@ describe("skillQualityHints", () => {
   it("flags a description with no trigger context", () => {
     const hints = skillQualityHints(
       { name: "x", description: "A markdown editor." },
-      "# X\n\nbody",
+      "# X\n\nbody"
     );
     expect(hints.map((h) => h.id)).toContain("no-use-when");
   });
@@ -45,24 +41,21 @@ describe("skillQualityHints", () => {
   it("flags generic document-intro descriptions", () => {
     const hints = skillQualityHints(
       { name: "x", description: "Welcome to the most advanced editor!" },
-      "# X",
+      "# X"
     );
     expect(hints.map((h) => h.id)).toContain("generic-description");
   });
 
   it("flags bodies over 500 lines", () => {
     const long = `# X\n\n${"line\n".repeat(600)}`;
-    const hints = skillQualityHints(
-      { name: "x", description: "Use this when testing." },
-      long,
-    );
+    const hints = skillQualityHints({ name: "x", description: "Use this when testing." }, long);
     expect(hints.map((h) => h.id)).toContain("long-body");
   });
 
   it("flags heading structure without instruction sections", () => {
     const hints = skillQualityHints(
       { name: "x", description: "Use this when testing." },
-      NOTES_DOC,
+      NOTES_DOC
     );
     expect(hints.map((h) => h.id)).toContain("no-instruction-headings");
   });
@@ -70,7 +63,7 @@ describe("skillQualityHints", () => {
   it("is clean for a well-shaped skill", () => {
     const hints = skillQualityHints(
       { name: "deploy", description: "Use this when the user asks to deploy." },
-      HOWTO_DOC,
+      HOWTO_DOC
     );
     expect(hints).toEqual([]);
   });
@@ -79,10 +72,9 @@ describe("skillQualityHints", () => {
     const hints = skillQualityHints(
       {
         name: "pdf",
-        description:
-          "Use this skill whenever the user wants to do anything with PDF files.",
+        description: "Use this skill whenever the user wants to do anything with PDF files.",
       },
-      HOWTO_DOC,
+      HOWTO_DOC
     );
     expect(hints.map((h) => h.id)).not.toContain("no-use-when");
   });

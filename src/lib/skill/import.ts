@@ -39,9 +39,7 @@ function isBundleEntry(name: string): boolean {
   return !name.endsWith("/") && !name.split("/").includes("__MACOSX");
 }
 
-export async function importSkillBundle(
-  bytes: Uint8Array,
-): Promise<ImportedSkill> {
+export async function importSkillBundle(bytes: Uint8Array): Promise<ImportedSkill> {
   const { unzipSync, strFromU8 } = await import("fflate");
 
   let fileCount = 0;
@@ -50,9 +48,7 @@ export async function importSkillBundle(
       if (!isBundleEntry(file.name)) return false;
       fileCount += 1;
       if (fileCount > MAX_BUNDLE_FILES) {
-        throw new Error(
-          `Bundle has too many files to import (limit ${MAX_BUNDLE_FILES}).`,
-        );
+        throw new Error(`Bundle has too many files to import (limit ${MAX_BUNDLE_FILES}).`);
       }
       if (file.originalSize > MAX_FILE_BYTES) {
         throw new Error(`"${file.name}" is too large to import (limit 1 MB).`);

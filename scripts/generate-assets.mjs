@@ -22,9 +22,7 @@ function glyph(stroke, x, y, scale) {
 
 function iconSvg({ size, bg, stroke, pad, rx = 0 }) {
   const scale = (size - 2 * pad) / 24;
-  const bgRect = bg
-    ? `<rect width="${size}" height="${size}" rx="${rx}" fill="${bg}"/>`
-    : "";
+  const bgRect = bg ? `<rect width="${size}" height="${size}" rx="${rx}" fill="${bg}"/>` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${bgRect}${glyph(stroke, pad, pad, scale)}</svg>`;
 }
 

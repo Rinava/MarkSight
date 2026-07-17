@@ -4,10 +4,7 @@
 // build, which bundles ~277 languages (refractor) into the client. This keeps
 // only the languages we actually highlight, dramatically reducing bundle size.
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  oneDark,
-  oneLight,
-} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
 import css from "react-syntax-highlighter/dist/esm/languages/prism/css";

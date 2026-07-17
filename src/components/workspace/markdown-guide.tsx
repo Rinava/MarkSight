@@ -38,46 +38,126 @@ const CATEGORIES: GuideCategory[] = [
   {
     title: "Text formatting",
     items: [
-      { Icon: Bold, title: "Bold", description: "Emphasize important words.", syntax: "**bold text**" },
-      { Icon: Italic, title: "Italic", description: "Lightly emphasize a phrase.", syntax: "*italic text*" },
-      { Icon: Strikethrough, title: "Strikethrough", description: "Mark text as removed.", syntax: "~~crossed out~~" },
-      { Icon: Code, title: "Inline code", description: "Highlight a command or term.", syntax: "Run `npm install` first" },
+      {
+        Icon: Bold,
+        title: "Bold",
+        description: "Emphasize important words.",
+        syntax: "**bold text**",
+      },
+      {
+        Icon: Italic,
+        title: "Italic",
+        description: "Lightly emphasize a phrase.",
+        syntax: "*italic text*",
+      },
+      {
+        Icon: Strikethrough,
+        title: "Strikethrough",
+        description: "Mark text as removed.",
+        syntax: "~~crossed out~~",
+      },
+      {
+        Icon: Code,
+        title: "Inline code",
+        description: "Highlight a command or term.",
+        syntax: "Run `npm install` first",
+      },
     ],
   },
   {
     title: "Headings",
     items: [
-      { Icon: Heading1, title: "Headings", description: "One to six #'s set the level.", syntax: "# Title\n## Section\n### Subsection" },
+      {
+        Icon: Heading1,
+        title: "Headings",
+        description: "One to six #'s set the level.",
+        syntax: "# Title\n## Section\n### Subsection",
+      },
     ],
   },
   {
     title: "Lists",
     items: [
-      { Icon: List, title: "Bulleted list", description: "Start each line with a dash.", syntax: "- First\n- Second\n- Third" },
-      { Icon: ListOrdered, title: "Numbered list", description: "Start each line with a number.", syntax: "1. First\n2. Second\n3. Third" },
-      { Icon: CheckSquare, title: "Task list", description: "Track to-dos with checkboxes.", syntax: "- [x] Done\n- [ ] Todo" },
+      {
+        Icon: List,
+        title: "Bulleted list",
+        description: "Start each line with a dash.",
+        syntax: "- First\n- Second\n- Third",
+      },
+      {
+        Icon: ListOrdered,
+        title: "Numbered list",
+        description: "Start each line with a number.",
+        syntax: "1. First\n2. Second\n3. Third",
+      },
+      {
+        Icon: CheckSquare,
+        title: "Task list",
+        description: "Track to-dos with checkboxes.",
+        syntax: "- [x] Done\n- [ ] Todo",
+      },
     ],
   },
   {
     title: "Blocks",
     items: [
-      { Icon: Quote, title: "Blockquote", description: "Call out a quote or note.", syntax: "> A calm workspace." },
-      { Icon: Code, title: "Code block", description: "Fence code with a language.", syntax: "```js\nconsole.log(\"hi\");\n```" },
-      { Icon: Minus, title: "Divider", description: "Three dashes on their own line.", syntax: "---" },
+      {
+        Icon: Quote,
+        title: "Blockquote",
+        description: "Call out a quote or note.",
+        syntax: "> A calm workspace.",
+      },
+      {
+        Icon: Code,
+        title: "Code block",
+        description: "Fence code with a language.",
+        syntax: '```js\nconsole.log("hi");\n```',
+      },
+      {
+        Icon: Minus,
+        title: "Divider",
+        description: "Three dashes on their own line.",
+        syntax: "---",
+      },
     ],
   },
   {
     title: "Links & media",
     items: [
-      { Icon: LinkIcon, title: "Link", description: "Text in [ ], URL in ( ).", syntax: "[MarkSight](https://marksight.laramateo.com)" },
-      { Icon: ImageIcon, title: "Image", description: "Like a link, prefixed with !.", syntax: "![Alt text](https://picsum.photos/240/80)" },
+      {
+        Icon: LinkIcon,
+        title: "Link",
+        description: "Text in [ ], URL in ( ).",
+        syntax: "[MarkSight](https://marksight.laramateo.com)",
+      },
+      {
+        Icon: ImageIcon,
+        title: "Image",
+        description: "Like a link, prefixed with !.",
+        syntax: "![Alt text](https://picsum.photos/240/80)",
+      },
     ],
   },
   {
     title: "Tables & diagrams",
     items: [
-      { Icon: TableIcon, title: "Table", description: "Pipes for columns, dashes for the header row.", syntax: "| Feature | Status |\n|---------|--------|\n| Preview | Live   |\n| Export  | HTML   |" },
-      { Icon: Share2, title: "Mermaid diagram", description: "Fenced `mermaid` blocks render as diagrams.", syntax: "```mermaid\ngraph LR\n  A[Write] --> B[Preview]\n```", learnMore: [{ label: "About Mermaid", href: "https://mermaid.js.org/intro/" }, { label: "Flowchart syntax", href: "https://mermaid.js.org/syntax/flowchart.html" }] },
+      {
+        Icon: TableIcon,
+        title: "Table",
+        description: "Pipes for columns, dashes for the header row.",
+        syntax:
+          "| Feature | Status |\n|---------|--------|\n| Preview | Live   |\n| Export  | HTML   |",
+      },
+      {
+        Icon: Share2,
+        title: "Mermaid diagram",
+        description: "Fenced `mermaid` blocks render as diagrams.",
+        syntax: "```mermaid\ngraph LR\n  A[Write] --> B[Preview]\n```",
+        learnMore: [
+          { label: "About Mermaid", href: "https://mermaid.js.org/intro/" },
+          { label: "Flowchart syntax", href: "https://mermaid.js.org/syntax/flowchart.html" },
+        ],
+      },
     ],
   },
 ];
@@ -93,19 +173,19 @@ export function MarkdownGuide({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-[60] bg-[rgba(20,32,16,0.42)] backdrop-blur-[2px] transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[61] flex max-h-[86vh] w-[min(780px,94vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-ms-border-2 bg-ms-surface text-ms-ink shadow-[var(--ms-shadow-menu)] outline-none transition-[transform,opacity] duration-150 data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0">
-          <header className="flex flex-none items-start justify-between gap-4 border-b border-ms-border px-6 py-[18px]">
+        <Dialog.Popup className="border-ms-border-2 bg-ms-surface text-ms-ink fixed top-1/2 left-1/2 z-[61] flex max-h-[86vh] w-[min(780px,94vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border shadow-[var(--ms-shadow-menu)] transition-[transform,opacity] duration-150 outline-none data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0">
+          <header className="border-ms-border flex flex-none items-start justify-between gap-4 border-b px-6 py-[18px]">
             <div>
-              <Dialog.Title className="text-[16px] font-semibold text-ms-primary-ink">
+              <Dialog.Title className="text-ms-primary-ink text-[16px] font-semibold">
                 Markdown guide
               </Dialog.Title>
-              <Dialog.Description className="mt-0.5 text-[12.5px] text-ms-muted-3">
+              <Dialog.Description className="text-ms-muted-3 mt-0.5 text-[12.5px]">
                 Everything you can write on the left — with a live preview of each.
               </Dialog.Description>
             </div>
             <Dialog.Close
               aria-label="Close guide"
-              className="flex h-8 w-8 flex-none items-center justify-center rounded-lg border border-ms-border-2 bg-ms-surface text-ms-label transition-colors hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink"
+              className="border-ms-border-2 bg-ms-surface text-ms-label hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink flex h-8 w-8 flex-none items-center justify-center rounded-lg border transition-colors"
             >
               <X className="h-[17px] w-[17px]" aria-hidden="true" />
             </Dialog.Close>
@@ -114,27 +194,27 @@ export function MarkdownGuide({
           <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
             {CATEGORIES.map((category) => (
               <section key={category.title} className="mb-6 last:mb-0">
-                <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
+                <h3 className="text-ms-muted mb-2.5 text-[11px] font-semibold tracking-[0.05em] uppercase">
                   {category.title}
                 </h3>
                 <div className="grid gap-2.5">
                   {category.items.map((item) => (
                     <div
                       key={item.title}
-                      className="rounded-xl border border-ms-border-2 bg-ms-surface-2 p-3"
+                      className="border-ms-border-2 bg-ms-surface-2 rounded-xl border p-3"
                     >
                       <div className="mb-2 flex items-center gap-2">
-                        <span className="flex text-ms-primary-ink">
+                        <span className="text-ms-primary-ink flex">
                           <item.Icon className="h-[15px] w-[15px]" aria-hidden="true" />
                         </span>
                         <span className="text-[13px] font-semibold">{item.title}</span>
-                        <span className="text-[12px] text-ms-muted-3">— {item.description}</span>
+                        <span className="text-ms-muted-3 text-[12px]">— {item.description}</span>
                       </div>
                       <div className="grid gap-2.5 md:grid-cols-2">
-                        <pre className="ms-scroll overflow-x-auto rounded-lg border border-ms-border-2 bg-ms-tint px-3 py-2 font-mono text-[12px] leading-relaxed text-ms-ink-3">
+                        <pre className="ms-scroll border-ms-border-2 bg-ms-tint text-ms-ink-3 overflow-x-auto rounded-lg border px-3 py-2 font-mono text-[12px] leading-relaxed">
                           {item.syntax}
                         </pre>
-                        <div className="rounded-lg border border-ms-border-2 bg-ms-surface px-3 py-2">
+                        <div className="border-ms-border-2 bg-ms-surface rounded-lg border px-3 py-2">
                           <MarkdownPreview
                             value={item.syntax}
                             className="ms-prose text-[13px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
@@ -149,7 +229,7 @@ export function MarkdownGuide({
                               href={link.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-[12px] font-medium text-ms-primary-ink transition-colors hover:underline"
+                              className="text-ms-primary-ink inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
                             >
                               {link.label}
                               <ExternalLink className="h-[13px] w-[13px]" aria-hidden="true" />

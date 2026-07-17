@@ -10,19 +10,22 @@ export interface UseLocalStorageOptions {
 export function useLocalStorage({ key, defaultValue = "" }: UseLocalStorageOptions) {
   const [storedValue, setStoredValue] = useState<string>(defaultValue);
 
-  useEffect(function hydrate() {
-    try {
-      const item = window.localStorage.getItem(key);
-      if (item !== null) {
-        // Seed from storage after mount, not during render, so the first client
-        // render matches the server's defaultValue and doesn't hydration-mismatch.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setStoredValue(JSON.parse(item));
+  useEffect(
+    function hydrate() {
+      try {
+        const item = window.localStorage.getItem(key);
+        if (item !== null) {
+          // Seed from storage after mount, not during render, so the first client
+          // render matches the server's defaultValue and doesn't hydration-mismatch.
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setStoredValue(JSON.parse(item));
+        }
+      } catch (error) {
+        console.warn(`Error reading localStorage key "${key}":`, error);
       }
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-    }
-  }, [key]);
+    },
+    [key]
+  );
 
   const setValue = useCallback(
     (value: string | ((val: string) => string)) => {

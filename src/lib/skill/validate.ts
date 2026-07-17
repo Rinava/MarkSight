@@ -15,16 +15,10 @@ const MAX_NAME_LENGTH = 64;
 const MAX_DESCRIPTION_LENGTH = 1024;
 const MAX_COMPATIBILITY_LENGTH = 500;
 
-export function validateSkill(
-  frontmatter: Record<string, unknown>,
-): ValidationResult {
+export function validateSkill(frontmatter: Record<string, unknown>): ValidationResult {
   const errors: string[] = [];
 
-  if (
-    frontmatter === null ||
-    typeof frontmatter !== "object" ||
-    Array.isArray(frontmatter)
-  ) {
+  if (frontmatter === null || typeof frontmatter !== "object" || Array.isArray(frontmatter)) {
     return { valid: false, errors: ["Frontmatter must be a YAML dictionary"] };
   }
 
@@ -34,9 +28,7 @@ export function validateSkill(
     errors.push(
       `Unexpected key(s) in SKILL.md frontmatter: ${unexpected
         .sort()
-        .join(", ")}. Allowed properties are: ${[...ALLOWED]
-        .sort()
-        .join(", ")}`,
+        .join(", ")}. Allowed properties are: ${[...ALLOWED].sort().join(", ")}`
     );
   }
 
@@ -58,21 +50,17 @@ export function validateSkill(
       } else {
         if (!NAME_PATTERN.test(trimmed)) {
           errors.push(
-            `Name '${trimmed}' should be kebab-case (lowercase letters, digits, and hyphens only)`,
+            `Name '${trimmed}' should be kebab-case (lowercase letters, digits, and hyphens only)`
           );
         }
-        if (
-          trimmed.startsWith("-") ||
-          trimmed.endsWith("-") ||
-          trimmed.includes("--")
-        ) {
+        if (trimmed.startsWith("-") || trimmed.endsWith("-") || trimmed.includes("--")) {
           errors.push(
-            `Name '${trimmed}' cannot start/end with hyphen or contain consecutive hyphens`,
+            `Name '${trimmed}' cannot start/end with hyphen or contain consecutive hyphens`
           );
         }
         if (trimmed.length > MAX_NAME_LENGTH) {
           errors.push(
-            `Name is too long (${trimmed.length} characters). Maximum is ${MAX_NAME_LENGTH} characters.`,
+            `Name is too long (${trimmed.length} characters). Maximum is ${MAX_NAME_LENGTH} characters.`
           );
         }
       }
@@ -94,7 +82,7 @@ export function validateSkill(
         }
         if (trimmed.length > MAX_DESCRIPTION_LENGTH) {
           errors.push(
-            `Description is too long (${trimmed.length} characters). Maximum is ${MAX_DESCRIPTION_LENGTH} characters.`,
+            `Description is too long (${trimmed.length} characters). Maximum is ${MAX_DESCRIPTION_LENGTH} characters.`
           );
         }
       }
@@ -108,7 +96,7 @@ export function validateSkill(
       errors.push(`Compatibility must be a string, got ${typeof compatibility}`);
     } else if (compatibility.length > MAX_COMPATIBILITY_LENGTH) {
       errors.push(
-        `Compatibility is too long (${compatibility.length} characters). Maximum is ${MAX_COMPATIBILITY_LENGTH} characters.`,
+        `Compatibility is too long (${compatibility.length} characters). Maximum is ${MAX_COMPATIBILITY_LENGTH} characters.`
       );
     }
   }

@@ -19,8 +19,8 @@ const FENCE_RE = /^\s*(```|~~~)/;
 const SETEXT_RE = /^ {0,3}(=+|-+)[ \t]*$/;
 
 export function documentMetrics(content: string): DocumentMetrics {
-  const lines = content.split('\n');
-  const words = content.split(/\s+/).filter(word => word.length > 0);
+  const lines = content.split("\n");
+  const words = content.split(/\s+/).filter((word) => word.length > 0);
   const characters = content.length;
   const links = (content.match(LINK_RE) || []).length;
   const images = (content.match(IMAGE_RE) || []).length;

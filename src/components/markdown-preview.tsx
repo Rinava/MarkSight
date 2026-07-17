@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 
 function isMermaidPre(node: unknown): boolean {
-  const child = (node as { children?: Array<Record<string, unknown>> })
-    ?.children?.[0];
+  const child = (node as { children?: Array<Record<string, unknown>> })?.children?.[0];
   if (!child || child.tagName !== "code") return false;
   const className = (child.properties as { className?: unknown })?.className;
   return Array.isArray(className) && className.includes("language-mermaid");
@@ -59,7 +58,7 @@ function CodeBlock({
         variant="secondary"
         onClick={handleCopy}
         aria-label={copied ? "Copied" : "Copy code"}
-        className="absolute right-2 top-2 z-10"
+        className="absolute top-2 right-2 z-10"
       >
         {copied ? <Check size={16} /> : <Copy size={16} />}
       </Button>
@@ -120,9 +119,7 @@ export const MarkdownPreview = memo(function MarkdownPreview({
           a({ href, children, ...props }) {
             const isExternal = /^https?:\/\//.test(href ?? "");
 
-            const external = isExternal
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {};
+            const external = isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {};
 
             return (
               <a href={href} {...external} {...props}>
@@ -134,28 +131,19 @@ export const MarkdownPreview = memo(function MarkdownPreview({
             const match = /language-(\w+)/.exec(codeClassName ?? "");
 
             if (match?.[1] === "mermaid") {
-              return (
-                <MermaidDiagram code={String(children).replace(/\n$/, "")} />
-              );
+              return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
             }
 
             // ReactMarkdown: inline code has no className; code blocks carry a
             // language- class or a trailing newline.
-            const isCodeBlock =
-              Boolean(codeClassName) || String(children).includes("\n");
+            const isCodeBlock = Boolean(codeClassName) || String(children).includes("\n");
 
             if (!isCodeBlock) {
               // Styled by `.ms-prose :not(pre) > code` in globals.css.
               return <code>{children}</code>;
             }
             const code = String(children).replace(/\n$/, "");
-            return (
-              <CodeBlock
-                code={code}
-                language={match ? match[1] : "text"}
-                isDark={isDark}
-              />
-            );
+            return <CodeBlock code={code} language={match ? match[1] : "text"} isDark={isDark} />;
           },
         }}
       >

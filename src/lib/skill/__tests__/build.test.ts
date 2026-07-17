@@ -1,18 +1,11 @@
 import { describe, it, expect } from "vitest";
-import {
-  buildSkillMd,
-  stripLeadingFrontmatter,
-  parseSkillFrontmatter,
-  yamlString,
-} from "../build";
+import { buildSkillMd, stripLeadingFrontmatter, parseSkillFrontmatter, yamlString } from "../build";
 import { validateSkill } from "../validate";
 import { deriveSkillMeta } from "../derive";
 
 describe("stripLeadingFrontmatter", () => {
   it("splits a leading frontmatter block from the body", () => {
-    const { frontmatter, body } = stripLeadingFrontmatter(
-      "---\nfoo: bar\n---\n\n# Title\n\ntext",
-    );
+    const { frontmatter, body } = stripLeadingFrontmatter("---\nfoo: bar\n---\n\n# Title\n\ntext");
     expect(frontmatter).toBe("foo: bar");
     expect(body).toBe("# Title\n\ntext");
   });
@@ -46,7 +39,7 @@ describe("buildSkillMd", () => {
   it("composes valid frontmatter + body", () => {
     const md = buildSkillMd(
       { name: "my-skill", description: "Does a thing." },
-      "# My Skill\n\nBody text.",
+      "# My Skill\n\nBody text."
     );
     expect(md.startsWith("---\nname: my-skill\n")).toBe(true);
     expect(md).toContain("description: Does a thing.");
@@ -56,7 +49,7 @@ describe("buildSkillMd", () => {
   it("strips a pre-existing frontmatter block (no double frontmatter)", () => {
     const md = buildSkillMd(
       { name: "my-skill", description: "ok" },
-      "---\ntitle: old\n---\n\n# Body\n\ntext",
+      "---\ntitle: old\n---\n\n# Body\n\ntext"
     );
     expect(md.match(/^---/gm)?.length).toBe(2); // exactly one frontmatter block
     expect(md).not.toContain("title: old");
@@ -75,9 +68,7 @@ describe("buildSkillMd", () => {
     const meta = { name: "my-skill", description: "A valid description." };
     const md = buildSkillMd(meta, "# Body");
     const { frontmatter } = stripLeadingFrontmatter(md);
-    expect(validateSkill(parseSkillFrontmatter(frontmatter ?? "")).valid).toBe(
-      true,
-    );
+    expect(validateSkill(parseSkillFrontmatter(frontmatter ?? "")).valid).toBe(true);
   });
 
   it("nests version and tags under the allowed metadata key", () => {
@@ -88,7 +79,7 @@ describe("buildSkillMd", () => {
         version: "2.3.0",
         tags: ["pdf", "ocr"],
       },
-      "# Body",
+      "# Body"
     );
     // Nested under `metadata` (a spec-allowed key), not as top-level frontmatter
     // keys — so a real YAML validator sees only {name, description, metadata}.
@@ -127,10 +118,7 @@ describe("buildSkillMd", () => {
   });
 
   it("omits the metadata block when version and tags are absent", () => {
-    const md = buildSkillMd(
-      { name: "my-skill", description: "Does a thing." },
-      "# Body",
-    );
+    const md = buildSkillMd({ name: "my-skill", description: "Does a thing." }, "# Body");
     expect(md).not.toContain("metadata:");
   });
 
@@ -138,8 +126,6 @@ describe("buildSkillMd", () => {
     const doc = "# Welcome to MarkSight 🌿\n\nAn open source markdown editor.";
     const md = buildSkillMd(deriveSkillMeta(doc), doc);
     const { frontmatter } = stripLeadingFrontmatter(md);
-    expect(validateSkill(parseSkillFrontmatter(frontmatter ?? "")).valid).toBe(
-      true,
-    );
+    expect(validateSkill(parseSkillFrontmatter(frontmatter ?? "")).valid).toBe(true);
   });
 });

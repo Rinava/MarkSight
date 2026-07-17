@@ -15,7 +15,7 @@ import type { SkillMeta } from "./types";
 export async function packageSkill(
   meta: SkillMeta,
   markdown: string,
-  extraFiles: { path: string; data: Uint8Array }[] = [],
+  extraFiles: { path: string; data: Uint8Array }[] = []
 ): Promise<Uint8Array> {
   const skillMd = buildSkillMd(meta, markdown);
   const { zipSync, strToU8 } = await import("fflate");

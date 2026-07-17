@@ -8,14 +8,7 @@ const eslintConfig = [
   ...nextCoreWebVitals,
   ...nextTypescript,
   {
-    ignores: [
-      "node_modules/**",
-      ".next/**",
-      ".claude/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-    ],
+    ignores: ["node_modules/**", ".next/**", ".claude/**", "out/**", "build/**", "next-env.d.ts"],
   },
   {
     // eslint-config-next 16 bundles eslint-plugin-react-hooks v6, whose new

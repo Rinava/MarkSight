@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  BookOpen,
-  CircleCheck,
-  RotateCcw,
-  Sparkles,
-  TriangleAlert,
-  Trash2,
-} from "lucide-react";
+import { BookOpen, CircleCheck, RotateCcw, Sparkles, TriangleAlert, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { GithubIcon } from "@/components/icons";
@@ -110,8 +103,7 @@ export function Workspace() {
 
   const { setContent, registerDocumentReplacer } = useContent();
   const { meta, validation } = useSkillMeta();
-  const { trackDocumentChange, trackClear, trackReset, trackEditorInteraction } =
-    useAnalytics();
+  const { trackDocumentChange, trackClear, trackReset, trackEditorInteraction } = useAnalytics();
 
   const [skillMode, setSkillMode] = useState(false);
   const [view, setView] = useState<ViewMode>("split");
@@ -133,7 +125,7 @@ export function Workspace() {
     (next: string) => {
       setValue(next);
     },
-    [setValue],
+    [setValue]
   );
 
   // Let menus (import / template) replace the document through the same
@@ -189,7 +181,7 @@ export function Workspace() {
       // the user's selected document content).
       trackEditorInteraction("toolbar_insert");
     },
-    [trackEditorInteraction],
+    [trackEditorInteraction]
   );
 
   const getCurrentContext = useCallback(
@@ -198,7 +190,7 @@ export function Workspace() {
         text: value,
         selection: { from: 0, to: 0 },
       },
-    [value],
+    [value]
   );
 
   const toggleSkill = useCallback(() => {
@@ -213,7 +205,7 @@ export function Workspace() {
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
     },
-    [],
+    []
   );
 
   const startResize = useCallback((event: React.MouseEvent) => {
@@ -253,25 +245,23 @@ export function Workspace() {
 
   return (
     <TooltipProvider>
-      <div className="flex h-dvh flex-col overflow-hidden bg-ms-app font-sans text-ms-ink">
+      <div className="bg-ms-app text-ms-ink flex h-dvh flex-col overflow-hidden font-sans">
         <a
           href="#main-content"
-          className="sr-only rounded-[9px] border border-ms-border-hover bg-ms-surface px-4 py-2 text-[13px] font-semibold text-ms-primary-ink shadow-[var(--ms-shadow-primary)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:outline-2 focus:outline-offset-2 focus:outline-ms-primary"
+          className="border-ms-border-hover bg-ms-surface text-ms-primary-ink focus:outline-ms-primary sr-only rounded-[9px] border px-4 py-2 text-[13px] font-semibold shadow-[var(--ms-shadow-primary)] focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:outline-2 focus:outline-offset-2"
         >
           Skip to main content
         </a>
 
         {/* ── Header ── */}
-        <header className="flex h-[58px] flex-none items-center gap-3.5 border-b border-ms-border bg-ms-surface px-[18px]">
+        <header className="border-ms-border bg-ms-surface flex h-[58px] flex-none items-center gap-3.5 border-b px-[18px]">
           <Logo />
           <div className="flex-1" />
 
           {skillMode && (
             <div
               className={`ms-slide flex items-center gap-2 rounded-full px-3 py-1.5 ${
-                validation.valid
-                  ? "bg-ms-tint text-ms-primary-ink"
-                  : "bg-ms-warn-bg text-ms-warn"
+                validation.valid ? "bg-ms-tint text-ms-primary-ink" : "bg-ms-warn-bg text-ms-warn"
               }`}
             >
               {validation.valid ? (
@@ -292,7 +282,7 @@ export function Workspace() {
             onClick={toggleSkill}
             className={`flex h-[34px] items-center gap-[7px] rounded-[9px] text-[13px] font-semibold ${
               skillMode
-                ? "border border-ms-border-hover bg-ms-tint px-[13px] text-ms-primary-ink transition-colors hover:border-ms-primary hover:bg-ms-tint-3"
+                ? "border-ms-border-hover bg-ms-tint text-ms-primary-ink hover:border-ms-primary hover:bg-ms-tint-3 border px-[13px] transition-colors"
                 : "bg-ms-primary px-[15px] text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07]"
             }`}
           >
@@ -300,12 +290,12 @@ export function Workspace() {
             <span>{skillMode ? "Skill mode" : "Create skill"}</span>
           </button>
 
-          <div className="h-[22px] w-px bg-ms-border" />
+          <div className="bg-ms-border h-[22px] w-px" />
 
           <button
             type="button"
             onClick={() => setGuideOpen(true)}
-            className="hidden items-center gap-1.5 text-[13px] font-medium text-ms-label transition-colors hover:text-ms-primary-ink sm:inline-flex"
+            className="text-ms-label hover:text-ms-primary-ink hidden items-center gap-1.5 text-[13px] font-medium transition-colors sm:inline-flex"
           >
             <BookOpen className="h-[15px] w-[15px]" aria-hidden="true" />
             Guide
@@ -313,7 +303,7 @@ export function Workspace() {
 
           <Link
             href="/about"
-            className="hidden text-[13px] font-medium text-ms-label transition-colors hover:text-ms-primary-ink sm:inline"
+            className="text-ms-label hover:text-ms-primary-ink hidden text-[13px] font-medium transition-colors sm:inline"
           >
             About
           </Link>
@@ -334,14 +324,11 @@ export function Workspace() {
         </header>
 
         {/* ── Toolbar ── */}
-        <div className="flex flex-none flex-wrap items-center gap-2.5 border-b border-ms-border bg-ms-surface-2 px-3.5 py-2">
+        <div className="border-ms-border bg-ms-surface-2 flex flex-none flex-wrap items-center gap-2.5 border-b px-3.5 py-2">
           {/* Formatting acts on the editor; hide it (and its shortcuts) in
               Preview-only view where the editor is unmounted. */}
           {showEditor ? (
-            <MarkdownToolbar
-              onInsert={toolbarInsert}
-              getCurrentContext={getCurrentContext}
-            />
+            <MarkdownToolbar onInsert={toolbarInsert} getCurrentContext={getCurrentContext} />
           ) : (
             <div className="flex-1" />
           )}
@@ -367,21 +354,13 @@ export function Workspace() {
               </button>
             </Tip>
           </div>
-          <div className="h-[22px] w-px flex-none bg-ms-border" />
+          <div className="bg-ms-border h-[22px] w-px flex-none" />
           <ViewSwitch view={view} onChange={setView} />
-          <ExportMenu
-            skillMode={skillMode}
-            content={debounced}
-            filename="marksight-document"
-          />
+          <ExportMenu skillMode={skillMode} content={debounced} filename="marksight-document" />
         </div>
 
         {/* ── Body ── */}
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="flex min-h-0 flex-1 focus:outline-none"
-        >
+        <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 focus:outline-none">
           <div ref={splitRef} className="flex min-w-0 flex-1">
             {showEditor && (
               <EditorPane
@@ -422,9 +401,9 @@ export function Workspace() {
                     setRatio(80);
                   }
                 }}
-                className="flex w-[7px] flex-none cursor-col-resize items-center justify-center border-x border-ms-border bg-ms-tint-2 outline-none focus-visible:bg-ms-tint focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ms-primary"
+                className="border-ms-border bg-ms-tint-2 focus-visible:bg-ms-tint focus-visible:outline-ms-primary flex w-[7px] flex-none cursor-col-resize items-center justify-center border-x outline-none focus-visible:outline-2 focus-visible:-outline-offset-2"
               >
-                <div className="h-[34px] w-[3px] rounded-[3px] bg-ms-scroll-thumb" />
+                <div className="bg-ms-scroll-thumb h-[34px] w-[3px] rounded-[3px]" />
               </div>
             )}
 
@@ -447,38 +426,28 @@ export function Workspace() {
           {skillMode ? (
             <SkillInspector onExit={() => setSkillMode(false)} />
           ) : (
-            <OutlineRail
-              content={debounced}
-              onOpenGuide={() => setGuideOpen(true)}
-            />
+            <OutlineRail content={debounced} onOpenGuide={() => setGuideOpen(true)} />
           )}
         </main>
 
         {/* ── Footer ── */}
-        <footer className="flex h-[42px] flex-none items-center gap-3.5 border-t border-ms-border bg-ms-surface px-4 text-[12px] text-ms-muted-3">
-          <div className="flex items-center gap-1.5 font-medium whitespace-nowrap text-ms-primary-ink">
+        <footer className="border-ms-border bg-ms-surface text-ms-muted-3 flex h-[42px] flex-none items-center gap-3.5 border-t px-4 text-[12px]">
+          <div className="text-ms-primary-ink flex items-center gap-1.5 font-medium whitespace-nowrap">
             <CircleCheck className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Saved locally</span>
           </div>
-          <div className="hidden h-4 w-px bg-ms-border sm:block" />
+          <div className="bg-ms-border hidden h-4 w-px sm:block" />
           <div className="hidden items-center gap-4 whitespace-nowrap sm:flex">
             <span>
-              <strong className="font-bold text-ms-primary-strong">
-                {metrics.wordCount}
-              </strong>{" "}
+              <strong className="text-ms-primary-strong font-bold">{metrics.wordCount}</strong>{" "}
               words
             </span>
             <span>
-              <strong className="font-bold text-ms-primary-strong">
-                {metrics.characterCount}
-              </strong>{" "}
+              <strong className="text-ms-primary-strong font-bold">{metrics.characterCount}</strong>{" "}
               characters
             </span>
             <span>
-              <strong className="font-bold text-ms-primary-strong">
-                {readingTime}
-              </strong>{" "}
-              min read
+              <strong className="text-ms-primary-strong font-bold">{readingTime}</strong> min read
             </span>
           </div>
 
@@ -492,22 +461,19 @@ export function Workspace() {
                 href={PORTFOLIO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-ms-primary-ink hover:underline"
+                className="text-ms-primary-ink font-medium hover:underline"
               >
                 laramateo.com
               </a>
             </span>
-            <Link
-              href="/about"
-              className="transition-colors hover:text-ms-primary-ink"
-            >
+            <Link href="/about" className="hover:text-ms-primary-ink transition-colors">
               About
             </Link>
             <a
               href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-ms-primary-ink"
+              className="hover:text-ms-primary-ink transition-colors"
             >
               GitHub
             </a>
@@ -524,8 +490,7 @@ export function Workspace() {
             <DialogHeader>
               <DialogTitle>Clear the document?</DialogTitle>
               <DialogDescription>
-                This removes all content from the editor. You can undo
-                immediately after.
+                This removes all content from the editor. You can undo immediately after.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

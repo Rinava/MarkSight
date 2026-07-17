@@ -12,10 +12,7 @@ export function Contributors() {
     return (
       <div className="flex flex-wrap gap-2" aria-hidden="true">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-11 w-11 animate-pulse rounded-full bg-ms-hover"
-          />
+          <div key={i} className="bg-ms-hover h-11 w-11 animate-pulse rounded-full" />
         ))}
       </div>
     );
@@ -27,7 +24,7 @@ export function Contributors() {
         href={CONTRIBUTORS_GRAPH_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block rounded-[13px] border border-ms-border-2 bg-ms-surface p-4 transition-colors hover:border-ms-border-hover"
+        className="border-ms-border-2 bg-ms-surface hover:border-ms-border-hover inline-block rounded-[13px] border p-4 transition-colors"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -50,10 +47,8 @@ export function Contributors() {
             href={c.profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            title={`@${c.login} — ${c.contributions} commit${
-              c.contributions === 1 ? "" : "s"
-            }`}
-            className="block rounded-full ring-1 ring-ms-border transition-transform hover:-translate-y-0.5 hover:ring-ms-primary-ink"
+            title={`@${c.login} — ${c.contributions} commit${c.contributions === 1 ? "" : "s"}`}
+            className="ring-ms-border hover:ring-ms-primary-ink block rounded-full ring-1 transition-transform hover:-translate-y-0.5"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -107,7 +102,7 @@ export function FooterContributors({
               width={20}
               height={20}
               loading="lazy"
-              className="h-5 w-5 rounded-full ring-1 ring-ms-surface"
+              className="ring-ms-surface h-5 w-5 rounded-full ring-1"
             />
           ))}
         </span>

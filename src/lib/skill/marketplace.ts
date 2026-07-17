@@ -90,9 +90,7 @@ async function ghFetch(url: string): Promise<Response> {
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error(
-        "GitHub request timed out — check your connection and try again",
-      );
+      throw new Error("GitHub request timed out — check your connection and try again");
     }
     throw error;
   } finally {
@@ -100,7 +98,7 @@ async function ghFetch(url: string): Promise<Response> {
   }
   if (response.status === 403 || response.status === 429) {
     throw new Error(
-      "GitHub rate limit reached — unauthenticated browsing is capped at 60 requests/hour per IP; wait a few minutes and try again",
+      "GitHub rate limit reached — unauthenticated browsing is capped at 60 requests/hour per IP; wait a few minutes and try again"
     );
   }
   if (response.status === 404) {
@@ -114,9 +112,7 @@ async function ghFetch(url: string): Promise<Response> {
 
 async function listDir(gh: GitHubRef, path: string): Promise<ContentsEntry[]> {
   const refQuery = gh.ref ? `?ref=${encodeURIComponent(gh.ref)}` : "";
-  const response = await ghFetch(
-    `${API}/repos/${gh.owner}/${gh.repo}/contents/${path}${refQuery}`,
-  );
+  const response = await ghFetch(`${API}/repos/${gh.owner}/${gh.repo}/contents/${path}${refQuery}`);
   const json = await response.json();
   if (!Array.isArray(json)) throw new Error("Expected a directory listing");
   return json as ContentsEntry[];
@@ -143,7 +139,7 @@ export interface DiscoveredSkill {
  * folders to choose from (when it points at a repo/collection).
  */
 export async function fetchFromGitHub(
-  input: string,
+  input: string
 ): Promise<
   | { kind: "skill"; skill: ImportedSkill; source: string }
   | { kind: "list"; skills: DiscoveredSkill[]; gh: GitHubRef }
@@ -155,9 +151,7 @@ export async function fetchFromGitHub(
 
   // Direct SKILL.md link → import it plus its sibling files.
   if (/(^|\/)SKILL\.md$/i.test(gh.path)) {
-    const dir = gh.path.includes("/")
-      ? gh.path.slice(0, gh.path.lastIndexOf("/"))
-      : "";
+    const dir = gh.path.includes("/") ? gh.path.slice(0, gh.path.lastIndexOf("/")) : "";
     return { kind: "skill", skill: await importSkillDir(gh, dir), source: input };
   }
 
@@ -182,7 +176,7 @@ export async function fetchFromGitHub(
 export async function importSkillDir(
   gh: GitHubRef,
   dirPath: string,
-  preListed?: ContentsEntry[],
+  preListed?: ContentsEntry[]
 ): Promise<ImportedSkill> {
   const entries = preListed ?? (await listDir(gh, dirPath));
   const skillMd = entries.find((e) => e.type === "file" && e.name === "SKILL.md");
@@ -237,7 +231,7 @@ async function getDefaultBranch(gh: GitHubRef): Promise<string> {
 async function discoverSkills(gh: GitHubRef): Promise<DiscoveredSkill[]> {
   const ref = gh.ref ?? (await getDefaultBranch(gh));
   const response = await ghFetch(
-    `${API}/repos/${gh.owner}/${gh.repo}/git/trees/${encodeURIComponent(ref)}?recursive=1`,
+    `${API}/repos/${gh.owner}/${gh.repo}/git/trees/${encodeURIComponent(ref)}?recursive=1`
   );
   const json = (await response.json()) as { tree?: TreeEntry[] };
   const tree = json.tree ?? [];

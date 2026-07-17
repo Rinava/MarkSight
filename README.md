@@ -9,7 +9,7 @@
 
 **Turn any Markdown document into an installable [Claude Agent Skill](https://code.claude.com/docs/en/skills). One click, in your browser.** MarkSight is a free, open source Markdown editor whose core doubles as a remote [MCP](https://modelcontextprotocol.io) server that Claude Code can call directly. Live preview, GFM, Mermaid diagrams, and Markdown/HTML/PDF export come with it.
 
-🔗 **Live (no signup):** [marksight.laramateo.com](https://marksight.laramateo.com)  ·  🧩 One-click `.skill` export  ·  🔌 Built-in MCP server  ·  🔒 100% client-side
+🔗 **Live (no signup):** [marksight.laramateo.com](https://marksight.laramateo.com) · 🧩 One-click `.skill` export · 🔌 Built-in MCP server · 🔒 100% client-side
 
 <!-- Demo GIF slot — drop a ≤2 MB clip at docs/demo.gif (type markdown → ⌘⇧K → .skill downloads → `claude mcp add`), then uncomment the line below. -->
 <!-- ![MarkSight: Markdown to a Claude Agent Skill in one click](docs/demo.gif) -->
@@ -71,18 +71,18 @@ I shipped. The longer version of that story is on my blog:
 
 > **Note:** On macOS, use **⌘ (Command)**. On Windows and Linux, use **Ctrl**.
 
-| Action | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Bold | ⌘ B | Ctrl + B |
-| Italic | ⌘ I | Ctrl + I |
-| Strikethrough | ⌘ U | Ctrl + U |
-| Link | ⌘ K | Ctrl + K |
-| Inline Code | ⌘ ` | Ctrl + ` |
-| Heading 1 | ⌘⇧1 | Ctrl+Shift+1 |
-| Heading 2 | ⌘⇧2 | Ctrl+Shift+2 |
-| Heading 3 | ⌘⇧3 | Ctrl+Shift+3 |
+| Action         | macOS | Windows / Linux  |
+| -------------- | ----- | ---------------- |
+| Bold           | ⌘ B   | Ctrl + B         |
+| Italic         | ⌘ I   | Ctrl + I         |
+| Strikethrough  | ⌘ U   | Ctrl + U         |
+| Link           | ⌘ K   | Ctrl + K         |
+| Inline Code    | ⌘ `   | Ctrl + `         |
+| Heading 1      | ⌘⇧1   | Ctrl+Shift+1     |
+| Heading 2      | ⌘⇧2   | Ctrl+Shift+2     |
+| Heading 3      | ⌘⇧3   | Ctrl+Shift+3     |
 | Unordered List | ⌘ ⇧ L | Ctrl + Shift + L |
-| Ordered List | ⌘ ⇧ O | Ctrl + Shift + O |
+| Ordered List   | ⌘ ⇧ O | Ctrl + Shift + O |
 
 ## Editor Preview
 

@@ -9,7 +9,7 @@ interface AnalyticsEvent {
 }
 
 export function trackEvent(event: AnalyticsEvent) {
-  sendGAEvent('event', event.action, {
+  sendGAEvent("event", event.action, {
     event_category: event.category,
     event_label: event.label,
     value: event.value,
@@ -18,34 +18,34 @@ export function trackEvent(event: AnalyticsEvent) {
 
 export function trackDocumentMetrics(metrics: DocumentMetrics) {
   trackEvent({
-    action: 'document_metrics',
-    category: 'document',
-    label: 'metrics_update',
+    action: "document_metrics",
+    category: "document",
+    label: "metrics_update",
     value: metrics.wordCount,
   });
 }
 
-export function trackExport(format: 'html' | 'pdf', wordCount: number) {
+export function trackExport(format: "html" | "pdf", wordCount: number) {
   trackEvent({
-    action: 'export',
-    category: 'document',
+    action: "export",
+    category: "document",
     label: format,
     value: wordCount,
   });
 }
 
-export function trackSkillCreate(kind: 'copy' | 'md' | 'skill' | 'ai-improve') {
+export function trackSkillCreate(kind: "copy" | "md" | "skill" | "ai-improve") {
   trackEvent({
-    action: 'skill_create',
-    category: 'document',
+    action: "skill_create",
+    category: "document",
     label: kind,
   });
 }
 
-export function trackThemeToggle(theme: 'light' | 'dark') {
+export function trackThemeToggle(theme: "light" | "dark") {
   trackEvent({
-    action: 'theme_toggle',
-    category: 'ui',
+    action: "theme_toggle",
+    category: "ui",
     label: theme,
   });
 }
@@ -55,41 +55,41 @@ export function trackThemeToggle(theme: 'light' | 'dark') {
 // browser). Deliberately takes no content payload.
 export function trackEditorAction(action: string) {
   trackEvent({
-    action: 'editor_action',
-    category: 'editor',
+    action: "editor_action",
+    category: "editor",
     label: action,
   });
 }
 
 export function trackToolbarAction(action: string) {
   trackEvent({
-    action: 'toolbar_action',
-    category: 'editor',
+    action: "toolbar_action",
+    category: "editor",
     label: action,
   });
 }
 
 export function trackKeyboardShortcut(shortcut: string) {
   trackEvent({
-    action: 'keyboard_shortcut',
-    category: 'editor',
+    action: "keyboard_shortcut",
+    category: "editor",
     label: shortcut,
   });
 }
 
 export function trackDocumentReset() {
   trackEvent({
-    action: 'document_reset',
-    category: 'document',
-    label: 'reset_to_default',
+    action: "document_reset",
+    category: "document",
+    label: "reset_to_default",
   });
 }
 
 export function trackDocumentClear() {
   trackEvent({
-    action: 'document_clear',
-    category: 'document',
-    label: 'clear_content',
+    action: "document_clear",
+    category: "document",
+    label: "clear_content",
   });
 }
 

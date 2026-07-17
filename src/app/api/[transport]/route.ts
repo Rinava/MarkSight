@@ -62,7 +62,7 @@ const handler = createMcpHandler(
           bundleBase64: Buffer.from(bytes).toString("base64"),
           bundleFilename: `${meta.name}.skill`,
         });
-      },
+      }
     );
 
     server.registerTool(
@@ -75,7 +75,7 @@ const handler = createMcpHandler(
           frontmatter: z.record(z.string(), z.unknown()),
         },
       },
-      async ({ frontmatter }) => json(validateSkill(frontmatter)),
+      async ({ frontmatter }) => json(validateSkill(frontmatter))
     );
 
     server.registerTool(
@@ -96,7 +96,7 @@ const handler = createMcpHandler(
           title,
         });
         return { content: [{ type: "text" as const, text: html }] };
-      },
+      }
     );
 
     server.registerTool(
@@ -107,7 +107,7 @@ const handler = createMcpHandler(
           "Extract the heading outline of a markdown document: level, text, rehype-slug-compatible anchor id, and 1-based source line. Skips headings inside code fences.",
         inputSchema: { markdown: markdownField },
       },
-      async ({ markdown }) => json(buildOutline(markdown)),
+      async ({ markdown }) => json(buildOutline(markdown))
     );
 
     server.registerTool(
@@ -118,14 +118,14 @@ const handler = createMcpHandler(
           "Compute word, character, line, heading, link, and image counts for a markdown document.",
         inputSchema: { markdown: markdownField },
       },
-      async ({ markdown }) => json(documentMetrics(markdown)),
+      async ({ markdown }) => json(documentMetrics(markdown))
     );
   },
   {},
   {
     basePath: "/api",
     maxDuration: 60,
-  },
+  }
 );
 
 export { handler as GET, handler as POST };

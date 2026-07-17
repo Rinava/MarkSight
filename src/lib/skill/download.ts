@@ -23,9 +23,7 @@ export async function downloadSkillBundle({
 }): Promise<void> {
   const bytes = await packageSkillForMode(meta, content, mode, extraFiles);
 
-  const url = URL.createObjectURL(
-    new Blob([bytes as BlobPart], { type: "application/zip" }),
-  );
+  const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "application/zip" }));
   const link = document.createElement("a");
   link.href = url;
   link.download = `${meta.name}.skill`;

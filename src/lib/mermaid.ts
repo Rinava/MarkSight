@@ -23,10 +23,7 @@ function configFor(isDark: boolean): MermaidConfig {
   };
 }
 
-export async function renderMermaid(
-  code: string,
-  isDark: boolean
-): Promise<string> {
+export async function renderMermaid(code: string, isDark: boolean): Promise<string> {
   const mermaid = await loadMermaid();
   mermaid.initialize(configFor(isDark));
 

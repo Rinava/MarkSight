@@ -92,15 +92,15 @@
 
   /* ── MarkSight workspace palette (light) — exact hues from MarkSight.dc.html ── */
   --ms-app-bg: #f5f8f1;
-  --ms-surface: #ffffff;        /* header, footer, preview pane */
-  --ms-surface-2: #fbfcf8;      /* toolbar row, right rail */
+  --ms-surface: #ffffff; /* header, footer, preview pane */
+  --ms-surface-2: #fbfcf8; /* toolbar row, right rail */
   --ms-surface-editor: #fcfdfa; /* editor pane */
   --ms-border: #e4ebdd;
-  --ms-border-2: #e0e9d6;       /* controls / cards */
-  --ms-border-3: #edf1e7;       /* pane header divider */
+  --ms-border-2: #e0e9d6; /* controls / cards */
+  --ms-border-3: #edf1e7; /* pane header divider */
   --ms-border-hover: #c4d6b8;
   --ms-primary: #3f7d44;
-  --ms-primary-ink: #3f7d44;    /* icon/text accent */
+  --ms-primary-ink: #3f7d44; /* icon/text accent */
   --ms-primary-strong: #2e4f2d; /* headings, logo */
   --ms-ink: #1b2e1e;
   --ms-ink-strong: #23331e;
@@ -115,7 +115,7 @@
   --ms-tint: #eaf0e3;
   --ms-tint-2: #eef3e8;
   --ms-tint-3: #e7efdf;
-  --ms-panel: #f3f7ef;          /* frontmatter / skill card bg */
+  --ms-panel: #f3f7ef; /* frontmatter / skill card bg */
   --ms-panel-border: #dfead6;
   --ms-hover: #f3f7ef;
   --ms-hover-2: #eef3e8;
@@ -265,59 +265,107 @@
     scroll-margin-top: 5rem;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    color: #2E4F2D;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #2e4f2d;
   }
-  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-    color: #A8C0A0;
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: #a8c0a0;
   }
 
-  a { color: #3F7D44; }
-  .dark a { color: #5BA875; }
+  a {
+    color: #3f7d44;
+  }
+  .dark a {
+    color: #5ba875;
+  }
 
   /* Buttons don't get a pointer cursor by default; disabled ones stay default. */
-  button:not(:disabled) { cursor: pointer; }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 
-  pre, code {
-    font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  pre,
+  code {
+    font-family:
+      var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
   }
   pre {
-    background: #E2EAE0;
-    border: 1px solid #D6E3D0;
+    background: #e2eae0;
+    border: 1px solid #d6e3d0;
     border-radius: var(--radius-md);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
   }
-  pre:hover { background: #CFE6CF; }
+  pre:hover {
+    background: #cfe6cf;
+  }
   .dark pre {
     background: #334936;
-    border-color: #3C5A40;
+    border-color: #3c5a40;
   }
-  .dark pre:hover { background: #4A6650; }
+  .dark pre:hover {
+    background: #4a6650;
+  }
 
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background-color: #D6E3D0; border-radius: 9999px; }
-  .dark ::-webkit-scrollbar-thumb { background-color: #3C5A40; }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #d6e3d0;
+    border-radius: 9999px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: #3c5a40;
+  }
 
-  html { transition: color 0.3s ease, background-color 0.3s ease; }
-  body, button, input, textarea, select { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+  html {
+    transition:
+      color 0.3s ease,
+      background-color 0.3s ease;
+  }
+  body,
+  button,
+  input,
+  textarea,
+  select {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+  }
 
   /* Text selection styles */
   ::selection {
-    background-color: #609B6E80; /* Primary color with 50% opacity */
-    color: #1B2E1E;
+    background-color: #609b6e80; /* Primary color with 50% opacity */
+    color: #1b2e1e;
   }
   .dark ::selection {
-    background-color: #76B08580; /* Primary color with 50% opacity in dark mode */
-    color: #E6F0E2;
+    background-color: #76b08580; /* Primary color with 50% opacity in dark mode */
+    color: #e6f0e2;
   }
 
   /* CodeMirror specific selection improvements */
   .cm-editor ::selection {
-    background-color: #609B6E60 !important; /* Primary color with 37.5% opacity */
+    background-color: #609b6e60 !important; /* Primary color with 37.5% opacity */
   }
   .dark .cm-editor ::selection {
-    background-color: #76B08560 !important; /* Primary color with 37.5% opacity in dark mode */
+    background-color: #76b08560 !important; /* Primary color with 37.5% opacity in dark mode */
   }
 
   /* Respect users who prefer reduced motion: neutralize CSS transitions/animations.
@@ -340,19 +388,40 @@
    ──────────────────────────────────────────────────────────────────────── */
 
 @keyframes msPop {
-  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes msSlide {
-  from { opacity: 0; transform: translateX(14px); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
-.ms-pop   { animation: msPop 0.14s ease; }
-.ms-slide { animation: msSlide 0.2s ease; }
+.ms-pop {
+  animation: msPop 0.14s ease;
+}
+.ms-slide {
+  animation: msSlide 0.2s ease;
+}
 
 /* Custom scrollbar for workspace scroll regions. */
-.ms-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
-.ms-scroll::-webkit-scrollbar-track { background: transparent; }
+.ms-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.ms-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
 .ms-scroll::-webkit-scrollbar-thumb {
   background-color: var(--ms-scroll-thumb);
   border-radius: 9999px;
@@ -372,7 +441,9 @@
   line-height: 1.7;
   max-width: none;
 }
-.ms-prose > :first-child { margin-top: 0; }
+.ms-prose > :first-child {
+  margin-top: 0;
+}
 .ms-prose :is(h1, h2, h3, h4, h5, h6) {
   color: var(--ms-primary-strong);
   font-weight: 650;
@@ -380,22 +451,38 @@
   margin: 1.6em 0 0.6em;
   letter-spacing: -0.01em;
 }
-.ms-prose h1 { font-size: 1.9em; margin-top: 0.2em; }
+.ms-prose h1 {
+  font-size: 1.9em;
+  margin-top: 0.2em;
+}
 .ms-prose h2 {
   font-size: 1.45em;
   padding-bottom: 0.24em;
   border-bottom: 1px solid var(--ms-border);
 }
-.ms-prose h3 { font-size: 1.15em; }
-.ms-prose p { margin: 0.85em 0; }
+.ms-prose h3 {
+  font-size: 1.15em;
+}
+.ms-prose p {
+  margin: 0.85em 0;
+}
 .ms-prose a {
   color: var(--ms-primary-ink);
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--ms-primary-ink) 45%, transparent);
 }
-.ms-prose strong { color: var(--ms-ink-strong); font-weight: 650; }
-.ms-prose ul, .ms-prose ol { margin: 0.85em 0; padding-left: 1.5em; }
-.ms-prose li { margin: 0.35em 0; }
+.ms-prose strong {
+  color: var(--ms-ink-strong);
+  font-weight: 650;
+}
+.ms-prose ul,
+.ms-prose ol {
+  margin: 0.85em 0;
+  padding-left: 1.5em;
+}
+.ms-prose li {
+  margin: 0.35em 0;
+}
 .ms-prose blockquote {
   margin: 1em 0;
   padding: 0.4em 1em;
@@ -420,7 +507,12 @@
   overflow-x: auto;
   margin: 1em 0;
 }
-.ms-prose pre code { background: none; padding: 0; font-size: 0.85em; line-height: 1.6; }
+.ms-prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
 .ms-prose table {
   border-collapse: collapse;
   width: 100%;
@@ -437,6 +529,16 @@
   color: var(--ms-primary-strong);
   font-weight: 600;
 }
-.ms-prose hr { border: none; border-top: 1px solid var(--ms-border-2); margin: 1.6em 0; }
-.ms-prose input[type="checkbox"] { accent-color: var(--ms-primary); margin-right: 0.4em; }
-.ms-prose img { max-width: 100%; border-radius: 8px; }
+.ms-prose hr {
+  border: none;
+  border-top: 1px solid var(--ms-border-2);
+  margin: 1.6em 0;
+}
+.ms-prose input[type="checkbox"] {
+  accent-color: var(--ms-primary);
+  margin-right: 0.4em;
+}
+.ms-prose img {
+  max-width: 100%;
+  border-radius: 8px;
+}
