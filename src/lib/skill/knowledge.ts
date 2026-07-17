@@ -1,5 +1,4 @@
-import { buildSkillMd, stripLeadingFrontmatter } from "./build";
-import type { SkillMeta } from "./types";
+import { stripLeadingFrontmatter } from "./build";
 
 /**
  * Knowledge-skill packaging: most documents are content, not instructions.
@@ -46,11 +45,6 @@ export function knowledgeSkillBody(): string {
     "2. Ground your answer in that document — quote or cite the relevant sections.",
     "3. If the question falls outside the document, say so instead of guessing.",
   ].join("\n");
-}
-
-/** Build the pointer `SKILL.md` for knowledge mode. */
-export function buildKnowledgeSkillMd(meta: SkillMeta): string {
-  return buildSkillMd(meta, knowledgeSkillBody());
 }
 
 /** The document payload shipped alongside the pointer, frontmatter stripped. */

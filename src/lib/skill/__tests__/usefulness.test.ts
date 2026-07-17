@@ -2,16 +2,11 @@ import { describe, it, expect } from "vitest";
 import { skillQualityHints } from "../hints";
 import {
   suggestSkillMode,
-  buildKnowledgeSkillMd,
   knowledgeDocFile,
   KNOWLEDGE_DOC_PATH,
 } from "../knowledge";
 import { SKILL_TEMPLATE } from "../template";
 import { deriveSkillMeta } from "../derive";
-import {
-  stripLeadingFrontmatter,
-  parseSkillFrontmatter,
-} from "../build";
 import { validateSkill } from "../validate";
 
 const HOWTO_DOC = `# Deploy Guide
@@ -104,15 +99,6 @@ describe("suggestSkillMode", () => {
 });
 
 describe("knowledge packaging", () => {
-  it("builds a valid pointer SKILL.md referencing the doc payload", () => {
-    const meta = { name: "notes", description: "Use when asked about the offsite." };
-    const md = buildKnowledgeSkillMd(meta);
-    expect(md).toContain(KNOWLEDGE_DOC_PATH);
-
-    const { frontmatter } = stripLeadingFrontmatter(md);
-    expect(validateSkill(parseSkillFrontmatter(frontmatter ?? "")).valid).toBe(true);
-  });
-
   it("ships the document body (frontmatter stripped) as the payload", () => {
     const file = knowledgeDocFile("---\nname: x\ndescription: y\n---\n\n# Doc\n\nContent.");
     expect(file.path).toBe(KNOWLEDGE_DOC_PATH);
