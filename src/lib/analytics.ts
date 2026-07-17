@@ -93,20 +93,4 @@ export function trackDocumentClear() {
   });
 }
 
-export function trackPreviewToggle() {
-  trackEvent({
-    action: 'preview_toggle',
-    category: 'ui',
-    label: 'toggle_preview',
-  });
-}
-
-export function trackSidebarToggle() {
-  trackEvent({
-    action: 'sidebar_toggle',
-    category: 'ui',
-    label: 'toggle_sidebar',
-  });
-}
-
 export const calculateDocumentMetrics = documentMetrics;

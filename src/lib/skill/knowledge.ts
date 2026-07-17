@@ -48,10 +48,6 @@ export function knowledgeSkillBody(): string {
   ].join("\n");
 }
 
-/** Build the pointer `SKILL.md` for knowledge mode. */
-export function buildKnowledgeSkillMd(meta: SkillMeta): string {
-  return buildSkillMd(meta, knowledgeSkillBody());
-}
 
 /** The document payload shipped alongside the pointer, frontmatter stripped. */
 export function knowledgeDocFile(markdown: string): {

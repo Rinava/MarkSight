@@ -9,9 +9,7 @@ import {
   trackToolbarAction,
   trackKeyboardShortcut,
   trackDocumentReset,
-  trackDocumentClear,
-  trackPreviewToggle,
-  trackSidebarToggle
+  trackDocumentClear
 } from "@/lib/analytics";
 
 export function useAnalytics() {
@@ -55,15 +53,6 @@ export function useAnalytics() {
   const trackClear = useCallback(() => {
     trackDocumentClear();
   }, []);
-
-  const trackPreview = useCallback(() => {
-    trackPreviewToggle();
-  }, []);
-
-  const trackSidebar = useCallback(() => {
-    trackSidebarToggle();
-  }, []);
-
   return {
     trackDocumentChange,
     trackExportAction,
@@ -74,7 +63,5 @@ export function useAnalytics() {
     trackShortcut,
     trackReset,
     trackClear,
-    trackPreview,
-    trackSidebar,
   };
 }
