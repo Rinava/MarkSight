@@ -29,10 +29,16 @@ export function ThemeToggle() {
 
   const isDark =
     theme === "dark" || (theme === "system" && systemTheme === "dark");
+  const actionLabel = isDark ? "Switch to light mode" : "Switch to dark mode";
 
   return (
-    <Tip label="Toggle theme">
-      <button type="button" onClick={next} aria-label="Toggle theme" className={BTN}>
+    <Tip label={actionLabel}>
+      <button
+        type="button"
+        onClick={next}
+        aria-label={actionLabel}
+        className={BTN}
+      >
         {isDark ? (
           <Moon className="h-[17px] w-[17px]" />
         ) : (

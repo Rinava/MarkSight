@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   BookOpen,
   CircleCheck,
-  Github,
   RotateCcw,
   Sparkles,
   TriangleAlert,
@@ -13,8 +12,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { GithubIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { FooterContributors } from "@/components/contributors";
 import { MarkdownToolbar } from "@/components/markdown-toolbar";
 import { MarkdownEditorRef } from "@/components/markdown-editor";
 import { TooltipProvider, Tip } from "@/components/ui/base/tooltip";
@@ -36,7 +37,7 @@ import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { documentMetrics } from "@/lib/markdown/metrics";
 import { buildSkillMd } from "@/lib/skill/build";
 
-const GITHUB_URL = "https://github.com/rinava/MarkSight";
+const GITHUB_URL = "https://github.com/Rinava/MarkSight";
 const PORTFOLIO_URL = "https://laramateo.com";
 
 const STARTER = `# Welcome to MarkSight
@@ -232,6 +233,13 @@ export function Workspace() {
   return (
     <TooltipProvider>
       <div className="flex h-dvh flex-col overflow-hidden bg-ms-app font-sans text-ms-ink">
+        <a
+          href="#main-content"
+          className="sr-only rounded-[9px] border border-ms-border-hover bg-ms-surface px-4 py-2 text-[13px] font-semibold text-ms-primary-ink shadow-[var(--ms-shadow-primary)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:outline-2 focus:outline-offset-2 focus:outline-ms-primary"
+        >
+          Skip to main content
+        </a>
+
         {/* ── Header ── */}
         <header className="flex h-[58px] flex-none items-center gap-3.5 border-b border-ms-border bg-ms-surface px-[18px]">
           <Logo />
@@ -299,7 +307,7 @@ export function Workspace() {
               aria-label="View on GitHub"
               className={ICON_BTN}
             >
-              <Github className="h-[17px] w-[17px]" aria-hidden="true" />
+              <GithubIcon className="h-[17px] w-[17px]" aria-hidden="true" />
             </a>
           </Tip>
         </header>
@@ -348,7 +356,11 @@ export function Workspace() {
         </div>
 
         {/* ── Body ── */}
-        <div className="flex min-h-0 flex-1">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex min-h-0 flex-1 focus:outline-none"
+        >
           <div ref={splitRef} className="flex min-w-0 flex-1">
             {showEditor && (
               <EditorPane
@@ -419,7 +431,7 @@ export function Workspace() {
               onOpenGuide={() => setGuideOpen(true)}
             />
           )}
-        </div>
+        </main>
 
         {/* ── Footer ── */}
         <footer className="flex h-[42px] flex-none items-center gap-3.5 border-t border-ms-border bg-ms-surface px-4 text-[12px] text-ms-muted-3">
@@ -478,6 +490,7 @@ export function Workspace() {
             >
               GitHub
             </a>
+            <FooterContributors />
             <span title={`© ${currentYear} laramateo.com. All rights reserved.`}>
               © {currentYear}
             </span>

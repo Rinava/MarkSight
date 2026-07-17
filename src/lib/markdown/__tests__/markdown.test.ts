@@ -49,11 +49,14 @@ describe("documentMetrics", () => {
     const m = documentMetrics(md);
     expect(m.lineCount).toBe(3);
     expect(m.headingCount).toBe(1);
-    // Historical behavior: the link regex also matches an image's bracket
-    // part, so an image counts toward linkCount too.
-    expect(m.linkCount).toBe(2);
+    expect(m.linkCount).toBe(1);
     expect(m.imageCount).toBe(1);
     expect(m.characterCount).toBe(md.length);
+  });
+
+  it("counts setext headings like buildOutline", () => {
+    const md = "Title\n=====\n\ntext\n\nSection\n-------";
+    expect(documentMetrics(md).headingCount).toBe(2);
   });
 
   it("ignores # lines inside ``` and ~~~ fences", () => {

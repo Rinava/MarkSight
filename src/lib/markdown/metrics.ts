@@ -12,23 +12,41 @@ export interface DocumentMetrics {
   imageCount: number;
 }
 
+const LINK_RE = /(?<!!)\[([^\]]+)\]\([^)]+\)/g;
+const IMAGE_RE = /!\[([^\]]*)\]\([^)]+\)/g;
+const ATX_HEADING_RE = /^#{1,6}\s/;
+const FENCE_RE = /^\s*(```|~~~)/;
+const SETEXT_RE = /^ {0,3}(=+|-+)[ \t]*$/;
+
 export function documentMetrics(content: string): DocumentMetrics {
   const lines = content.split('\n');
   const words = content.split(/\s+/).filter(word => word.length > 0);
   const characters = content.length;
-  const links = (content.match(/\[([^\]]+)\]\([^)]+\)/g) || []).length;
-  const images = (content.match(/!\[([^\]]*)\]\([^)]+\)/g) || []).length;
+  const links = (content.match(LINK_RE) || []).length;
+  const images = (content.match(IMAGE_RE) || []).length;
 
-  // Fence-aware ATX heading count (1–6 hashes), consistent with buildOutline.
   let insideFence = false;
   let headings = 0;
-  for (const line of lines) {
-    if (/^\s*(```|~~~)/.test(line)) {
+  lines.forEach((line, index) => {
+    if (FENCE_RE.test(line)) {
       insideFence = !insideFence;
-      continue;
+      return;
     }
-    if (!insideFence && /^#{1,6}\s/.test(line)) headings++;
-  }
+    if (insideFence) return;
+
+    if (ATX_HEADING_RE.test(line)) {
+      headings++;
+      return;
+    }
+
+    const setext = line.match(SETEXT_RE);
+    if (setext) {
+      const prev = lines[index - 1];
+      if (prev && prev.trim() && !ATX_HEADING_RE.test(prev) && !FENCE_RE.test(prev)) {
+        headings++;
+      }
+    }
+  });
 
   return {
     wordCount: words.length,

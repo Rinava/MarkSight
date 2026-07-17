@@ -39,6 +39,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Unit tests (Vitest) — run before the slow build so they fail fast.
+      - name: Test
+        run: npm test
+
       # next build --turbopack also runs type-checking and produces the
       # production output. Runs fully headless with no required env vars.
       - name: Build

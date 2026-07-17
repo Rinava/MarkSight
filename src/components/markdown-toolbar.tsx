@@ -1,5 +1,5 @@
 "use client";
-
+import { escapeRegExp } from "@/lib/utils";
 import { useEffect, useCallback, useMemo } from "react";
 import { Tip } from "@/components/ui/base/tooltip";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -199,13 +199,13 @@ export function MarkdownToolbar({ onInsert, getCurrentContext, selectionVersion 
       
       // Check if the selected text exactly matches a markdown pattern
       const selectedPattern = markdownPatterns.find(pattern => {
-        const match = selectedText.match(new RegExp(`^${pattern.before.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(.+)${pattern.after.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+        const match = selectedText.match(new RegExp(`^${escapeRegExp(pattern.before)}(.+)${escapeRegExp(pattern.after)}$`));
         return match && pattern.type === elementType;
       });
       
       if (selectedPattern) {
         // Remove formatting from selected text
-        const innerMatch = selectedText.match(new RegExp(`^${selectedPattern.before.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(.+)${selectedPattern.after.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+        const innerMatch = selectedText.match(new RegExp(`^${escapeRegExp(selectedPattern.before)}(.+)${escapeRegExp(selectedPattern.after)}$`));
         if (innerMatch) {
           const innerText = innerMatch[1];
           onInsert(innerText, innerText.length, selection.from, selection.to);

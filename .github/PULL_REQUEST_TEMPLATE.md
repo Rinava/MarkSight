@@ -27,6 +27,7 @@ Please fill out the sections below. Remove any that don't apply.
 
 - [ ] My branch is up to date with `main`
 - [ ] `npm run lint` passes
+- [ ] `npm test` passes
 - [ ] `npm run build` succeeds
 - [ ] I tested my change in the browser
 - [ ] My commits follow [Conventional Commits](https://www.conventionalcommits.org/)
