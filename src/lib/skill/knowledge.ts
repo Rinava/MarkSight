@@ -1,5 +1,4 @@
-import { buildSkillMd, stripLeadingFrontmatter } from "./build";
-import type { SkillMeta } from "./types";
+import { stripLeadingFrontmatter } from "./build";
 
 /**
  * Knowledge-skill packaging: most documents are content, not instructions.
@@ -47,7 +46,6 @@ export function knowledgeSkillBody(): string {
     "3. If the question falls outside the document, say so instead of guessing.",
   ].join("\n");
 }
-
 
 /** The document payload shipped alongside the pointer, frontmatter stripped. */
 export function knowledgeDocFile(markdown: string): {

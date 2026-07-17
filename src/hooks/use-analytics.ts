@@ -53,6 +53,7 @@ export function useAnalytics() {
   const trackClear = useCallback(() => {
     trackDocumentClear();
   }, []);
+
   return {
     trackDocumentChange,
     trackExportAction,

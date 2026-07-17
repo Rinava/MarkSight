@@ -7,10 +7,6 @@ import {
 } from "../knowledge";
 import { SKILL_TEMPLATE } from "../template";
 import { deriveSkillMeta } from "../derive";
-import {
-  stripLeadingFrontmatter,
-  parseSkillFrontmatter,
-} from "../build";
 import { validateSkill } from "../validate";
 
 const HOWTO_DOC = `# Deploy Guide
@@ -103,7 +99,6 @@ describe("suggestSkillMode", () => {
 });
 
 describe("knowledge packaging", () => {
-
   it("ships the document body (frontmatter stripped) as the payload", () => {
     const file = knowledgeDocFile("---\nname: x\ndescription: y\n---\n\n# Doc\n\nContent.");
     expect(file.path).toBe(KNOWLEDGE_DOC_PATH);
