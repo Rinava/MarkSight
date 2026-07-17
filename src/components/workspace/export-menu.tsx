@@ -128,15 +128,19 @@ export function ExportMenu({
       trackExportAction("pdf", content);
       const html = await renderExportHtml(content, filename);
       const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        toast.error("Allow pop-ups to export as PDF");
-        return;
+
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+
+        setTimeout(() => {
+          printWindow.print();
+        }, 400);
+      } else {
+        toast.error(
+          "Couldn't open the export window. Please allow popups for this site and try again.",
+        );
       }
-      printWindow.document.write(html);
-      printWindow.document.close();
-      setTimeout(() => {
-        printWindow.print();
-      }, 400);
     } catch {
       toast.error("Failed to export PDF");
     }
@@ -146,12 +150,15 @@ export function ExportMenu({
     try {
       const html = await renderExportHtml(content, filename);
       const newWindow = window.open("", "_blank");
-      if (!newWindow) {
-        toast.error("Allow pop-ups to preview HTML");
-        return;
+
+      if (newWindow) {
+        newWindow.document.write(html);
+        newWindow.document.close();
+      } else {
+        toast.error(
+          "Couldn't open the export window. Please allow popups for this site and try again.",
+        );
       }
-      newWindow.document.write(html);
-      newWindow.document.close();
     } catch {
       toast.error("Failed to preview HTML");
     }
@@ -228,15 +235,53 @@ export function ExportMenu({
   }, []);
 
   const docItems = [
-    { label: "Export HTML", sub: "Styled, self-contained", Icon: FileText, action: exportHTML },
-    { label: "Export PDF", sub: "Print-ready", Icon: Printer, action: exportPDF },
-    { label: "Preview HTML", sub: "Open in new tab", Icon: ExternalLink, action: previewHTML },
-    { label: "Download Markdown", sub: "Raw .md source", Icon: FileDown, action: downloadMarkdown },
+    {
+      label: "Export HTML",
+      sub: "Styled, self-contained",
+      Icon: FileText,
+      action: exportHTML,
+    },
+    {
+      label: "Export PDF",
+      sub: "Print-ready",
+      Icon: Printer,
+      action: exportPDF,
+    },
+    {
+      label: "Preview HTML",
+      sub: "Open in new tab",
+      Icon: ExternalLink,
+      action: previewHTML,
+    },
+    {
+      label: "Download Markdown",
+      sub: "Raw .md source",
+      Icon: FileDown,
+      action: downloadMarkdown,
+    },
   ];
   const skillItems = [
-    { label: "Copy SKILL.md", sub: "Frontmatter + body", Icon: Copy, action: copySkillMd, gated: true },
-    { label: "Download SKILL.md", sub: "Single file", Icon: FileCode2, action: downloadSkillMd, gated: true },
-    { label: "Download folder (.zip)", sub: "SKILL.md + bundled files", Icon: Package, action: downloadSkillZip, gated: true },
+    {
+      label: "Copy SKILL.md",
+      sub: "Frontmatter + body",
+      Icon: Copy,
+      action: copySkillMd,
+      gated: true,
+    },
+    {
+      label: "Download SKILL.md",
+      sub: "Single file",
+      Icon: FileCode2,
+      action: downloadSkillMd,
+      gated: true,
+    },
+    {
+      label: "Download folder (.zip)",
+      sub: "SKILL.md + bundled files",
+      Icon: Package,
+      action: downloadSkillZip,
+      gated: true,
+    },
   ];
   const items = skillMode ? skillItems : docItems;
 
@@ -255,7 +300,12 @@ export function ExportMenu({
         <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
       </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
+        <Menu.Positioner
+          side="bottom"
+          align="end"
+          sideOffset={6}
+          className="z-50"
+        >
           <Menu.Popup className="ms-pop w-[248px] origin-[var(--transform-origin)] rounded-xl border border-ms-border-2 bg-ms-surface p-1.5 shadow-[var(--ms-shadow-menu)] outline-none">
             <div className="px-2.5 pt-1.5 pb-1 text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
               {skillMode ? "Package skill" : "Export document"}
@@ -264,15 +314,21 @@ export function ExportMenu({
               <Menu.Item
                 key={item.label}
                 onClick={item.action}
-                disabled={"gated" in item && item.gated ? !validation.valid : false}
+                disabled={
+                  "gated" in item && item.gated ? !validation.valid : false
+                }
                 className={ITEM_CLASS}
               >
                 <span className="flex text-ms-primary-ink">
                   <item.Icon className="h-[18px] w-[18px]" aria-hidden="true" />
                 </span>
                 <span className="flex-1">
-                  <span className="block text-[13px] font-medium">{item.label}</span>
-                  <span className="block text-[11px] text-ms-muted-3">{item.sub}</span>
+                  <span className="block text-[13px] font-medium">
+                    {item.label}
+                  </span>
+                  <span className="block text-[11px] text-ms-muted-3">
+                    {item.sub}
+                  </span>
                 </span>
               </Menu.Item>
             ))}
