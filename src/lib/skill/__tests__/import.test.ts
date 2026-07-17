@@ -63,6 +63,28 @@ describe("importSkillBundle ↔ packageSkill round-trip", () => {
       "examples/nested/SKILL.md",
     ]);
   });
+
+  it("rejects bundles with too many files", async () => {
+    const { zipSync, strToU8 } = await import("fflate");
+    const files: Record<string, Uint8Array> = {
+      "SKILL.md": strToU8("---\nname: big\ndescription: x\n---\nbody"),
+    };
+    for (let i = 0; i < 30; i += 1) {
+      files[`references/file-${i}.txt`] = strToU8("x");
+    }
+    await expect(importSkillBundle(zipSync(files))).rejects.toThrow(
+      /too many files/,
+    );
+  });
+
+  it("rejects bundles with an oversized file", async () => {
+    const { zipSync, strToU8 } = await import("fflate");
+    const bytes = zipSync({
+      "SKILL.md": strToU8("---\nname: big\ndescription: x\n---\nbody"),
+      "references/huge.bin": new Uint8Array(1_000_001),
+    });
+    await expect(importSkillBundle(bytes)).rejects.toThrow(/too large/);
+  });
 });
 
 describe("parseGitHubUrl", () => {
