@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
     ],
   },
   // Static security headers. The per-request Content-Security-Policy (with a
-  // nonce) is set in middleware.ts.
+  // nonce) is set in proxy.ts.
   async headers() {
     return [
       {
