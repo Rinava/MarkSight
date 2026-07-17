@@ -5,34 +5,40 @@ Do not start a phase until the previous checkpoint is signed off.
 
 ## Phase 1 — Client-side skill creation (offline) ✅ DONE
 
-### Task 1A — Test harness + validation + types  ·  done
+### Task 1A — Test harness + validation + types · done
+
 - [x] `src/lib/skill/types.ts` — `SkillMeta`, `SkillDraft`, `ValidationResult`, `ALLOWED_FRONTMATTER_KEYS`
 - [x] `src/lib/skill/validate.ts` — TS port of `quick_validate.py` rules
 - [x] Vitest setup: `vitest.config.ts` + `test`/`test:watch` scripts + `vitest` dep
 - [x] `validate.test.ts` — 11 cases (bad name chars/`--`/>64, >1024/angle-bracket desc, unexpected keys, non-string)
 
-### Task 1B — Derivation + SKILL.md builder  ·  done
+### Task 1B — Derivation + SKILL.md builder · done
+
 - [x] `src/lib/skill/derive.ts` — `deriveSkillName`/`deriveSkillDescription`/`deriveSkillMeta` (+ fallbacks)
 - [x] `src/lib/skill/build.ts` — `buildSkillMd` (strips pre-existing frontmatter, YAML-escapes), `parseSkillFrontmatter`
 - [x] `derive.test.ts` + `build.test.ts` — emoji/symbol-only/missing H1, links, setext, angle brackets, over-length, existing frontmatter, round-trip
 - [x] Verify: 34 tests green; parity vs Python validator confirmed ("Skill is valid!")
 
-### Task 2 — "Create Skill" entry + live preview dialog  ·  done
+### Task 2 — "Create Skill" entry + live preview dialog · done
+
 - [x] `src/components/skill-creator-dialog.tsx` — auto-derive → build → validate → read-only preview + status badge
 - [x] Wire button (PackagePlus + separator) + controlled dialog state into `export-toolbar.tsx`
 - [x] Verify (preview tools): dialog shows `welcome-to-marksight/`, ✓ Valid, correct SKILL.md
 
-### Task 3 — Single-file + clipboard delivery  ·  done
+### Task 3 — Single-file + clipboard delivery · done
+
 - [x] Copy `SKILL.md` (clipboard + sonner toast)
 - [x] Download `SKILL.md` (`text/markdown`)
 - [x] Both disabled while invalid
 
-### Task 4 — `.skill` zip packaging + download  ·  done
+### Task 4 — `.skill` zip packaging + download · done
+
 - [x] Add `fflate`; `src/lib/skill/package.ts` (`<name>/SKILL.md`), lazy `import("fflate")`
 - [x] Download `.skill` action; registered `fflate` in `optimizePackageImports`
 - [x] Verify: unzips to `welcome-to-marksight/SKILL.md`; passes `quick_validate.py`
 
-### ✅ Checkpoint A — Offline creator works end-to-end  ·  PASSED
+### ✅ Checkpoint A — Offline creator works end-to-end · PASSED
+
 - [x] Create → preview → validate → copy / `.md` / `.skill` all work
 - [x] Downloaded skill passes official `quick_validate.py`
 - [x] `lint` + `build` clean, `test` green (34)
@@ -40,23 +46,27 @@ Do not start a phase until the previous checkpoint is signed off.
 
 ## Phase 1.5 — Usefulness (valid ≠ useful)
 
-### Task 12 — Knowledge-skill packaging mode  ·  implemented, gates pending
+### Task 12 — Knowledge-skill packaging mode · implemented, gates pending
+
 - [x] `lib/skill/knowledge.ts`: `suggestSkillMode` heuristic, pointer `SKILL.md` builder, `references/document.md` payload (frontmatter stripped)
 - [x] Dialog radiogroup toggle (Instructions / Knowledge) with "suggested" badge; `.skill` download packages per mode
 - [ ] Verify: unit tests written (`usefulness.test.ts`) — run pending; knowledge bundle vs `quick_validate.py` pending
 
-### Task 13 — Trigger-quality hints  ·  implemented, gates pending
+### Task 13 — Trigger-quality hints · implemented, gates pending
+
 - [x] `lib/skill/hints.ts`: no-use-when, generic-description, long-body (>500), no-instruction-headings — non-blocking amber list in dialog
 - [x] Hints computed against the effective body (knowledge pointer is clean by construction)
 - [ ] Note: went with hints instead of a separate "use when" input — the frontmatter-override rule already gives manual control; revisit if hints prove insufficient
 - [ ] Verify: unit tests written — run pending
 
-### Task 14 — "New skill" starter template  ·  implemented, gates pending
+### Task 14 — "New skill" starter template · implemented, gates pending
+
 - [x] `lib/skill/template.ts` + Template button in the dialog's import row (undoable, clears carried files)
 - [x] Template is valid + hint-clean + instruction-suggested **by test construction** (`usefulness.test.ts`)
 - [ ] Verify: test run pending
 
-### Task 15 — Import & modify skills  ·  implemented, gates pending
+### Task 15 — Import & modify skills · implemented, gates pending
+
 - [x] 15A file import: `.skill`/`.zip`/`SKILL.md` → editor (`lib/skill/import.ts`); extras preserved via extended `packageSkill`; undoable (goes through `handleValueChange`)
 - [x] Frontmatter-aware metadata: document frontmatter overrides derivation (preserves imported names/trigger descriptions; also enables manual control)
 - [x] 15B marketplace import (`lib/skill/marketplace.ts`): any GitHub URL (repo/folder/SKILL.md) via contents API + raw; curated quick-picks (anthropics/skills, claude-plugins-public); skill discovery picker; 30-file/1MB caps; friendly rate-limit errors
@@ -66,12 +76,14 @@ Do not start a phase until the previous checkpoint is signed off.
 - [ ] Live marketplace fetch verified against real GitHub (CORS/layout) — pending same
 
 ### ✅ Checkpoint A.5 — Useful + round-trip
+
 - [ ] Knowledge mode, hints, template, import all verified; `lint`/`build`/`test` green
 - [ ] **Human review**
 
 ## Phase 2 — Optional AI refinement
 
-### Task 5 — `/api/skill/improve` route (AI Gateway)  ·  done (live AI call pends a key)
+### Task 5 — `/api/skill/improve` route (AI Gateway) · done (live AI call pends a key)
+
 - [x] Read `vercel:ai-gateway` skill; pinned `ai@^6` (npm resolved v7 — newer than documented; pinned to the verified line)
 - [x] `src/app/api/skill/improve/route.ts` — plain `"provider/model"` string via Gateway; default `anthropic/claude-haiku-4.5`, `SKILL_AI_MODEL` override
 - [x] AI output parsed, sanitized, re-validated with shared `validateSkill`; per-field repair fallback; 422 if unrecoverable
@@ -79,26 +91,30 @@ Do not start a phase until the previous checkpoint is signed off.
 - [x] Verify: build registers route; `curl` GET/POST without key → `{"enabled":false}`
 - [ ] Live refinement with a real key — **needs credentials** (`vercel env pull` or `AI_GATEWAY_API_KEY`)
 
-### Task 6 — "Improve with AI" wiring + feature gating  ·  done
+### Task 6 — "Improve with AI" wiring + feature gating · done
+
 - [x] ✨ button (leftmost in action row): POST → writes refined meta into document frontmatter (undoable, flows through frontmatter-override)
 - [x] Feature-detect on dialog open (GET); button absent when `enabled:false` — verified in browser
 - [x] Phase 1 flows unaffected (verified: all offline actions present without key)
 
-### ✅ Checkpoint B — AI refinement is additive and safe  ·  PASSED (fully)
+### ✅ Checkpoint B — AI refinement is additive and safe · PASSED (fully)
+
 - [x] Without key: button gone; offline creator intact
 - [x] Server re-validates; invalid AI output repaired or 422 — never reaches the document
 - [x] `build` clean
 - [x] Live test on the **free Gemini path** (`GOOGLE_GENERATIVE_AI_API_KEY`, `gemini-flash-latest`): curl returns refined trigger-optimized metadata; browser ✨ button → "Metadata refined" → frontmatter updated
 - [x] Dual-provider routing: Google direct (free) checked first; AI Gateway (OIDC/key) fallback; gateway 403 activation error surfaced with actionable message
 
-### Task 11 — Extract shared markdown core  ·  done (moved up from Phase 4)
+### Task 11 — Extract shared markdown core · done (moved up from Phase 4)
+
 - [x] `lib/markdown/to-html.ts` (remark pipeline + styled wrapper), `outline.ts` (slugger outline), `metrics.ts` (pure metrics)
 - [x] `export-toolbar`, `document-outline`, `analytics` now delegate; behavior preserved (incl. image-counts-as-link quirk, documented in test)
 - [x] 6 unit tests; browser-verified outline over the imported pdf skill
 
 ## Phase 3 — Polish & docs
 
-### Task 7 — Analytics, shortcut, a11y, docs  ·  mostly done (AI parts pend Phase 2)
+### Task 7 — Analytics, shortcut, a11y, docs · mostly done (AI parts pend Phase 2)
+
 - [x] `trackSkillCreate(kind: 'copy' | 'md' | 'skill')` in `analytics.ts` + `trackSkillAction` in `use-analytics.ts`
 - [x] ⌘⇧K / Ctrl+Shift+K shortcut opens the dialog (matches toolbar tooltip)
 - [x] Dialog a11y: Radix focus trap/escape; aria-labels on icon buttons; labeled install section
@@ -106,29 +122,34 @@ Do not start a phase until the previous checkpoint is signed off.
 - [ ] `.env.example` — deferred to Phase 2 (no env vars exist yet)
 
 ### ✅ Checkpoint C — Feature complete (offline + AI)
+
 - [ ] All Phase 1–3 acceptance criteria met; docs updated
 
 ## Phase 4 — Distribution & easy-add (backend)
 
-### Task 8 — "Add to Claude" install panel  ·  done
+### Task 8 — "Add to Claude" install panel · done
+
 - [x] Claude Code copyable cmd: `unzip -o ~/Downloads/<name>.skill -d ~/.claude/skills/` + reload note
 - [x] claude.ai upload steps (Settings › Capabilities › Skills › Upload)
 - [x] Interpolates real `<name>`; copy → toast
 - [x] Verify (browser): panel renders, command interpolates derived name; zip layout matches (`<name>/SKILL.md`)
 
-### Task 11 — Extract shared markdown core  ·  Small–Medium  ·  deps: none (prereq for 9)
+### Task 11 — Extract shared markdown core · Small–Medium · deps: none (prereq for 9)
+
 - [ ] `src/lib/markdown/to-html.ts` — `renderMarkdownToHtml` (lift from `export-toolbar.tsx`); toolbar imports it
 - [ ] `src/lib/markdown/outline.ts` — `buildOutline` (lift from `document-outline.tsx`); component imports it
 - [ ] `src/lib/markdown/metrics.ts` — pure `documentMetrics` (from `analytics.ts`), no GA side effects
 - [ ] Unit tests for each; verify HTML export + outline + metrics unchanged in app
 
-### Task 9 — MCP server endpoint (tool suite)  ·  done
+### Task 9 — MCP server endpoint (tool suite) · done
+
 - [x] Read current `mcp-handler` README (createMcpHandler, `app/api/[transport]/route.ts`, registerTool) — built from docs, not memory
 - [x] `src/app/api/[transport]/route.ts` — streamable HTTP at `/api/mcp`; 5 thin typed wrappers (zod schemas, 500KB input cap) over shared libs
 - [x] Verify (MCP Inspector CLI): tools/list shows all 5; `create_skill` bundle decodes → `release-checklist/SKILL.md` → **official `quick_validate.py` passes**; outline/metrics/validate/html outputs correct
 - [x] Project `.mcp.json` (auto-wires the connector for cloners) + README connector section
 
-### Task 10 — Document handoff bridge (token + KV)  ·  Medium  ·  deps: 9, 2 (+ KV store)
+### Task 10 — Document handoff bridge (token + KV) · Medium · deps: 9, 2 (+ KV store)
+
 - [ ] Provision Marketplace Redis/KV (Upstash) via `vercel:marketplace`
 - [ ] `src/app/api/skill/share/route.ts` — store doc, short TTL, unguessable token; size + rate limits
 - [ ] MCP tool `get_marksight_document(token)` (single-use / TTL)
@@ -136,6 +157,7 @@ Do not start a phase until the previous checkpoint is signed off.
 - [ ] Verify: token round-trips, expires; e2e `get_marksight_document → create_skill` valid
 
 ### ✅ Checkpoint D — Easy-add works
+
 - [ ] Install panel commands match real `.skill` layout
 - [ ] MCP connector usable from Claude Code; tools validated
 - [ ] Share→token→fetch round-trips with limits enforced
@@ -144,6 +166,7 @@ Do not start a phase until the previous checkpoint is signed off.
 ---
 
 ## Open questions (blocking decisions — see plan.md)
+
 - [ ] AI scope: metadata only vs. also restructure body / add when-to-use
 - [ ] Provider/model: AI Gateway `anthropic/<model>` (default) — which model id?
 - [ ] `license` frontmatter: omit (default) vs. inherit MIT

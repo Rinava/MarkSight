@@ -29,23 +29,16 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     replacerRef.current?.(markdown);
   }, []);
 
-  const registerDocumentReplacer = useCallback(
-    (handler: ((markdown: string) => void) | null) => {
-      replacerRef.current = handler;
-    },
-    [],
-  );
+  const registerDocumentReplacer = useCallback((handler: ((markdown: string) => void) | null) => {
+    replacerRef.current = handler;
+  }, []);
 
   const value = useMemo(
     () => ({ content, setContent, replaceDocument, registerDocumentReplacer }),
-    [content, replaceDocument, registerDocumentReplacer],
+    [content, replaceDocument, registerDocumentReplacer]
   );
 
-  return (
-    <ContentContext.Provider value={value}>
-      {children}
-    </ContentContext.Provider>
-  );
+  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
 }
 
 export function useContent() {

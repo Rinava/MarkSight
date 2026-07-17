@@ -9,7 +9,7 @@ import {
   trackToolbarAction,
   trackKeyboardShortcut,
   trackDocumentReset,
-  trackDocumentClear
+  trackDocumentClear,
 } from "@/lib/analytics";
 
 export function useAnalytics() {
@@ -18,16 +18,16 @@ export function useAnalytics() {
     trackDocumentMetrics(metrics);
   }, []);
 
-  const trackExportAction = useCallback((format: 'html' | 'pdf', content: string) => {
+  const trackExportAction = useCallback((format: "html" | "pdf", content: string) => {
     const metrics = calculateDocumentMetrics(content);
     trackExport(format, metrics.wordCount);
   }, []);
 
-  const trackSkillAction = useCallback((kind: 'copy' | 'md' | 'skill' | 'ai-improve') => {
+  const trackSkillAction = useCallback((kind: "copy" | "md" | "skill" | "ai-improve") => {
     trackSkillCreate(kind);
   }, []);
 
-  const trackThemeChange = useCallback((theme: 'light' | 'dark') => {
+  const trackThemeChange = useCallback((theme: "light" | "dark") => {
     trackThemeToggle(theme);
   }, []);
 

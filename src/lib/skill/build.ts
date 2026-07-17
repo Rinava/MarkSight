@@ -118,9 +118,7 @@ function parseFlowValue(value: string): string | string[] {
  * nested block it understands is `metadata:` — its indented children land under
  * a `metadata` object instead of leaking as bogus top-level keys.
  */
-export function parseSkillFrontmatter(
-  frontmatter: string,
-): Record<string, string> {
+export function parseSkillFrontmatter(frontmatter: string): Record<string, string> {
   const result: Record<string, string> = {};
   let block: Record<string, unknown> | null = null;
 

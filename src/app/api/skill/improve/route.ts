@@ -58,10 +58,7 @@ export async function POST(request: Request) {
       originHost = null;
     }
     if (originHost !== request.headers.get("host")) {
-      return NextResponse.json(
-        { error: "Cross-origin request rejected" },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
     }
   }
 
@@ -112,7 +109,10 @@ export async function POST(request: Request) {
         : {}),
     });
 
-    const raw = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
+    const raw = text
+      .trim()
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```\s*$/, "");
     let parsed: { name?: unknown; description?: unknown };
     try {
       parsed = JSON.parse(raw);
@@ -121,9 +121,7 @@ export async function POST(request: Request) {
     }
 
     const name =
-      typeof parsed.name === "string" && parsed.name.trim()
-        ? parsed.name.trim()
-        : current.name;
+      typeof parsed.name === "string" && parsed.name.trim() ? parsed.name.trim() : current.name;
     const description =
       typeof parsed.description === "string" && parsed.description.trim()
         ? parsed.description.trim().replace(/[<>]/g, "").slice(0, 1024)
@@ -142,7 +140,7 @@ export async function POST(request: Request) {
       if (!recheck.valid) {
         return NextResponse.json(
           { error: "AI output failed validation", details: validation.errors },
-          { status: 422 },
+          { status: 422 }
         );
       }
       return NextResponse.json({ enabled: true, ...repaired, repaired: true });

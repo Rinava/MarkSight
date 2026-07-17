@@ -37,8 +37,7 @@ describe("buildOutline", () => {
   });
 
   it("skips headings inside both ``` and ~~~ fences", () => {
-    const md =
-      "# Real\n\n~~~\n# tilde\n~~~\n\n```\n# backtick\n```\n\n## Also";
+    const md = "# Real\n\n~~~\n# tilde\n~~~\n\n```\n# backtick\n```\n\n## Also";
     expect(buildOutline(md).map((h) => h.text)).toEqual(["Real", "Also"]);
   });
 });

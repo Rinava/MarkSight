@@ -24,10 +24,7 @@ const INSTRUCTION_HEADING_RE =
 
 const MAX_BODY_LINES = 500;
 
-export function skillQualityHints(
-  meta: SkillMeta,
-  markdown: string,
-): SkillHint[] {
+export function skillQualityHints(meta: SkillMeta, markdown: string): SkillHint[] {
   const hints: SkillHint[] = [];
   const { body } = stripLeadingFrontmatter(markdown);
 

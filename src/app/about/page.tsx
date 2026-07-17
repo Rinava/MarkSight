@@ -111,13 +111,7 @@ const ICON_BTN =
 const LINK =
   "font-medium text-ms-primary-ink underline decoration-ms-primary-ink/40 underline-offset-4 transition-colors hover:decoration-ms-primary-ink";
 
-function ExternalLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function ExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className={LINK}>
       {children}
@@ -129,7 +123,7 @@ export default function AboutPage() {
   const year = new Date().getFullYear();
 
   return (
-    <div className="ms-scroll flex min-h-dvh flex-col bg-ms-app font-sans text-ms-ink">
+    <div className="ms-scroll bg-ms-app text-ms-ink flex min-h-dvh flex-col font-sans">
       {/* JSON-LD is non-executable data, so CSP script-src does not apply. */}
       <script
         type="application/ld+json"
@@ -139,19 +133,19 @@ export default function AboutPage() {
       />
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-10 flex h-[58px] flex-none items-center gap-3.5 border-b border-ms-border bg-ms-surface px-[18px]">
+      <header className="border-ms-border bg-ms-surface sticky top-0 z-10 flex h-[58px] flex-none items-center gap-3.5 border-b px-[18px]">
         <Link href="/" aria-label="MarkSight home">
           <Logo />
         </Link>
         <div className="flex-1" />
         <Link
           href="/"
-          className="flex h-[34px] items-center gap-[7px] rounded-[9px] bg-ms-primary px-[15px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07]"
+          className="bg-ms-primary flex h-[34px] items-center gap-[7px] rounded-[9px] px-[15px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07]"
         >
           <span>Open editor</span>
           <ArrowRight className="h-[15px] w-[15px]" aria-hidden="true" />
         </Link>
-        <div className="h-[22px] w-px bg-ms-border" />
+        <div className="bg-ms-border h-[22px] w-px" />
         <ThemeToggle />
         <a
           href={GITHUB_URL}
@@ -168,28 +162,24 @@ export default function AboutPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-12 sm:py-16">
         <article className="space-y-12">
           <header className="space-y-4">
-            <h1 className="text-[2.2rem] font-bold tracking-[-0.02em] text-ms-ink-strong">
+            <h1 className="text-ms-ink-strong text-[2.2rem] font-bold tracking-[-0.02em]">
               About Mark<span className="text-ms-primary-ink">Sight</span>
             </h1>
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
-              MarkSight is a free, open source markdown editor that runs entirely
-              in your browser. It pairs a CodeMirror editor with an
-              instantly-rendered preview, a smart formatting toolbar, keyboard
-              shortcuts, a document outline, and Markdown, HTML, and PDF export —
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
+              MarkSight is a free, open source markdown editor that runs entirely in your browser.
+              It pairs a CodeMirror editor with an instantly-rendered preview, a smart formatting
+              toolbar, keyboard shortcuts, a document outline, and Markdown, HTML, and PDF export —
               without accounts, subscriptions, or server-side storage.
             </p>
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
-              Your documents are saved to your browser&apos;s localStorage and
-              exports are generated client-side, so your writing never leaves
-              your device. You can also turn any document into an{" "}
-              <strong className="font-semibold text-ms-ink-strong">
-                Agent Skill
-              </strong>{" "}
-              for Claude and other AI agents in one click.
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
+              Your documents are saved to your browser&apos;s localStorage and exports are generated
+              client-side, so your writing never leaves your device. You can also turn any document
+              into an <strong className="text-ms-ink-strong font-semibold">Agent Skill</strong> for
+              Claude and other AI agents in one click.
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-ms-primary-ink hover:underline"
+              className="text-ms-primary-ink inline-flex items-center gap-1.5 text-[15px] font-semibold hover:underline"
             >
               Open the editor
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -197,38 +187,30 @@ export default function AboutPage() {
           </header>
 
           <section className="space-y-3">
-            <h2 className="text-[1.5rem] font-semibold text-ms-primary-strong">
-              A place to talk
-            </h2>
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
-              MarkSight is developed in the open, and the conversation happens on
-              GitHub:
+            <h2 className="text-ms-primary-strong text-[1.5rem] font-semibold">A place to talk</h2>
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
+              MarkSight is developed in the open, and the conversation happens on GitHub:
             </p>
             <ul className="ml-1 space-y-2">
-              <li className="flex gap-2 text-[15px] leading-[1.7] text-ms-ink-body">
+              <li className="text-ms-ink-body flex gap-2 text-[15px] leading-[1.7]">
                 <span aria-hidden="true" className="text-ms-primary-ink">
                   •
                 </span>
                 <span>
-                  <ExternalLink href={`${GITHUB_URL}/discussions`}>
-                    GitHub Discussions
-                  </ExternalLink>{" "}
-                  — ask questions, share what you&apos;re building, or propose
-                  ideas.
+                  <ExternalLink href={`${GITHUB_URL}/discussions`}>GitHub Discussions</ExternalLink>{" "}
+                  — ask questions, share what you&apos;re building, or propose ideas.
                 </span>
               </li>
-              <li className="flex gap-2 text-[15px] leading-[1.7] text-ms-ink-body">
+              <li className="text-ms-ink-body flex gap-2 text-[15px] leading-[1.7]">
                 <span aria-hidden="true" className="text-ms-primary-ink">
                   •
                 </span>
                 <span>
-                  <ExternalLink href={`${GITHUB_URL}/issues`}>
-                    GitHub Issues
-                  </ExternalLink>{" "}
-                  — report bugs and request features.
+                  <ExternalLink href={`${GITHUB_URL}/issues`}>GitHub Issues</ExternalLink> — report
+                  bugs and request features.
                 </span>
               </li>
-              <li className="flex gap-2 text-[15px] leading-[1.7] text-ms-ink-body">
+              <li className="text-ms-ink-body flex gap-2 text-[15px] leading-[1.7]">
                 <span aria-hidden="true" className="text-ms-primary-ink">
                   •
                 </span>
@@ -243,15 +225,13 @@ export default function AboutPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-[1.5rem] font-semibold text-ms-primary-strong">
-              Contributors
-            </h2>
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
-              MarkSight is better because of the people who report bugs, suggest
-              features, and open pull requests. Thank you!
+            <h2 className="text-ms-primary-strong text-[1.5rem] font-semibold">Contributors</h2>
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
+              MarkSight is better because of the people who report bugs, suggest features, and open
+              pull requests. Thank you!
             </p>
             <Contributors />
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
               Want to join them? Look for issues labelled{" "}
               <ExternalLink
                 href={`${GITHUB_URL}/issues?q=is%3Aopen+label%3A%22good+first+issue%22`}
@@ -263,36 +243,29 @@ export default function AboutPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-[1.5rem] font-semibold text-ms-primary-strong">
+            <h2 className="text-ms-primary-strong text-[1.5rem] font-semibold">
               Who&apos;s behind it
             </h2>
-            <p className="text-[15px] leading-[1.7] text-ms-ink-body">
+            <p className="text-ms-ink-body text-[15px] leading-[1.7]">
               MarkSight was created and is maintained by{" "}
               <ExternalLink href={PORTFOLIO_URL}>Lara Mateo</ExternalLink> (
-              <ExternalLink href="https://github.com/Rinava">
-                @Rinava
-              </ExternalLink>{" "}
-              on GitHub), and developed together with open source contributors
-              from around the world.
+              <ExternalLink href="https://github.com/Rinava">@Rinava</ExternalLink> on GitHub), and
+              developed together with open source contributors from around the world.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-[1.5rem] font-semibold text-ms-primary-strong">
+            <h2 className="text-ms-primary-strong text-[1.5rem] font-semibold">
               Frequently asked questions
             </h2>
             <div className="space-y-3">
               {faqs.map((faq) => (
                 <div
                   key={faq.question}
-                  className="rounded-[13px] border border-ms-border-2 bg-ms-surface p-5"
+                  className="border-ms-border-2 bg-ms-surface rounded-[13px] border p-5"
                 >
-                  <h3 className="text-[16px] font-semibold text-ms-ink-strong">
-                    {faq.question}
-                  </h3>
-                  <p className="mt-1.5 text-[14px] leading-[1.65] text-ms-ink-body">
-                    {faq.answer}
-                  </p>
+                  <h3 className="text-ms-ink-strong text-[16px] font-semibold">{faq.question}</h3>
+                  <p className="text-ms-ink-body mt-1.5 text-[14px] leading-[1.65]">{faq.answer}</p>
                 </div>
               ))}
             </div>
@@ -301,14 +274,14 @@ export default function AboutPage() {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="flex flex-none flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-ms-border bg-ms-surface px-4 py-4 text-[12px] text-ms-muted-3">
+      <footer className="border-ms-border bg-ms-surface text-ms-muted-3 flex flex-none flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t px-4 py-4 text-[12px]">
         <span>
           Made with <span aria-hidden="true">🫶</span> by{" "}
           <a
             href={PORTFOLIO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-ms-primary-ink hover:underline"
+            className="text-ms-primary-ink font-medium hover:underline"
           >
             laramateo.com
           </a>
@@ -318,21 +291,17 @@ export default function AboutPage() {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors hover:text-ms-primary-ink"
+          className="hover:text-ms-primary-ink transition-colors"
         >
           GitHub
         </a>
         <span aria-hidden="true">·</span>
-        <Link href="/" className="transition-colors hover:text-ms-primary-ink">
+        <Link href="/" className="hover:text-ms-primary-ink transition-colors">
           Editor
         </Link>
-        <FooterContributors
-          separator={<span aria-hidden="true">·</span>}
-        />
+        <FooterContributors separator={<span aria-hidden="true">·</span>} />
         <span aria-hidden="true">·</span>
-        <span title={`© ${year} laramateo.com. All rights reserved.`}>
-          © {year}
-        </span>
+        <span title={`© ${year} laramateo.com. All rights reserved.`}>© {year}</span>
       </footer>
     </div>
   );

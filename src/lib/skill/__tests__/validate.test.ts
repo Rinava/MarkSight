@@ -42,29 +42,19 @@ describe("validateSkill", () => {
   it("rejects blank or whitespace-only required fields", () => {
     const result = validateSkill({ name: "   ", description: "" });
     expect(result.valid).toBe(false);
-    expect(
-      result.errors.some((e) => /name/i.test(e) && /empty/i.test(e)),
-    ).toBe(true);
-    expect(
-      result.errors.some((e) => /description/i.test(e) && /empty/i.test(e)),
-    ).toBe(true);
+    expect(result.errors.some((e) => /name/i.test(e) && /empty/i.test(e))).toBe(true);
+    expect(result.errors.some((e) => /description/i.test(e) && /empty/i.test(e))).toBe(true);
   });
 
   it("rejects non-kebab-case names", () => {
-    expect(validateSkill({ name: "My_Skill", description: "x" }).valid).toBe(
-      false,
-    );
-    expect(validateSkill({ name: "My Skill", description: "x" }).valid).toBe(
-      false,
-    );
+    expect(validateSkill({ name: "My_Skill", description: "x" }).valid).toBe(false);
+    expect(validateSkill({ name: "My Skill", description: "x" }).valid).toBe(false);
   });
 
   it("rejects leading/trailing/consecutive hyphens in name", () => {
     expect(validateSkill({ name: "-skill", description: "x" }).valid).toBe(false);
     expect(validateSkill({ name: "skill-", description: "x" }).valid).toBe(false);
-    expect(validateSkill({ name: "my--skill", description: "x" }).valid).toBe(
-      false,
-    );
+    expect(validateSkill({ name: "my--skill", description: "x" }).valid).toBe(false);
   });
 
   it("rejects names longer than 64 characters", () => {
@@ -79,9 +69,7 @@ describe("validateSkill", () => {
       description: "Renders <html> tags",
     });
     expect(result.valid).toBe(false);
-    expect(
-      result.errors.some((e) => e.includes("angle brackets")),
-    ).toBe(true);
+    expect(result.errors.some((e) => e.includes("angle brackets"))).toBe(true);
   });
 
   it("rejects descriptions longer than 1024 characters", () => {
@@ -103,8 +91,6 @@ describe("validateSkill", () => {
 
   it("rejects non-string name/description", () => {
     expect(validateSkill({ name: 123, description: "x" }).valid).toBe(false);
-    expect(validateSkill({ name: "my-skill", description: 5 }).valid).toBe(
-      false,
-    );
+    expect(validateSkill({ name: "my-skill", description: 5 }).valid).toBe(false);
   });
 });

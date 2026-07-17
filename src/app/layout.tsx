@@ -25,9 +25,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://marksight.laramateo.com"),
   title: {
     default: "MarkSight - Advanced Markdown Editor with Real-time Preview",
-    template: "%s | MarkSight - Markdown Editor"
+    template: "%s | MarkSight - Markdown Editor",
   },
-  description: "Free, open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and HTML/PDF export.",
+  description:
+    "Free, open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and HTML/PDF export.",
   keywords: [
     "markdown editor",
     "markdown preview",
@@ -57,12 +58,14 @@ export const metadata: Metadata = {
     url: "https://marksight.laramateo.com",
     siteName: "MarkSight",
     title: "MarkSight - Advanced Markdown Editor with Real-time Preview",
-    description: "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub.",
+    description:
+      "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub.",
   },
   twitter: {
     card: "summary_large_image",
     title: "MarkSight - Advanced Markdown Editor with Real-time Preview",
-    description: "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, and export options. Free to use and contribute to on GitHub.",
+    description:
+      "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, and export options. Free to use and contribute to on GitHub.",
     creator: "@laramateo",
   },
   alternates: {
@@ -99,27 +102,28 @@ export default async function RootLayout({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "MarkSight",
-    "description": "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub.",
-    "url": "https://marksight.laramateo.com",
-    "applicationCategory": "ProductivityApplication",
-    "operatingSystem": "Web Browser",
-    "offers": {
+    name: "MarkSight",
+    description:
+      "Open source markdown editor with real-time preview, smart toolbar, keyboard shortcuts, document outline, and export options. Free to use and contribute to on GitHub.",
+    url: "https://marksight.laramateo.com",
+    applicationCategory: "ProductivityApplication",
+    operatingSystem: "Web Browser",
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+      price: "0",
+      priceCurrency: "USD",
     },
-    "author": {
+    author: {
       "@type": "Person",
-      "name": "Lara Mateo",
-      "url": "https://laramateo.com"
+      name: "Lara Mateo",
+      url: "https://laramateo.com",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "laramateo.com",
-      "url": "https://laramateo.com"
+      name: "laramateo.com",
+      url: "https://laramateo.com",
     },
-    "featureList": [
+    featureList: [
       "Real-time markdown preview",
       "Smart formatting toolbar",
       "Keyboard shortcuts",
@@ -129,8 +133,8 @@ export default async function RootLayout({
       "Dark/light theme toggle",
       "Local storage persistence",
       "Open source and free",
-      "GitHub collaboration"
-    ]
+      "GitHub collaboration",
+    ],
   };
 
   return (
@@ -146,7 +150,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground min-h-dvh antialiased`}
       >
         <ThemeProvider nonce={nonce}>
           <ContentProvider>

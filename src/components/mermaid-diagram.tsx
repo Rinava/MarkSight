@@ -38,12 +38,10 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
     return (
       <div
         role="alert"
-        className="not-prose my-4 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+        className="not-prose border-destructive/50 bg-destructive/10 text-destructive my-4 rounded-md border p-3 text-sm"
       >
         <p className="font-medium">Failed to render Mermaid diagram</p>
-        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-xs">
-          {error}
-        </pre>
+        <pre className="mt-2 overflow-x-auto font-mono text-xs whitespace-pre-wrap">{error}</pre>
       </div>
     );
   }
@@ -51,7 +49,7 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
   if (svg === null) {
     return (
       <div
-        className="not-prose my-4 h-24 animate-pulse rounded-md bg-muted"
+        className="not-prose bg-muted my-4 h-24 animate-pulse rounded-md"
         aria-label="Rendering diagram"
         aria-busy="true"
       />

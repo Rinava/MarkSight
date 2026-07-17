@@ -1,19 +1,18 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 
-
 type ErrorBoundaryProps = {
-  error: Error & { digest?: string },
-  reset: () => void
-}
+  error: Error & { digest?: string };
+  reset: () => void;
+};
 
 export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 text-center antialiased">
-      <div className="max-w-md space-y-6 rounded-lg border border-border bg-card p-8 shadow-sm">
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center p-6 text-center antialiased">
+      <div className="border-border bg-card max-w-md space-y-6 rounded-lg border p-8 shadow-sm">
         {/* Visual Alert Icon */}
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+        <div className="bg-destructive/10 text-destructive mx-auto flex h-12 w-12 items-center justify-center rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -32,15 +31,15 @@ export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
 
         {/* Text Stack - Surfacing only a generic message and the safe identifier */}
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-foreground text-xl font-semibold tracking-tight">
             Something went wrong
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            We couldn&apos;t load this page because an unexpected error occurred.
-            Please try again below
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            We couldn&apos;t load this page because an unexpected error occurred. Please try again
+            below
           </p>
           {error.digest && (
-            <p className="font-mono text-xs text-muted-foreground/60 select-all pt-1">
+            <p className="text-muted-foreground/60 pt-1 font-mono text-xs select-all">
               Error ID: {error.digest}
             </p>
           )}

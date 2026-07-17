@@ -33,41 +33,37 @@ export function PreviewPane({
     <section
       aria-label="Rendered preview"
       style={style}
-      className={`flex min-w-0 flex-col bg-ms-surface ${className}`}
+      className={`bg-ms-surface flex min-w-0 flex-col ${className}`}
     >
-      <div className="flex flex-none items-center justify-between border-b border-ms-border-3 px-4 py-[9px]">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
+      <div className="border-ms-border-3 flex flex-none items-center justify-between border-b px-4 py-[9px]">
+        <span className="text-ms-muted text-[11px] font-semibold tracking-[0.05em] uppercase">
           {label}
         </span>
-        <span className="text-[11px] text-ms-muted-2">{readingTime} min read</span>
+        <span className="text-ms-muted-2 text-[11px]">{readingTime} min read</span>
       </div>
 
       <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-[34px] py-[26px]">
         <div className="max-w-[720px]">
           {skillMode && (
-            <div className="mb-[22px] rounded-[13px] border border-ms-panel-border bg-ms-panel px-[18px] py-4">
+            <div className="border-ms-panel-border bg-ms-panel mb-[22px] rounded-[13px] border px-[18px] py-4">
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <Sparkles
-                  className="h-[15px] w-[15px] text-ms-primary-ink"
-                  aria-hidden="true"
-                />
-                <span className="font-mono text-[15px] font-semibold text-ms-primary-strong">
+                <Sparkles className="text-ms-primary-ink h-[15px] w-[15px]" aria-hidden="true" />
+                <span className="text-ms-primary-strong font-mono text-[15px] font-semibold">
                   {name || "untitled-skill"}
                 </span>
-                <span className="rounded-md bg-ms-chip px-[7px] py-0.5 text-[11px] font-medium text-ms-label">
+                <span className="bg-ms-chip text-ms-label rounded-md px-[7px] py-0.5 text-[11px] font-medium">
                   v{version}
                 </span>
               </div>
-              <p className="m-0 text-[13.5px] leading-[1.55] text-ms-label">
-                {description ||
-                  "No description yet — add one in the inspector."}
+              <p className="text-ms-label m-0 text-[13.5px] leading-[1.55]">
+                {description || "No description yet — add one in the inspector."}
               </p>
               {tags.length > 0 && (
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   {tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-md bg-ms-tint-3 px-2 py-0.5 text-[11px] font-medium text-ms-label"
+                      className="bg-ms-tint-3 text-ms-label rounded-md px-2 py-0.5 text-[11px] font-medium"
                     >
                       {tag}
                     </span>

@@ -28,7 +28,7 @@ export function ViewSwitch({
         if (next) onChange(next);
       }}
       aria-label="Editor view"
-      className="flex items-center gap-0.5 rounded-lg border border-ms-border-2 bg-ms-tint-2 p-[3px]"
+      className="border-ms-border-2 bg-ms-tint-2 flex items-center gap-0.5 rounded-lg border p-[3px]"
     >
       {OPTIONS.map(({ value, label, Icon }) => (
         <Toggle
@@ -36,7 +36,7 @@ export function ViewSwitch({
           value={value}
           title={label}
           aria-label={label}
-          className="flex h-7 w-8 items-center justify-center rounded-md text-ms-muted-2 transition-colors hover:text-ms-primary-strong data-[pressed]:bg-ms-surface data-[pressed]:text-ms-primary-ink data-[pressed]:shadow-sm"
+          className="text-ms-muted-2 hover:text-ms-primary-strong data-[pressed]:bg-ms-surface data-[pressed]:text-ms-primary-ink flex h-7 w-8 items-center justify-center rounded-md transition-colors data-[pressed]:shadow-sm"
         >
           <Icon className="h-[15px] w-[15px]" />
         </Toggle>

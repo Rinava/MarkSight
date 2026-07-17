@@ -12,24 +12,17 @@ const MONO_STACK =
   "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 
 function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function mermaidError(error: unknown): string {
-  const message = escapeHtml(
-    error instanceof Error ? error.message : String(error)
-  );
+  const message = escapeHtml(error instanceof Error ? error.message : String(error));
   return `<div class="mermaid-error"><strong>Failed to render Mermaid diagram</strong><pre>${message}</pre></div>`;
 }
 
 // Shared component map. `onMermaid` returns the inner HTML to inject for a
 // mermaid block, or `null` during the collection pass.
-function makeComponents(
-  onMermaid: (code: string) => string | null
-): Components {
+function makeComponents(onMermaid: (code: string) => string | null): Components {
   return {
     // The `code` component renders every code block into its own container (a
     // highlighter <pre>, a mermaid diagram, or inline code), so the default
@@ -43,16 +36,10 @@ function makeComponents(
       if (match?.[1] === "mermaid") {
         const inner = onMermaid(String(children).replace(/\n$/, ""));
         if (inner === null) return null;
-        return (
-          <div
-            className="mermaid-diagram"
-            dangerouslySetInnerHTML={{ __html: inner }}
-          />
-        );
+        return <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: inner }} />;
       }
 
-      const isCodeBlock =
-        Boolean(className) || String(children).includes("\n");
+      const isCodeBlock = Boolean(className) || String(children).includes("\n");
 
       if (!isCodeBlock) {
         return <code className="inline-code">{children}</code>;
@@ -120,10 +107,7 @@ export async function renderExportBody(content: string): Promise<string> {
 
   let index = 0;
   return renderToStaticMarkup(
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={makeComponents(() => diagrams[index++])}
-    >
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={makeComponents(() => diagrams[index++])}>
       {content}
     </ReactMarkdown>
   );

@@ -97,8 +97,6 @@ describe("packageSkillForMode", () => {
     const bytes = await packageSkillForMode(meta, NOTES_DOC, "knowledge");
     const entries = unzipSync(bytes);
     expect(strFromU8(entries["deploy-guide/SKILL.md"])).toContain(KNOWLEDGE_DOC_PATH);
-    expect(strFromU8(entries[`deploy-guide/${KNOWLEDGE_DOC_PATH}`])).toContain(
-      "## Discussion",
-    );
+    expect(strFromU8(entries[`deploy-guide/${KNOWLEDGE_DOC_PATH}`])).toContain("## Discussion");
   });
 });

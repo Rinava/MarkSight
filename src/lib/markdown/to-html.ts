@@ -26,12 +26,9 @@ function escapeHtml(value: string): string {
 
 export async function renderMarkdownToHtml(
   markdown: string,
-  { styled = true, title = "document" }: RenderHtmlOptions = {},
+  { styled = true, title = "document" }: RenderHtmlOptions = {}
 ): Promise<string> {
-  const result = await remark()
-    .use(remarkGfm)
-    .use(remarkHtml)
-    .process(markdown);
+  const result = await remark().use(remarkGfm).use(remarkHtml).process(markdown);
 
   const htmlContent = result.toString();
   if (!styled) return htmlContent;

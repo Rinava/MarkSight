@@ -40,10 +40,10 @@ export function Logo({ className = "", markOnly = false }: LogoProps) {
       <LogoMark />
       {!markOnly && (
         <div className="flex flex-col gap-0.5 leading-[1.05]">
-          <span className="text-[17px] font-bold tracking-[-0.03em] text-ms-ink-strong">
+          <span className="text-ms-ink-strong text-[17px] font-bold tracking-[-0.03em]">
             Mark<span className="text-ms-primary-ink">Sight</span>
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-ms-muted">
+          <span className="text-ms-muted text-[10px] font-semibold tracking-[0.09em] uppercase">
             markdown, clearly
           </span>
         </div>

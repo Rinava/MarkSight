@@ -54,13 +54,13 @@ That's it. Edit a file under `src/` and the page hot-reloads.
 
 ### Available scripts
 
-| Command         | What it does                          |
-| --------------- | ------------------------------------- |
-| `npm run dev`   | Start the dev server with Turbopack   |
-| `npm run build` | Production build                      |
-| `npm run start` | Serve the production build            |
-| `npm run lint`  | Run ESLint                            |
-| `npm test`      | Run the unit tests (Vitest)           |
+| Command         | What it does                        |
+| --------------- | ----------------------------------- |
+| `npm run dev`   | Start the dev server with Turbopack |
+| `npm run build` | Production build                    |
+| `npm run start` | Serve the production build          |
+| `npm run lint`  | Run ESLint                          |
+| `npm test`      | Run the unit tests (Vitest)         |
 
 Brand assets (icons, social images) are generated from inline SVG:
 

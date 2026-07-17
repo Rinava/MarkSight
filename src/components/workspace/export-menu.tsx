@@ -27,14 +27,10 @@ export interface ExportMenuProps {
   filename?: string;
 }
 
-const MERMAID_BLOCK =
-  /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g;
+const MERMAID_BLOCK = /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g;
 
 function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 // remark-html entity-escapes code-block contents; decode so mermaid receives
@@ -46,9 +42,7 @@ function decodeHtmlEntities(value: string): string {
 }
 
 function mermaidErrorHTML(error: unknown): string {
-  const message = escapeHtml(
-    error instanceof Error ? error.message : String(error),
-  );
+  const message = escapeHtml(error instanceof Error ? error.message : String(error));
   return `<div class="mermaid-error"><strong>Failed to render Mermaid diagram</strong><pre>${message}</pre></div>`;
 }
 
@@ -76,10 +70,7 @@ async function inlineMermaidDiagrams(html: string): Promise<string> {
 }
 
 // Styled export document with any mermaid diagrams inlined as SVG.
-async function renderExportHtml(
-  content: string,
-  filename: string,
-): Promise<string> {
+async function renderExportHtml(content: string, filename: string): Promise<string> {
   const html = await renderMarkdownToHtml(content, {
     styled: true,
     title: filename,
@@ -106,11 +97,7 @@ function downloadBlob(data: BlobPart, name: string, mime: string) {
   URL.revokeObjectURL(url);
 }
 
-export function ExportMenu({
-  skillMode,
-  content,
-  filename = "document",
-}: ExportMenuProps) {
+export function ExportMenu({ skillMode, content, filename = "document" }: ExportMenuProps) {
   const { meta, validation, mode, extraFiles } = useSkillMeta();
   const { trackExportAction, trackSkillAction } = useAnalytics();
   const [name, setName] = useState(filename);
@@ -119,11 +106,7 @@ export function ExportMenu({
   async function exportHTML() {
     try {
       trackExportAction("html", content);
-      downloadBlob(
-        await renderExportHtml(content, safeName),
-        `${safeName}.html`,
-        "text/html",
-      );
+      downloadBlob(await renderExportHtml(content, safeName), `${safeName}.html`, "text/html");
       toast.success("HTML exported");
     } catch {
       toast.error("Failed to export HTML");
@@ -137,7 +120,7 @@ export function ExportMenu({
       const printWindow = window.open("", "_blank");
       if (!printWindow) {
         toast.error(
-          "Couldn't open the export window. Please allow popups for this site and try again.",
+          "Couldn't open the export window. Please allow popups for this site and try again."
         );
         return;
       }
@@ -157,7 +140,7 @@ export function ExportMenu({
       const newWindow = window.open("", "_blank");
       if (!newWindow) {
         toast.error(
-          "Couldn't open the export window. Please allow popups for this site and try again.",
+          "Couldn't open the export window. Please allow popups for this site and try again."
         );
         return;
       }
@@ -184,9 +167,7 @@ export function ExportMenu({
   async function copySkillMd() {
     if (!ensureValidSkill()) return;
     try {
-      await navigator.clipboard.writeText(
-        buildSkillMdForMode(meta, content, mode),
-      );
+      await navigator.clipboard.writeText(buildSkillMdForMode(meta, content, mode));
       trackSkillAction("copy");
       toast.success("SKILL.md copied — paste it into Claude or another agent.");
     } catch {
@@ -196,11 +177,7 @@ export function ExportMenu({
 
   function downloadSkillMd() {
     if (!ensureValidSkill()) return;
-    downloadBlob(
-      buildSkillMdForMode(meta, content, mode),
-      "SKILL.md",
-      "text/markdown",
-    );
+    downloadBlob(buildSkillMdForMode(meta, content, mode), "SKILL.md", "text/markdown");
     trackSkillAction("md");
     toast.success("SKILL.md downloaded");
   }
@@ -225,11 +202,7 @@ export function ExportMenu({
   // ⌘⇧K / Ctrl+Shift+K — one-click skill package, matching the original app.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (
-        (event.metaKey || event.ctrlKey) &&
-        event.shiftKey &&
-        event.key.toLowerCase() === "k"
-      ) {
+      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "k") {
         event.preventDefault();
         skillZipRef.current();
       }
@@ -245,9 +218,27 @@ export function ExportMenu({
     { label: "Download Markdown", sub: "Raw .md source", Icon: FileDown, action: downloadMarkdown },
   ];
   const skillItems = [
-    { label: "Copy SKILL.md", sub: "Frontmatter + body", Icon: Copy, action: copySkillMd, gated: true },
-    { label: "Download SKILL.md", sub: "Single file", Icon: FileCode2, action: downloadSkillMd, gated: true },
-    { label: "Download folder (.zip)", sub: "SKILL.md + bundled files", Icon: Package, action: downloadSkillZip, gated: true },
+    {
+      label: "Copy SKILL.md",
+      sub: "Frontmatter + body",
+      Icon: Copy,
+      action: copySkillMd,
+      gated: true,
+    },
+    {
+      label: "Download SKILL.md",
+      sub: "Single file",
+      Icon: FileCode2,
+      action: downloadSkillMd,
+      gated: true,
+    },
+    {
+      label: "Download folder (.zip)",
+      sub: "SKILL.md + bundled files",
+      Icon: Package,
+      action: downloadSkillZip,
+      gated: true,
+    },
   ];
   const items = skillMode ? skillItems : docItems;
 
@@ -257,7 +248,7 @@ export function ExportMenu({
         render={
           <button
             type="button"
-            className="flex h-[34px] items-center gap-[7px] rounded-[9px] bg-ms-primary px-[13px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
+            className="bg-ms-primary flex h-[34px] items-center gap-[7px] rounded-[9px] px-[13px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
           />
         }
       >
@@ -267,12 +258,12 @@ export function ExportMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
-          <Menu.Popup className="ms-pop w-[248px] origin-[var(--transform-origin)] rounded-xl border border-ms-border-2 bg-ms-surface p-1.5 shadow-[var(--ms-shadow-menu)] outline-none">
-            <div className="px-2.5 pt-1.5 pb-1 text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ms-muted">
+          <Menu.Popup className="ms-pop border-ms-border-2 bg-ms-surface w-[248px] origin-[var(--transform-origin)] rounded-xl border p-1.5 shadow-[var(--ms-shadow-menu)] outline-none">
+            <div className="text-ms-muted px-2.5 pt-1.5 pb-1 text-[10.5px] font-semibold tracking-[0.05em] uppercase">
               {skillMode ? "Package skill" : "Export document"}
             </div>
             {!skillMode && (
-              <div className="px-2.5 pb-1.5 pt-0.5" onKeyDown={(e) => e.stopPropagation()}>
+              <div className="px-2.5 pt-0.5 pb-1.5" onKeyDown={(e) => e.stopPropagation()}>
                 <input
                   type="text"
                   value={name}
@@ -280,7 +271,7 @@ export function ExportMenu({
                   onKeyDown={(e) => e.stopPropagation()}
                   placeholder="document"
                   aria-label="Export file name"
-                  className="ms-in w-full rounded-md border border-ms-border-2 bg-ms-surface px-2 py-1.5 text-[12px] text-ms-ink-2"
+                  className="ms-in border-ms-border-2 bg-ms-surface text-ms-ink-2 w-full rounded-md border px-2 py-1.5 text-[12px]"
                 />
               </div>
             )}
@@ -291,12 +282,12 @@ export function ExportMenu({
                 disabled={"gated" in item && item.gated ? !validation.valid : false}
                 className={ITEM_CLASS}
               >
-                <span className="flex text-ms-primary-ink">
+                <span className="text-ms-primary-ink flex">
                   <item.Icon className="h-[18px] w-[18px]" aria-hidden="true" />
                 </span>
                 <span className="flex-1">
                   <span className="block text-[13px] font-medium">{item.label}</span>
-                  <span className="block text-[11px] text-ms-muted-3">{item.sub}</span>
+                  <span className="text-ms-muted-3 block text-[11px]">{item.sub}</span>
                 </span>
               </Menu.Item>
             ))}
