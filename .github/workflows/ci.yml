@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Check formatting
+        run: npm run format:check
+
       # Unit tests (Vitest) — run before the slow build so they fail fast.
       - name: Test
         run: npm test
