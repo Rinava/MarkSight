@@ -131,38 +131,45 @@ export function ExportMenu({
   }
 
   async function exportPDF() {
-    try {
-      trackExportAction("pdf", content);
-      const html = await renderExportHtml(content, safeName);
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        toast.error("Allow pop-ups to export as PDF");
-        return;
-      }
+  try {
+    trackExportAction("pdf", content);
+
+    const html = await renderExportHtml(content, filename);
+    const printWindow = window.open("", "_blank");
+
+    if (printWindow) {
       printWindow.document.write(html);
       printWindow.document.close();
       setTimeout(() => {
         printWindow.print();
       }, 400);
-    } catch {
-      toast.error("Failed to export PDF");
+    } else {
+      toast.error(
+        "Couldn't open the export window. Please allow popups for this site and try again.",
+      );
     }
+  } catch {
+    toast.error("Failed to export PDF");
   }
+}
 
   async function previewHTML() {
-    try {
-      const html = await renderExportHtml(content, safeName);
-      const newWindow = window.open("", "_blank");
-      if (!newWindow) {
-        toast.error("Allow pop-ups to preview HTML");
-        return;
-      }
+  try {
+    const html = await renderExportHtml(content, filename);
+    const newWindow = window.open("", "_blank");
+
+    if (newWindow) {
       newWindow.document.write(html);
       newWindow.document.close();
-    } catch {
-      toast.error("Failed to preview HTML");
+    } else {
+      toast.error(
+        "Couldn't open the export window. Please allow popups for this site and try again.",
+      );
     }
+  } catch {
+    toast.error("Failed to preview HTML");
   }
+}
 
   function downloadMarkdown() {
     downloadBlob(content, `${safeName}.md`, "text/markdown");
