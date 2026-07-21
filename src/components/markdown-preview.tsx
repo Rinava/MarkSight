@@ -1,5 +1,5 @@
 "use client";
-
+import { toast } from "sonner";
 import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -42,6 +42,7 @@ function CodeBlock({
       }, 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
+      toast.error("Couldn't copy to clipboard");
     }
   }
   useEffect(() => {
