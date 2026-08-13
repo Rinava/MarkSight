@@ -49,6 +49,11 @@ export function MarkdownToolbar({
   selectionVersion,
 }: MarkdownToolbarProps) {
   const { trackToolbarInteraction, trackShortcut } = useAnalytics();
+  // Modifier shown in tooltips: ⌘ on macOS, Ctrl elsewhere. Guard navigator for
+  // the SSR prerender pass (this is a client component but still renders server-side).
+  const isMac =
+    typeof navigator !== "undefined" && navigator.platform.toUpperCase().includes("MAC");
+  const modifierKey = isMac ? "⌘" : "Ctrl";
   const markdownPatterns = useMemo(
     () => [
       { pattern: /\*\*([^*]+)\*\*/g, type: "bold", before: "**", after: "**" },
@@ -379,55 +384,55 @@ export function MarkdownToolbar({
     {
       icon: Bold,
       label: "Bold",
-      shortcut: "⌘B",
+      shortcut: `${modifierKey}B`,
       formatType: "bold",
       action: () => smartInsert("**", "**", "bold text", "bold"),
     },
     {
       icon: Italic,
       label: "Italic",
-      shortcut: "⌘I",
+      shortcut: `${modifierKey}I`,
       formatType: "italic",
       action: () => smartInsert("*", "*", "italic text", "italic"),
     },
     {
       icon: Strikethrough,
       label: "Strikethrough",
-      shortcut: "⌘U",
+      shortcut: `${modifierKey}U`,
       formatType: "strikethrough",
       action: () => smartInsert("~~", "~~", "strikethrough text", "strikethrough"),
     },
     {
       icon: Heading1,
       label: "Heading 1",
-      shortcut: "⌘⇧1",
+      shortcut: `${modifierKey}⇧1`,
       formatType: "heading1",
       action: () => smartHeading(1),
     },
     {
       icon: Heading2,
       label: "Heading 2",
-      shortcut: "⌘⇧2",
+      shortcut: `${modifierKey}⇧2`,
       formatType: "heading2",
       action: () => smartHeading(2),
     },
     {
       icon: Heading3,
       label: "Heading 3",
-      shortcut: "⌘⇧3",
+      shortcut: `${modifierKey}⇧3`,
       formatType: "heading3",
       action: () => smartHeading(3),
     },
     {
       icon: List,
       label: "Unordered List",
-      shortcut: "⌘⇧L",
+      shortcut: `${modifierKey}⇧L`,
       action: () => insertLine("- ", "List item"),
     },
     {
       icon: ListOrdered,
       label: "Ordered List",
-      shortcut: "⌘⇧O",
+      shortcut: `${modifierKey}⇧O`,
       action: () => insertLine("1. ", "List item"),
     },
     {
@@ -443,7 +448,7 @@ export function MarkdownToolbar({
     {
       icon: Code,
       label: "Inline Code",
-      shortcut: "⌘`",
+      shortcut: `${modifierKey}\``,
       formatType: "code",
       action: () => smartInsert("`", "`", "code", "code"),
     },
@@ -455,7 +460,7 @@ export function MarkdownToolbar({
     {
       icon: Link,
       label: "Link",
-      shortcut: "⌘K",
+      shortcut: `${modifierKey}K`,
       action: () => insertText("[", "](url)", "link text"),
     },
     {
@@ -522,7 +527,6 @@ export function MarkdownToolbar({
     function setupKeyboardShortcuts() {
       function handleKeyDown(event: KeyboardEvent) {
         if (!document.activeElement?.closest(".cm-editor")) return;
-        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
         const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
         if (!isCtrlOrCmd) return;
@@ -596,7 +600,7 @@ export function MarkdownToolbar({
         document.removeEventListener("keydown", handleKeyDown);
       };
     },
-    [insertLine, insertText, smartHeading, smartInsert, trackShortcut]
+    [isMac, insertLine, insertText, smartHeading, smartInsert, trackShortcut]
   );
 
   // Recompute when the doc changes (getCurrentContext identity) or the caret moves
