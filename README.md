@@ -250,6 +250,8 @@ collecting dust.
 MarkSight was created and is maintained by
 **[Lara Mateo](https://laramateo.com)** ([@Rinava](https://github.com/Rinava)).
 
+MarkSight is built by the team behind [Kenda](https://www.kenda.app).
+
 ## License
 
 [MIT](./LICENSE).
