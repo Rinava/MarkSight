@@ -42,6 +42,10 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      # Fast type gate: fails in seconds instead of waiting for the full build.
+      - name: Typecheck
+        run: npm run typecheck
+
       # Unit tests (Vitest) — run before the slow build so they fail fast.
       - name: Test
         run: npm test

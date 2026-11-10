@@ -35,8 +35,8 @@ on the approach before you invest time in it.
 
 ## Getting started
 
-**Prerequisites:** [Node.js](https://nodejs.org/) 20 or newer (the project is
-developed on Node 22) and npm (bundled with Node).
+**Prerequisites:** [Node.js](https://nodejs.org/) 22 or newer (the version
+pinned in `.nvmrc` and the one CI runs) and npm (bundled with Node).
 
 ```bash
 # 1. Fork the repo on GitHub, then clone your fork
@@ -54,13 +54,14 @@ That's it. Edit a file under `src/` and the page hot-reloads.
 
 ### Available scripts
 
-| Command         | What it does                        |
-| --------------- | ----------------------------------- |
-| `npm run dev`   | Start the dev server with Turbopack |
-| `npm run build` | Production build                    |
-| `npm run start` | Serve the production build          |
-| `npm run lint`  | Run ESLint                          |
-| `npm test`      | Run the unit tests (Vitest)         |
+| Command             | What it does                                   |
+| ------------------- | ---------------------------------------------- |
+| `npm run dev`       | Start the dev server with Turbopack            |
+| `npm run build`     | Production build                               |
+| `npm run start`     | Serve the production build                     |
+| `npm run lint`      | Run ESLint                                     |
+| `npm run typecheck` | Type-check with `tsc --noEmit` (takes seconds) |
+| `npm test`          | Run the unit tests (Vitest)                    |
 
 Brand assets (icons, social images) are generated from inline SVG:
 
@@ -82,6 +83,7 @@ node scripts/generate-assets.mjs
 
    ```bash
    npm run lint
+   npm run typecheck
    npm test
    npm run build
    ```
