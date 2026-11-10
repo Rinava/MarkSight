@@ -128,6 +128,12 @@ export const MarkdownPreview = memo(function MarkdownPreview({
               </a>
             );
           },
+          img({ alt, ...props }) {
+            // Markdown src is an arbitrary user URL, so next/image's remote-domain
+            // allowlist can't cover it — use a plain lazy <img>.
+            // eslint-disable-next-line @next/next/no-img-element
+            return <img {...props} alt={alt ?? ""} loading="lazy" decoding="async" />;
+          },
           code({ className: codeClassName, children }) {
             const match = /language-(\w+)/.exec(codeClassName ?? "");
 
