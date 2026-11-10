@@ -69,6 +69,19 @@ Brand assets (icons, social images) are generated from inline SVG:
 node scripts/generate-assets.mjs
 ```
 
+### Dependency overrides
+
+`package.json` has an `overrides` block. JSON can't hold comments, so the
+reasons live here:
+
+| Override  | Why it's there                                                                                                                                              | When it can go                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `prismjs` | `react-syntax-highlighter` pulls in an older Prism through `refractor` that has a known DOM clobbering advisory. The override forces the patched 1.30 line. | Once `react-syntax-highlighter` depends on `prismjs` >= 1.30 by itself.     |
+| `postcss` | Next.js pins an exact, older `postcss` that has an XSS advisory in its CSS stringifier. The override dedupes everything onto a patched 8.5 release.         | Once Next.js ships with `postcss` >= 8.5.10 and `npm ls postcss` is single. |
+
+If you remove one, run `npm ls <package> --all` and `npm audit` to confirm
+nothing vulnerable comes back.
+
 ## Development workflow
 
 1. Create a branch off `main` with a descriptive, prefixed name:
