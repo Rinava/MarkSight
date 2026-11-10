@@ -221,7 +221,7 @@ export function MarkdownToolbar({
           label={
             <span>
               {button.label}
-              {button.shortcut && <span className="ml-2 text-[#9db392]">{button.shortcut}</span>}
+              {button.shortcut && <span className="text-ms-tip-muted ml-2">{button.shortcut}</span>}
             </span>
           }
         >

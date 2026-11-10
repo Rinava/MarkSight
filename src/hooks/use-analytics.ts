@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   trackDocumentMetrics,
   calculateDocumentMetrics,
@@ -12,57 +11,41 @@ import {
   trackDocumentClear,
 } from "@/lib/analytics";
 
-export function useAnalytics() {
-  const trackDocumentChange = useCallback((content: string) => {
-    const metrics = calculateDocumentMetrics(content);
-    trackDocumentMetrics(metrics);
-  }, []);
-
-  const trackExportAction = useCallback((format: "html" | "pdf", content: string) => {
-    const metrics = calculateDocumentMetrics(content);
-    trackExport(format, metrics.wordCount);
-  }, []);
-
-  const trackSkillAction = useCallback((kind: "copy" | "md" | "skill" | "ai-improve") => {
+// Module-level, so every caller gets the same function identities and they
+// are safe to list in effect/callback dependency arrays without useCallback.
+const analytics = {
+  trackDocumentChange(content: string) {
+    trackDocumentMetrics(calculateDocumentMetrics(content));
+  },
+  trackExportAction(format: "html" | "pdf", content: string) {
+    trackExport(format, calculateDocumentMetrics(content).wordCount);
+  },
+  trackSkillAction(kind: "copy" | "md" | "skill" | "ai-improve") {
     trackSkillCreate(kind);
-  }, []);
-
-  const trackThemeChange = useCallback((theme: "light" | "dark") => {
+  },
+  trackThemeChange(theme: "light" | "dark") {
     trackThemeToggle(theme);
-  }, []);
-
-  const trackEditorInteraction = useCallback((action: string, details?: string) => {
-    // `details` is accepted for call-site compatibility but intentionally
-    // dropped — document text must never reach analytics.
+  },
+  // `details` is accepted for call-site compatibility but intentionally
+  // dropped: document text must never reach analytics.
+  trackEditorInteraction(action: string, details?: string) {
     void details;
     trackEditorAction(action);
-  }, []);
-
-  const trackToolbarInteraction = useCallback((action: string) => {
+  },
+  trackToolbarInteraction(action: string) {
     trackToolbarAction(action);
-  }, []);
-
-  const trackShortcut = useCallback((shortcut: string) => {
+  },
+  trackShortcut(shortcut: string) {
     trackKeyboardShortcut(shortcut);
-  }, []);
-
-  const trackReset = useCallback(() => {
+  },
+  trackReset() {
     trackDocumentReset();
-  }, []);
-
-  const trackClear = useCallback(() => {
+  },
+  trackClear() {
     trackDocumentClear();
-  }, []);
+  },
+};
 
-  return {
-    trackDocumentChange,
-    trackExportAction,
-    trackSkillAction,
-    trackThemeChange,
-    trackEditorInteraction,
-    trackToolbarInteraction,
-    trackShortcut,
-    trackReset,
-    trackClear,
-  };
+export function useAnalytics() {
+  return analytics;
 }

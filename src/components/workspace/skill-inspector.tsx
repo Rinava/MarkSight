@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   CircleCheck,
@@ -19,10 +19,10 @@ import { toast } from "sonner";
 import { useContent } from "@/contexts/content-context";
 import { useSkillMeta } from "@/contexts/skill-meta-context";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { skillQualityHints } from "@/lib/skill/hints";
 import { KNOWLEDGE_DOC_PATH } from "@/lib/skill/knowledge";
 
 const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const TRIGGER_RE = /\b(when|use|trigger|invoke)\b/i;
 const SCRIPT_EXT_RE = /\.(py|js|ts|tsx|jsx|sh|rb|go|rs|mjs|cjs)$/i;
 const MODE_OPTIONS = [
   { value: "instruction" as const, label: "Instructions", Icon: ListChecks },
@@ -32,6 +32,53 @@ const SECTION_LABEL = "text-[11px] font-semibold uppercase tracking-[0.05em] tex
 const FIELD_LABEL = "text-[12.5px] font-semibold text-ms-ink-3";
 const TEXT_INPUT =
   "ms-in w-full rounded-[9px] border border-ms-border-2 bg-ms-surface px-3 py-2.5 text-[13px] text-ms-ink-2";
+
+type FieldStatus = "empty" | "ok" | "error";
+
+/** Hint text and colors for the name field, by validation state. */
+const NAME_FIELD: Record<FieldStatus, { hint: string; hintColor: string; border: string }> = {
+  empty: {
+    hint: "Lowercase, hyphen-separated. Becomes the folder name.",
+    hintColor: "text-ms-muted-2",
+    border: "border-ms-border-2",
+  },
+  ok: {
+    hint: "✓ Valid identifier",
+    hintColor: "text-ms-primary-ink",
+    border: "border-ms-ok-input-border",
+  },
+  error: {
+    hint: "Only lowercase letters, numbers and single hyphens (max 64).",
+    hintColor: "text-ms-danger-strong",
+    border: "border-ms-danger-border",
+  },
+};
+
+const DESC_MAX_CHARS = 1024;
+/** Past this the character counter turns amber as a heads-up. */
+const DESC_WARN_CHARS = 900;
+
+function descCountClass(length: number): string {
+  if (length > DESC_MAX_CHARS) return "text-ms-danger-strong";
+  if (length > DESC_WARN_CHARS) return "text-ms-warn";
+  return "text-ms-muted";
+}
+
+type CheckStatus = "ok" | "warn" | "error";
+
+/** Icon and border colors for a validation row, by outcome. */
+const CHECK_STYLE: Record<CheckStatus, { icon: string; border: string }> = {
+  ok: { icon: "text-ms-primary-ink", border: "border-ms-ok-border" },
+  warn: { icon: "text-ms-warn", border: "border-ms-warn-border" },
+  error: { icon: "text-ms-danger-strong", border: "border-ms-danger-border" },
+};
+
+/** Row titles for the optional quality hints from lib/skill/hints.ts. */
+const HINT_LABELS: Record<string, string> = {
+  "generic-description": "Description style",
+  "long-body": "Body length",
+  "no-instruction-headings": "Instruction structure",
+};
 
 function isScript(path: string) {
   return SCRIPT_EXT_RE.test(path);
@@ -110,28 +157,18 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
   const nameEmpty = name.length === 0;
   const nameOk = NAME_RE.test(name) && name.length <= 64;
   const descLen = meta.description.length;
-  const descOk = descLen > 0 && descLen <= 1024;
-  const descWhen = TRIGGER_RE.test(meta.description);
+  const descOk = descLen > 0 && descLen <= DESC_MAX_CHARS;
+  // Non-blocking quality nudges (spec-valid skills can still be hard for an
+  // agent to trigger). The trigger hint feeds the "Trigger clarity" row; the
+  // rest show up as extra warning rows only when they apply.
+  const hints = useMemo(() => skillQualityHints(meta, content), [meta, content]);
+  const descWhen = !hints.some((hint) => hint.id === "no-use-when");
   const bodyOk = content.trim().length > 20;
   const filesCount = extraFiles.length;
 
-  const nameHint = nameEmpty
-    ? "Lowercase, hyphen-separated. Becomes the folder name."
-    : nameOk
-      ? "✓ Valid identifier"
-      : "Only lowercase letters, numbers and single hyphens (max 64).";
-  const nameHintColor = nameEmpty
-    ? "text-ms-muted-2"
-    : nameOk
-      ? "text-ms-primary-ink"
-      : "text-ms-danger-strong";
-  const nameBorder = nameEmpty
-    ? "border-ms-border-2"
-    : nameOk
-      ? "border-ms-ok-input-border"
-      : "border-ms-danger-border";
-  const descCountColor =
-    descLen > 1024 ? "text-ms-danger-strong" : descLen > 900 ? "text-ms-warn" : "text-ms-muted";
+  const nameStatus: FieldStatus = nameEmpty ? "empty" : nameOk ? "ok" : "error";
+  const { hint: nameHint, hintColor: nameHintColor, border: nameBorder } = NAME_FIELD[nameStatus];
+  const descCountColor = descCountClass(descLen);
 
   function addTag(raw: string) {
     const tag = raw.trim().toLowerCase();
@@ -182,7 +219,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
       label: "Trigger clarity",
       detail: descWhen
         ? "Describes when to use the skill."
-        : "Mention when the agent should invoke this.",
+        : 'Say when the agent should reach for this, e.g. "Use this when …".',
     },
     {
       ok: bodyOk,
@@ -199,6 +236,14 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
           ? `${filesCount} file(s) attached.`
           : "Optional — attach scripts or references.",
     },
+    ...hints
+      .filter((hint) => hint.id in HINT_LABELS)
+      .map((hint) => ({
+        ok: false,
+        warn: true,
+        label: HINT_LABELS[hint.id],
+        detail: hint.message,
+      })),
   ];
 
   const treeLines = [`📁 ${name || "skill-name"}/`, "  📄 SKILL.md"];
@@ -401,9 +446,7 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
                   key={file.path}
                   className="border-ms-border-2 bg-ms-surface flex items-center gap-2.5 rounded-[9px] border px-[11px] py-[9px]"
                 >
-                  <span
-                    className={`flex ${script ? "text-[#3e6da6] dark:text-[#7ba4d6]" : "text-ms-primary-ink"}`}
-                  >
+                  <span className={`flex ${script ? "text-ms-script" : "text-ms-primary-ink"}`}>
                     <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -434,16 +477,8 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
         <div className="flex flex-col gap-2">
           {checks.map((check) => {
             const Icon = check.ok ? CircleCheck : TriangleAlert;
-            const iconColor = check.ok
-              ? "text-ms-primary-ink"
-              : check.warn
-                ? "text-ms-warn"
-                : "text-ms-danger-strong";
-            const borderColor = check.ok
-              ? "border-ms-ok-border"
-              : check.warn
-                ? "border-ms-warn-border"
-                : "border-ms-danger-border";
+            const status: CheckStatus = check.ok ? "ok" : check.warn ? "warn" : "error";
+            const { icon: iconColor, border: borderColor } = CHECK_STYLE[status];
             return (
               <div
                 key={check.label}
