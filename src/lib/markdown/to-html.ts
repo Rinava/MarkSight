@@ -5,6 +5,12 @@ import remarkHtml from "remark-html";
 /**
  * Markdown → HTML rendering, shared by the export toolbar and the MCP
  * `markdown_to_html` tool. Pure — no React/DOM.
+ *
+ * The body is sanitized: `remark-html` runs with its default `sanitize: true`
+ * (the GitHub-style hast-util-sanitize schema), so raw HTML embedded in the
+ * Markdown, event-handler attributes and `javascript:` URLs are dropped. That
+ * matches the live preview, which also treats raw HTML as inert. Don't pass
+ * `{ sanitize: false }` here; the tests in `__tests__/markdown.test.ts` pin it.
  */
 
 export interface RenderHtmlOptions {
@@ -14,7 +20,7 @@ export interface RenderHtmlOptions {
   title?: string;
 }
 
-/** Escape caller-supplied text before it lands in the (unsanitized) <head>. */
+/** Escape caller-supplied text before it lands in the <head>, which the body sanitizer never sees. */
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")

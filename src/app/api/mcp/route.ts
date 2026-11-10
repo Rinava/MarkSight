@@ -87,7 +87,7 @@ const handler = createMcpHandler((server) => {
     {
       title: "Render Markdown to HTML",
       description:
-        "Render GitHub-flavored markdown to HTML using MarkSight's export pipeline. styled=true wraps it in a standalone printable document.",
+        "Render GitHub-flavored markdown to HTML using MarkSight's export pipeline. The output is sanitized: raw HTML embedded in the markdown (script tags, event handlers, javascript: links) is stripped, not passed through. styled=true wraps it in a standalone printable document.",
       inputSchema: {
         markdown: markdownField,
         styled: z.boolean().optional(),
