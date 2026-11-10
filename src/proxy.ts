@@ -9,7 +9,11 @@ import { NextResponse, type NextRequest } from "next/server";
  * Uses a nonce with `strict-dynamic` so only first-party scripts that carry the
  * nonce (Next.js framework bootstrap, next/script-loaded Google Analytics, the
  * next-themes inline script, and our JSON-LD) can execute, and any scripts they
- * load are trusted transitively. `style-src` keeps `'unsafe-inline'` because
+ * load are trusted transitively. There is deliberately no `'unsafe-inline'` or
+ * `https:` fallback in `script-src`: CSP3 browsers ignore both next to
+ * `'strict-dynamic'`, while CSP2-only browsers would honor them and lose the
+ * XSS protection. The cost is that those legacy browsers only run same-origin
+ * and nonced scripts, so third-party analytics won't load there. `style-src` keeps `'unsafe-inline'` because
  * CodeMirror, Prism, and Tailwind inject inline styles that cannot be nonced.
  */
 export function proxy(request: NextRequest) {
@@ -18,9 +22,7 @@ export function proxy(request: NextRequest) {
 
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline'${
-      isDev ? " 'unsafe-eval'" : ""
-    }`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""}`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https:`,
     `font-src 'self' data:`,
