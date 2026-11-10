@@ -117,6 +117,18 @@ src/
 └── proxy.ts          # security headers / CSP
 ```
 
+## Writing tests
+
+Tests live next to the code (`src/**/__tests__/` or a sibling `*.test.ts`) and
+run with [Vitest](https://vitest.dev/). The file extension picks the
+environment:
+
+- `*.test.ts` runs in plain Node. Use it for pure logic (most of `src/lib`).
+- `*.test.tsx` runs in jsdom with
+  [Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+  Use it for hooks and components. `src/lib/__tests__/use-debounced-value.test.tsx`
+  is a good one to copy from.
+
 ## Coding guidelines
 
 - **Language:** TypeScript and React 19 (App Router). Prefer Server Components;
