@@ -9,6 +9,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 
+// Optional. Google Analytics only loads when a deployment sets its own ID, so
+// forks and self-hosted copies never report to someone else's property.
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -161,7 +165,7 @@ export default async function RootLayout({
           </ContentProvider>
         </ThemeProvider>
         <Analytics />
-        <GoogleAnalytics gaId="G-YYGPWZ1WF7" />
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );
