@@ -3,6 +3,7 @@ import { generateText, APICallError, type LanguageModel } from "ai";
 import { google } from "@ai-sdk/google";
 import { validateSkill } from "@/lib/skill/validate";
 import { deriveSkillMeta } from "@/lib/skill/derive";
+import { checkRateLimit, clientIdFromRequest, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * AI refinement for skill metadata. Two provider paths, checked in order:
@@ -19,6 +20,10 @@ import { deriveSkillMeta } from "@/lib/skill/derive";
  */
 
 const MAX_CONTENT_BYTES = 100_000;
+
+// Each call spends the owner's LLM budget, so this is much tighter than the
+// MCP endpoint's limit.
+const RATE_LIMIT = { name: "skill-improve", limit: 10, windowMs: 60_000 };
 
 function resolveModel(): { model: LanguageModel; viaGateway: boolean } | null {
   if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
@@ -45,27 +50,29 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  // Lightweight same-origin guard against denial-of-wallet on the owner's LLM
-  // key: reject when a cross-origin browser sends a mismatched Origin. This is
-  // best-effort only — real abuse protection needs a shared rate-limit store,
-  // which a stateless route can't provide without external infra.
+  // Same-origin guard against denial-of-wallet on the owner's LLM key. Browsers
+  // always send Origin on a POST, so a request without one didn't come from
+  // the app's own UI and is treated as untrusted, same as a mismatched one.
+  // A script can still forge both headers, which is what the rate limit below
+  // is for.
   const origin = request.headers.get("origin");
-  if (origin) {
-    let originHost: string | null = null;
-    try {
-      originHost = new URL(origin).host;
-    } catch {
-      originHost = null;
-    }
-    if (originHost !== request.headers.get("host")) {
-      return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
-    }
+  let originHost: string | null = null;
+  try {
+    originHost = origin ? new URL(origin).host : null;
+  } catch {
+    originHost = null;
+  }
+  if (!originHost || originHost !== request.headers.get("host")) {
+    return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
   }
 
   const resolved = resolveModel();
   if (!resolved) {
     return NextResponse.json({ enabled: false });
   }
+
+  const limit = await checkRateLimit(RATE_LIMIT, clientIdFromRequest(request));
+  if (!limit.ok) return rateLimitResponse(limit);
 
   let content: unknown;
   try {

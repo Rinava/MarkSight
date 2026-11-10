@@ -7,6 +7,7 @@ import { packageSkill } from "@/lib/skill/package";
 import { renderMarkdownToHtml } from "@/lib/markdown/to-html";
 import { buildOutline } from "@/lib/markdown/outline";
 import { documentMetrics } from "@/lib/markdown/metrics";
+import { checkRateLimit, clientIdFromRequest, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * MarkSight MCP server (streamable HTTP at /api/mcp).
@@ -22,6 +23,14 @@ import { documentMetrics } from "@/lib/markdown/metrics";
 export const maxDuration = 60;
 
 const MAX_MARKDOWN_BYTES = 500_000;
+
+// The endpoint is public on purpose (remote MCP clients have to reach it), so
+// the abuse guard is throttling and size caps, not auth.
+const RATE_LIMIT = { name: "mcp", limit: 60, windowMs: 60_000 };
+
+// Room for the largest allowed markdown field once JSON-escaped, plus the
+// JSON-RPC envelope. Anything bigger is rejected before a tool runs.
+const MAX_BODY_BYTES = 2_000_000;
 
 const markdownField = z
   .string()
@@ -126,4 +135,28 @@ const handler = createMcpHandler((server) => {
   );
 });
 
-export { handler as GET, handler as POST };
+function payloadTooLarge(): Response {
+  return Response.json(
+    { error: `Request body too large (limit ${MAX_BODY_BYTES} bytes)` },
+    { status: 413 }
+  );
+}
+
+async function guarded(request: Request): Promise<Response> {
+  const limit = await checkRateLimit(RATE_LIMIT, clientIdFromRequest(request));
+  if (!limit.ok) return rateLimitResponse(limit);
+
+  if (request.method !== "POST") return handler(request);
+
+  // Cheap rejection first, then measure what actually arrived: Content-Length
+  // can be missing (chunked) or simply wrong.
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) {
+    return payloadTooLarge();
+  }
+  const body = await request.arrayBuffer();
+  if (body.byteLength > MAX_BODY_BYTES) return payloadTooLarge();
+
+  return handler(new Request(request, { body }));
+}
+
+export { guarded as GET, guarded as POST };
