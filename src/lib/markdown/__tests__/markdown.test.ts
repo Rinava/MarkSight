@@ -92,4 +92,43 @@ describe("renderMarkdownToHtml", () => {
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;/title&gt;&lt;script&gt;x&lt;/script&gt;");
   });
+
+  // The preview treats raw HTML as inert; the export (and the MCP tool that
+  // shares this renderer) has to agree. See issue #123.
+  it("strips script tags and other raw HTML from the body", async () => {
+    const html = await renderMarkdownToHtml(
+      '# Title\n\n<script>alert(1)</script>\n\n<iframe src="https://example.com"></iframe>\n\ntext',
+      { styled: false }
+    );
+    expect(html).not.toMatch(/<script/i);
+    expect(html).not.toMatch(/<iframe/i);
+    expect(html).not.toContain("alert(1)");
+    expect(html).toContain("<h1>Title</h1>");
+  });
+
+  it("drops event handlers and javascript: URLs", async () => {
+    const html = await renderMarkdownToHtml(
+      '<img src="x" onerror="alert(1)">\n\n[click](javascript:alert(2))\n\n![pic](javascript:alert(3))',
+      { styled: false }
+    );
+    expect(html).not.toMatch(/onerror/i);
+    expect(html).not.toMatch(/javascript:/i);
+  });
+
+  it("keeps the styled document free of injected scripts too", async () => {
+    const html = await renderMarkdownToHtml("<script>alert(1)</script>\n\nhello", {
+      styled: true,
+    });
+    expect(html).not.toMatch(/<script/i);
+    expect(html).toContain("hello");
+  });
+
+  it("still emits the language class that code and Mermaid blocks rely on", async () => {
+    const html = await renderMarkdownToHtml(
+      "```mermaid\ngraph TD; A-->B\n```\n\n```js\nconst a = 1;\n```",
+      { styled: false }
+    );
+    expect(html).toContain('<pre><code class="language-mermaid">');
+    expect(html).toContain('<pre><code class="language-js">');
+  });
 });

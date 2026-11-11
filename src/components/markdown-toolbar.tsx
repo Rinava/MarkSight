@@ -1,6 +1,14 @@
 "use client";
-import { escapeRegExp } from "@/lib/utils";
 import { useEffect, useCallback, useMemo } from "react";
+import {
+  getActiveFormatting,
+  insertLine as formatLine,
+  smartHeading as formatHeading,
+  smartInsert as formatInline,
+  wrapOrInsert,
+  type EditorContext,
+  type FormatEdit,
+} from "@/lib/markdown/format";
 import { Tip } from "@/components/ui/base/tooltip";
 import { useAnalytics } from "@/hooks/use-analytics";
 import {
@@ -36,398 +44,115 @@ interface ToolbarButton {
   formatType?: string;
 }
 
-interface MarkdownPattern {
-  pattern: RegExp;
-  type: string;
-  before: string;
-  after: string;
-}
-
 export function MarkdownToolbar({
   onInsert,
   getCurrentContext,
   selectionVersion,
 }: MarkdownToolbarProps) {
   const { trackToolbarInteraction, trackShortcut } = useAnalytics();
-  const markdownPatterns = useMemo(
-    () => [
-      { pattern: /\*\*([^*]+)\*\*/g, type: "bold", before: "**", after: "**" },
-      { pattern: /\*([^*]+)\*/g, type: "italic", before: "*", after: "*" },
-      { pattern: /~~([^~]+)~~/g, type: "strikethrough", before: "~~", after: "~~" },
-      { pattern: /`([^`]+)`/g, type: "code", before: "`", after: "`" },
-    ],
-    []
+  // Modifier shown in tooltips: ⌘ on macOS, Ctrl elsewhere. Guard navigator for
+  // the SSR prerender pass (this is a client component but still renders server-side).
+  const isMac =
+    typeof navigator !== "undefined" && navigator.platform.toUpperCase().includes("MAC");
+  const modifierKey = isMac ? "⌘" : "Ctrl";
+  const context = useCallback(
+    (): EditorContext | null => getCurrentContext?.() ?? null,
+    [getCurrentContext]
   );
 
-  const getActiveFormatting = useCallback((): string[] => {
-    if (!getCurrentContext) return [];
-
-    const context = getCurrentContext();
-    const { text, selection } = context;
-    const cursorPos = selection.from;
-
-    const activeFormats: string[] = [];
-
-    // Check if cursor is inside any formatting
-    for (const patternInfo of markdownPatterns) {
-      const matches = [...text.matchAll(patternInfo.pattern)];
-      for (const match of matches) {
-        if (match.index !== undefined) {
-          const start = match.index;
-          const end = match.index + match[0].length;
-          if (cursorPos >= start && cursorPos <= end) {
-            activeFormats.push(patternInfo.type);
-          }
-        }
-      }
-    }
-
-    // Check for heading at current line
-    const lines = text.split("\n");
-    let currentLine = 0;
-    let charCount = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-      if (charCount + lines[i].length >= cursorPos) {
-        currentLine = i;
-        break;
-      }
-      charCount += lines[i].length + 1; // +1 for newline
-    }
-
-    const lineText = lines[currentLine];
-    const headingMatch = lineText.match(/^(#{1,6})\s/);
-    if (headingMatch) {
-      activeFormats.push(`heading${headingMatch[1].length}`);
-    }
-
-    return activeFormats;
-  }, [getCurrentContext, markdownPatterns]);
-
-  const findSurroundingMarkdown = useCallback(
-    (text: string, position: number): MarkdownPattern | null => {
-      for (const patternInfo of markdownPatterns) {
-        const matches = [...text.matchAll(patternInfo.pattern)];
-        for (const match of matches) {
-          if (match.index !== undefined) {
-            const start = match.index;
-            const end = match.index + match[0].length;
-            if (position >= start && position <= end) {
-              return patternInfo;
-            }
-          }
-        }
-      }
-      return null;
+  // The formatting rules live in lib/markdown/format.ts; these wrappers only
+  // read the editor state, record analytics, and hand the edit back.
+  const apply = useCallback(
+    (edit: FormatEdit | null) => {
+      if (edit) onInsert(edit.text, edit.cursorOffset, edit.from, edit.to);
     },
-    [markdownPatterns]
+    [onInsert]
   );
-
-  const canNest = (currentType: string, newType: string): boolean => {
-    const nestingRules: Record<string, string[]> = {
-      bold: ["italic", "strikethrough", "code"],
-      italic: ["bold", "strikethrough", "code"],
-      strikethrough: ["bold", "italic", "code"],
-      code: [], // Code cannot nest other formatting
-    };
-    return nestingRules[currentType]?.includes(newType) ?? false;
-  };
 
   const insertText = useCallback(
     (before: string, after: string = "", placeholder: string = "") => {
-      if (getCurrentContext) {
-        const context = getCurrentContext();
-        const { selection } = context;
-        const hasSelection = selection.from !== selection.to;
-
-        if (hasSelection) {
-          // Wrap selected text
-          const selectedText = context.text.substring(selection.from, selection.to);
-          const wrappedText = `${before}${selectedText}${after}`;
-          const cursorOffset = before.length + selectedText.length + after.length;
-          onInsert(wrappedText, cursorOffset, selection.from, selection.to);
-          return;
-        }
-      }
-
-      // Normal insertion with placeholder
-      const text = placeholder ? `${before}${placeholder}${after}` : `${before}${after}`;
-      const cursorOffset = placeholder ? before.length : before.length + after.length;
-      onInsert(text, cursorOffset);
+      apply(wrapOrInsert(context(), before, after, placeholder));
     },
-    [getCurrentContext, onInsert]
-  );
-
-  const removeFormatting = useCallback(
-    (text: string, selection: { from: number; to: number }, pattern: MarkdownPattern) => {
-      const matches = [...text.matchAll(pattern.pattern)];
-      for (const match of matches) {
-        if (match.index !== undefined) {
-          const start = match.index;
-          const end = match.index + match[0].length;
-          if (selection.from >= start && selection.from <= end) {
-            const innerText = match[1];
-            const newCursorPos = selection.from - start - pattern.before.length;
-
-            // Replace the entire matched text with just the inner content
-            onInsert(innerText, newCursorPos + innerText.length, start, end);
-            return;
-          }
-        }
-      }
-    },
-    [onInsert]
-  );
-
-  const replaceFormatting = useCallback(
-    (
-      text: string,
-      selection: { from: number; to: number },
-      oldPattern: MarkdownPattern,
-      newBefore: string,
-      newAfter: string,
-      placeholder: string
-    ) => {
-      const matches = [...text.matchAll(oldPattern.pattern)];
-      for (const match of matches) {
-        if (match.index !== undefined) {
-          const start = match.index;
-          const end = match.index + match[0].length;
-          if (selection.from >= start && selection.from <= end) {
-            const innerText = match[1];
-            const newText =
-              placeholder && !innerText
-                ? `${newBefore}${placeholder}${newAfter}`
-                : `${newBefore}${innerText}${newAfter}`;
-            const cursorOffset =
-              newBefore.length + (placeholder && !innerText ? 0 : innerText.length);
-
-            onInsert(newText, cursorOffset, start, end);
-            return;
-          }
-        }
-      }
-    },
-    [onInsert]
+    [apply, context]
   );
 
   const smartInsert = useCallback(
     (before: string, after: string, placeholder: string, elementType: string) => {
       trackToolbarInteraction(elementType);
-      if (!getCurrentContext) {
-        insertText(before, after, placeholder);
-        return;
-      }
-
-      const context = getCurrentContext();
-      const { text, selection } = context;
-      const hasSelection = selection.from !== selection.to;
-
-      if (hasSelection) {
-        // Handle text selection - check if selection is already formatted
-        const selectedText = text.substring(selection.from, selection.to);
-
-        // Check if the selected text exactly matches a markdown pattern
-        const selectedPattern = markdownPatterns.find((pattern) => {
-          const match = selectedText.match(
-            new RegExp(`^${escapeRegExp(pattern.before)}(.+)${escapeRegExp(pattern.after)}$`)
-          );
-          return match && pattern.type === elementType;
-        });
-
-        if (selectedPattern) {
-          // Remove formatting from selected text
-          const innerMatch = selectedText.match(
-            new RegExp(
-              `^${escapeRegExp(selectedPattern.before)}(.+)${escapeRegExp(selectedPattern.after)}$`
-            )
-          );
-          if (innerMatch) {
-            const innerText = innerMatch[1];
-            onInsert(innerText, innerText.length, selection.from, selection.to);
-          }
-        } else {
-          // Wrap selected text with formatting
-          const wrappedText = `${before}${selectedText}${after}`;
-          const cursorOffset = before.length + selectedText.length + after.length;
-          onInsert(wrappedText, cursorOffset, selection.from, selection.to);
-        }
-        return;
-      }
-
-      // Handle cursor position (no selection)
-      const cursorPos = selection.from;
-      const surroundingMarkdown = findSurroundingMarkdown(text, cursorPos);
-
-      if (surroundingMarkdown) {
-        if (surroundingMarkdown.type === elementType) {
-          // Same type - remove the formatting
-          removeFormatting(text, selection, surroundingMarkdown);
-        } else if (canNest(surroundingMarkdown.type, elementType)) {
-          // Different type that can be nested
-          insertText(before, after, placeholder);
-        } else {
-          // Cannot nest - replace
-          replaceFormatting(text, selection, surroundingMarkdown, before, after, placeholder);
-        }
-      } else {
-        // No surrounding markdown - normal insert
-        insertText(before, after, placeholder);
-      }
+      apply(formatInline(context(), before, after, placeholder, elementType));
     },
-    [
-      getCurrentContext,
-      onInsert,
-      insertText,
-      findSurroundingMarkdown,
-      markdownPatterns,
-      removeFormatting,
-      replaceFormatting,
-      trackToolbarInteraction,
-    ]
+    [apply, context, trackToolbarInteraction]
   );
 
   const insertLine = useCallback(
     (prefix: string, placeholder: string = "") => {
       trackToolbarInteraction("insert_line");
-      const body = placeholder ? `${prefix}${placeholder}` : prefix;
-
-      if (!getCurrentContext) {
-        onInsert(`${body}\n`, prefix.length);
-        return;
-      }
-
-      const { text, selection } = getCurrentContext();
-      // Break onto a fresh line only when the caret isn't already at the start of one,
-      // and only append a newline when text follows — avoids stray blank lines / splits.
-      const atLineStart = selection.from === 0 || text[selection.from - 1] === "\n";
-      const atLineEnd = selection.to >= text.length || text[selection.to] === "\n";
-      const leading = atLineStart ? "" : "\n";
-      const trailing = atLineEnd ? "" : "\n";
-      onInsert(`${leading}${body}${trailing}`, leading.length + prefix.length);
+      apply(formatLine(context(), prefix, placeholder));
     },
-    [getCurrentContext, onInsert, trackToolbarInteraction]
+    [apply, context, trackToolbarInteraction]
   );
 
   const smartHeading = useCallback(
     (level: number) => {
       trackToolbarInteraction(`heading_${level}`);
-      const prefix = "#".repeat(level) + " ";
-      const placeholder = `Heading ${level}`;
-
-      if (!getCurrentContext) {
-        insertLine(prefix, placeholder);
-        return;
-      }
-
-      const context = getCurrentContext();
-      const { text, selection } = context;
-      const hasSelection = selection.from !== selection.to;
-
-      if (hasSelection) {
-        const selectedText = text.substring(selection.from, selection.to);
-
-        const lines = selectedText.split("\n");
-        if (lines.length > 1) {
-          const firstLine = lines[0];
-          const restLines = lines.slice(1);
-
-          const cleanFirstLine = firstLine.replace(/^#+\s*/, "");
-          const newText = `${prefix}${cleanFirstLine}${restLines.length > 0 ? "\n" + restLines.join("\n") : ""}`;
-          const cursorOffset = newText.length;
-
-          onInsert(newText, cursorOffset, selection.from, selection.to);
-        } else {
-          // Single line selection: convert to heading
-          const cleanText = selectedText.replace(/^#+\s*/, "");
-          const headingText = `${prefix}${cleanText}`;
-          const cursorOffset = headingText.length;
-
-          onInsert(headingText, cursorOffset, selection.from, selection.to);
-        }
-        return;
-      }
-
-      const lines = text.split("\n");
-      let currentLineIndex = 0;
-      let lineStart = 0;
-
-      // Find which line the cursor is on
-      for (let i = 0; i < lines.length; i++) {
-        const lineEnd = lineStart + lines[i].length;
-        if (selection.from >= lineStart && selection.from <= lineEnd) {
-          currentLineIndex = i;
-          break;
-        }
-        lineStart = lineEnd + 1; // +1 for newline character
-      }
-
-      const currentLine = lines[currentLineIndex];
-      const lineEnd = lineStart + currentLine.length;
-
-      // Remove existing heading markers
-      const cleanLine = currentLine.replace(/^#+\s*/, "");
-      const newHeading = cleanLine ? `${prefix}${cleanLine}` : `${prefix}${placeholder}`;
-      const cursorOffset = prefix.length + (cleanLine ? cleanLine.length : 0);
-
-      onInsert(newHeading, cursorOffset, lineStart, lineEnd);
+      apply(formatHeading(context(), level));
     },
-    [getCurrentContext, onInsert, insertLine, trackToolbarInteraction]
+    [apply, context, trackToolbarInteraction]
   );
 
   const buttons: ToolbarButton[] = [
     {
       icon: Bold,
       label: "Bold",
-      shortcut: "⌘B",
+      shortcut: `${modifierKey}B`,
       formatType: "bold",
       action: () => smartInsert("**", "**", "bold text", "bold"),
     },
     {
       icon: Italic,
       label: "Italic",
-      shortcut: "⌘I",
+      shortcut: `${modifierKey}I`,
       formatType: "italic",
       action: () => smartInsert("*", "*", "italic text", "italic"),
     },
     {
       icon: Strikethrough,
       label: "Strikethrough",
-      shortcut: "⌘U",
+      shortcut: `${modifierKey}U`,
       formatType: "strikethrough",
       action: () => smartInsert("~~", "~~", "strikethrough text", "strikethrough"),
     },
     {
       icon: Heading1,
       label: "Heading 1",
-      shortcut: "⌘⇧1",
+      shortcut: `${modifierKey}⇧1`,
       formatType: "heading1",
       action: () => smartHeading(1),
     },
     {
       icon: Heading2,
       label: "Heading 2",
-      shortcut: "⌘⇧2",
+      shortcut: `${modifierKey}⇧2`,
       formatType: "heading2",
       action: () => smartHeading(2),
     },
     {
       icon: Heading3,
       label: "Heading 3",
-      shortcut: "⌘⇧3",
+      shortcut: `${modifierKey}⇧3`,
       formatType: "heading3",
       action: () => smartHeading(3),
     },
     {
       icon: List,
       label: "Unordered List",
-      shortcut: "⌘⇧L",
+      shortcut: `${modifierKey}⇧L`,
       action: () => insertLine("- ", "List item"),
     },
     {
       icon: ListOrdered,
       label: "Ordered List",
-      shortcut: "⌘⇧O",
+      shortcut: `${modifierKey}⇧O`,
       action: () => insertLine("1. ", "List item"),
     },
     {
@@ -443,7 +168,7 @@ export function MarkdownToolbar({
     {
       icon: Code,
       label: "Inline Code",
-      shortcut: "⌘`",
+      shortcut: `${modifierKey}\``,
       formatType: "code",
       action: () => smartInsert("`", "`", "code", "code"),
     },
@@ -455,7 +180,7 @@ export function MarkdownToolbar({
     {
       icon: Link,
       label: "Link",
-      shortcut: "⌘K",
+      shortcut: `${modifierKey}K`,
       action: () => insertText("[", "](url)", "link text"),
     },
     {
@@ -496,7 +221,7 @@ export function MarkdownToolbar({
           label={
             <span>
               {button.label}
-              {button.shortcut && <span className="ml-2 text-[#9db392]">{button.shortcut}</span>}
+              {button.shortcut && <span className="text-ms-tip-muted ml-2">{button.shortcut}</span>}
             </span>
           }
         >
@@ -522,7 +247,6 @@ export function MarkdownToolbar({
     function setupKeyboardShortcuts() {
       function handleKeyDown(event: KeyboardEvent) {
         if (!document.activeElement?.closest(".cm-editor")) return;
-        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
         const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
         if (!isCtrlOrCmd) return;
@@ -596,16 +320,19 @@ export function MarkdownToolbar({
         document.removeEventListener("keydown", handleKeyDown);
       };
     },
-    [insertLine, insertText, smartHeading, smartInsert, trackShortcut]
+    [isMac, insertLine, insertText, smartHeading, smartInsert, trackShortcut]
   );
 
   // Recompute when the doc changes (getCurrentContext identity) or the caret moves
   // (selectionVersion) — CodeMirror selection lives outside React's render cycle, so
   // selectionVersion is a signal-only dep the linter can't see through getCurrentContext.
   const activeFormats = useMemo(
-    () => getActiveFormatting(),
+    () => {
+      const current = context();
+      return current ? getActiveFormatting(current.text, current.selection.from) : [];
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getActiveFormatting, selectionVersion]
+    [context, selectionVersion]
   );
 
   return (

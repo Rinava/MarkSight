@@ -27,6 +27,9 @@ export interface ExportMenuProps {
   filename?: string;
 }
 
+/** Give the print window a moment to lay out the document before the dialog opens. */
+const PRINT_DIALOG_DELAY_MS = 400;
+
 const MERMAID_BLOCK = /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g;
 
 function escapeHtml(value: string): string {
@@ -128,7 +131,7 @@ export function ExportMenu({ skillMode, content, filename = "document" }: Export
       printWindow.document.close();
       setTimeout(() => {
         printWindow.print();
-      }, 400);
+      }, PRINT_DIALOG_DELAY_MS);
     } catch {
       toast.error("Failed to export PDF");
     }

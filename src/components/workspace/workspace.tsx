@@ -94,12 +94,26 @@ function frontmatterBlock(md: string) {
   return match ? match[0] : "";
 }
 
+/** Split-pane bounds: neither pane may shrink below 20% of the width. */
+const MIN_EDITOR_PCT = 20;
+const MAX_EDITOR_PCT = 80;
+/** How far one arrow-key press moves the divider. */
+const RESIZE_STEP_PCT = 2;
+/** Delay before the preview re-renders after typing stops. */
+const PREVIEW_DEBOUNCE_MS = 100;
+/** Average adult reading speed, used for the "min read" estimate. */
+const WORDS_PER_MINUTE = 200;
+
+function clampEditorPct(pct: number): number {
+  return Math.min(MAX_EDITOR_PCT, Math.max(MIN_EDITOR_PCT, pct));
+}
+
 export function Workspace() {
   const [value, setValue] = useLocalStorage({
     key: "marksight-markdown-content",
     defaultValue: STARTER,
   });
-  const debounced = useDebouncedValue(value, { delayMs: 100 });
+  const debounced = useDebouncedValue(value, { delayMs: PREVIEW_DEBOUNCE_MS });
 
   const { setContent, registerDocumentReplacer } = useContent();
   const { meta, validation } = useSkillMeta();
@@ -218,7 +232,7 @@ export function Workspace() {
       const rect = splitRef.current?.getBoundingClientRect();
       if (!rect || rect.width === 0) return;
       const pct = ((moveEvent.clientX - rect.left) / rect.width) * 100;
-      setRatio(Math.min(80, Math.max(20, pct)));
+      setRatio(clampEditorPct(pct));
     };
     const up = () => {
       controller.abort();
@@ -233,7 +247,7 @@ export function Workspace() {
   }, []);
 
   const metrics = useMemo(() => documentMetrics(value), [value]);
-  const readingTime = Math.max(1, Math.round(metrics.wordCount / 200));
+  const readingTime = Math.max(1, Math.round(metrics.wordCount / WORDS_PER_MINUTE));
   const currentYear = new Date().getFullYear();
   const showEditor = view !== "preview";
   const showPreview = view !== "edit";
@@ -382,17 +396,17 @@ export function Workspace() {
                 aria-orientation="vertical"
                 aria-label="Resize editor and preview panes"
                 aria-valuenow={Math.round(ratio)}
-                aria-valuemin={20}
-                aria-valuemax={80}
+                aria-valuemin={MIN_EDITOR_PCT}
+                aria-valuemax={MAX_EDITOR_PCT}
                 tabIndex={0}
                 onMouseDown={startResize}
                 onKeyDown={(event) => {
                   if (event.key === "ArrowLeft") {
                     event.preventDefault();
-                    setRatio((r) => Math.max(20, r - 2));
+                    setRatio((r) => clampEditorPct(r - RESIZE_STEP_PCT));
                   } else if (event.key === "ArrowRight") {
                     event.preventDefault();
-                    setRatio((r) => Math.min(80, r + 2));
+                    setRatio((r) => clampEditorPct(r + RESIZE_STEP_PCT));
                   } else if (event.key === "Home") {
                     event.preventDefault();
                     setRatio(20);

@@ -58,13 +58,7 @@ export function EditorPane({
         </div>
       )}
 
-      <MarkdownEditor
-        ref={editorRef}
-        value={content}
-        onChange={onChange}
-        bare
-        showToolbar={false}
-      />
+      <MarkdownEditor ref={editorRef} value={content} onChange={onChange} />
     </section>
   );
 }

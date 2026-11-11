@@ -13,18 +13,64 @@ Everything before this file existed was reconstructed from git history.
 - Error boundary: a runtime error now shows a recovery page instead of a
   blank screen
 - Placeholder text in the empty markdown editor
+- Copy button on code blocks in the preview
+- Custom file name for HTML, PDF and Markdown exports
+- Skip-to-content link for keyboard users
+- Skill inspector shows quality hints (generic description, very long body,
+  no instruction-shaped sections) as warnings next to the validation checks
+- Images in the preview load lazily
+- `NEXT_PUBLIC_GA_ID`: Google Analytics is now opt-in per deployment, so forks
+  and self-hosted copies no longer report to the upstream property
+- Rate limiting on the public API routes (`/api/mcp`, `/api/skill/improve`)
+  with an optional shared Upstash Redis store, plus a request size cap on the
+  MCP endpoint
+- `npm run typecheck`, and a jsdom test project so hooks and components can be
+  tested (`*.test.tsx`)
+- README: keyboard-shortcuts table and editor screenshots
+
+### Changed
+
+- MCP route migrated to `mcp-handler` 2.x. The endpoint is still `/api/mcp`;
+  the legacy SSE transport is gone
+- Node 22 is now the minimum (matches `.nvmrc` and CI)
+- The toolbar's formatting logic lives in `src/lib/markdown/format.ts` with
+  unit tests
+- Code base formatted with Prettier, checked in CI
 
 ### Fixed
 
 - Decorative logo icon hidden from the accessibility tree
 - GitHub brand icon replaced with a local SVG (lucide dropped brand icons)
+- Toolbar tooltips show `Ctrl` shortcuts on Windows and Linux instead of `⌘`
+- Toggling a format off from the toolbar no longer throws the caret to the
+  wrong place
+- Clear message when the browser blocks the export or print popup
+- Error toast when copying a code block fails
+- External links in the preview open in a new tab
+- Theme toggle has an accurate accessible label
+- Sitemap `lastmod` no longer changes on every deploy
+
+### Security
+
+- Zip imports are capped in file count and size
+- `/api/skill/improve` rejects requests without an `Origin` header
+- CSP `script-src` no longer carries the `'unsafe-inline'` / `https:` fallback
+  for legacy browsers
+- Exported HTML is confirmed sanitized (raw HTML, event handlers and
+  `javascript:` links are stripped) and now covered by tests
+
+### Removed
+
+- Unused second export pipeline (`src/lib/export-markdown.tsx`) and the
+  unreachable toolbar mode inside the editor component
 
 ### Dependencies
 
 - `ai` 6 → 7, `zod` 3 → 4, `typescript` 5.9 → 6.0, `lucide-react` 0.544 → 1.23,
   plus grouped minor/patch updates
-- Dependabot no longer auto-bumps `@modelcontextprotocol/sdk` (pinned for MCP
-  protocol stability)
+- `next` 16.3 → 16.4, `mcp-handler` 1 → 2 (drops `@modelcontextprotocol/sdk`
+  for `@modelcontextprotocol/server`), and every other dependency refreshed
+  within its range
 
 ## [1.0.0] - 2026-07-06
 

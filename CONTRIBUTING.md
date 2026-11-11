@@ -35,8 +35,8 @@ on the approach before you invest time in it.
 
 ## Getting started
 
-**Prerequisites:** [Node.js](https://nodejs.org/) 20 or newer (the project is
-developed on Node 22) and npm (bundled with Node).
+**Prerequisites:** [Node.js](https://nodejs.org/) 22 or newer (the version
+pinned in `.nvmrc` and the one CI runs) and npm (bundled with Node).
 
 ```bash
 # 1. Fork the repo on GitHub, then clone your fork
@@ -54,19 +54,33 @@ That's it. Edit a file under `src/` and the page hot-reloads.
 
 ### Available scripts
 
-| Command         | What it does                        |
-| --------------- | ----------------------------------- |
-| `npm run dev`   | Start the dev server with Turbopack |
-| `npm run build` | Production build                    |
-| `npm run start` | Serve the production build          |
-| `npm run lint`  | Run ESLint                          |
-| `npm test`      | Run the unit tests (Vitest)         |
+| Command             | What it does                                   |
+| ------------------- | ---------------------------------------------- |
+| `npm run dev`       | Start the dev server with Turbopack            |
+| `npm run build`     | Production build                               |
+| `npm run start`     | Serve the production build                     |
+| `npm run lint`      | Run ESLint                                     |
+| `npm run typecheck` | Type-check with `tsc --noEmit` (takes seconds) |
+| `npm test`          | Run the unit tests (Vitest)                    |
 
 Brand assets (icons, social images) are generated from inline SVG:
 
 ```bash
 node scripts/generate-assets.mjs
 ```
+
+### Dependency overrides
+
+`package.json` has an `overrides` block. JSON can't hold comments, so the
+reasons live here:
+
+| Override  | Why it's there                                                                                                                                              | When it can go                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `prismjs` | `react-syntax-highlighter` pulls in an older Prism through `refractor` that has a known DOM clobbering advisory. The override forces the patched 1.30 line. | Once `react-syntax-highlighter` depends on `prismjs` >= 1.30 by itself.     |
+| `postcss` | Next.js pins an exact, older `postcss` that has an XSS advisory in its CSS stringifier. The override dedupes everything onto a patched 8.5 release.         | Once Next.js ships with `postcss` >= 8.5.10 and `npm ls postcss` is single. |
+
+If you remove one, run `npm ls <package> --all` and `npm audit` to confirm
+nothing vulnerable comes back.
 
 ## Development workflow
 
@@ -82,6 +96,7 @@ node scripts/generate-assets.mjs
 
    ```bash
    npm run lint
+   npm run typecheck
    npm test
    npm run build
    ```
@@ -101,6 +116,18 @@ src/
 ├── lib/              # utilities (slugify, local storage, syntax highlighter, …)
 └── proxy.ts          # security headers / CSP
 ```
+
+## Writing tests
+
+Tests live next to the code (`src/**/__tests__/` or a sibling `*.test.ts`) and
+run with [Vitest](https://vitest.dev/). The file extension picks the
+environment:
+
+- `*.test.ts` runs in plain Node. Use it for pure logic (most of `src/lib`).
+- `*.test.tsx` runs in jsdom with
+  [Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+  Use it for hooks and components. `src/lib/__tests__/use-debounced-value.test.tsx`
+  is a good one to copy from.
 
 ## Coding guidelines
 
