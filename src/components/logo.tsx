@@ -2,6 +2,8 @@ interface LogoProps {
   className?: string;
   /** Hide the wordmark + tagline, showing only the mark (e.g. tight layouts). */
   markOnly?: boolean;
+  /** Drop the tagline on narrow screens so the logo fits a phone header. */
+  compact?: boolean;
 }
 
 /** The MarkSight brand mark: the original notepad/calendar icon. */
@@ -34,16 +36,24 @@ export function LogoMark({ className = "" }: { className?: string }) {
   );
 }
 
-export function Logo({ className = "", markOnly = false }: LogoProps) {
+export function Logo({ className = "", markOnly = false, compact = false }: LogoProps) {
   return (
-    <div className={`flex items-center gap-[11px] ${className}`}>
-      <LogoMark />
+    <div className={`flex flex-none items-center gap-[11px] whitespace-nowrap ${className}`}>
+      <LogoMark className="flex-none" />
       {!markOnly && (
         <div className="flex flex-col gap-0.5 leading-[1.05]">
-          <span className="text-ms-ink-strong text-[17px] font-bold tracking-[-0.03em]">
+          <span
+            className={`text-ms-ink-strong text-[17px] font-bold tracking-[-0.03em] ${
+              compact ? "max-[339px]:hidden" : ""
+            }`}
+          >
             Mark<span className="text-ms-primary-ink">Sight</span>
           </span>
-          <span className="text-ms-muted text-[10px] font-semibold tracking-[0.09em] uppercase">
+          <span
+            className={`text-ms-muted text-[10px] font-semibold tracking-[0.09em] uppercase ${
+              compact ? "max-sm:hidden" : ""
+            }`}
+          >
             markdown, clearly
           </span>
         </div>

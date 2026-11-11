@@ -43,6 +43,9 @@ function json(data: unknown) {
   };
 }
 
+// What clients show as the server's identity after connecting.
+const SERVER_OPTIONS = { serverInfo: { name: "marksight", version: "1.0.0" } };
+
 const handler = createMcpHandler((server) => {
   server.registerTool(
     "create_skill",
@@ -133,7 +136,7 @@ const handler = createMcpHandler((server) => {
     },
     async ({ markdown }) => json(documentMetrics(markdown))
   );
-});
+}, SERVER_OPTIONS);
 
 function payloadTooLarge(): Response {
   return Response.json(
@@ -156,7 +159,18 @@ async function guarded(request: Request): Promise<Response> {
   const body = await request.arrayBuffer();
   if (body.byteLength > MAX_BODY_BYTES) return payloadTooLarge();
 
-  return handler(new Request(request, { body }));
+  // Build the replacement from plain parts instead of `new Request(request, …)`.
+  // Next hands us a NextRequest, and on Node 24 cloning one through the Request
+  // constructor throws ("Cannot read private member #state"), which turned
+  // every POST into a bare 500 in production.
+  return handler(
+    new Request(request.url, {
+      method: request.method,
+      headers: request.headers,
+      body,
+      signal: request.signal,
+    })
+  );
 }
 
 export { guarded as GET, guarded as POST };

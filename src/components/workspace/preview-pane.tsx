@@ -42,7 +42,7 @@ export function PreviewPane({
         <span className="text-ms-muted-2 text-[11px]">{readingTime} min read</span>
       </div>
 
-      <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-[34px] py-[26px]">
+      <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-5 py-5 md:px-[34px] md:py-[26px]">
         <div className="max-w-[720px]">
           {skillMode && (
             <div className="border-ms-panel-border bg-ms-panel mb-[22px] rounded-[13px] border px-[18px] py-4">

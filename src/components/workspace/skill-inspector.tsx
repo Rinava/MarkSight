@@ -86,9 +86,11 @@ function isScript(path: string) {
 
 export interface SkillInspectorProps {
   onExit: () => void;
+  /** Positioning from the workspace (full-screen panel on phones). */
+  className?: string;
 }
 
-export function SkillInspector({ onExit }: SkillInspectorProps) {
+export function SkillInspector({ onExit, className = "" }: SkillInspectorProps) {
   const { content } = useContent();
   const {
     meta,
@@ -262,7 +264,10 @@ export function SkillInspector({ onExit }: SkillInspectorProps) {
   }
 
   return (
-    <aside className="ms-slide ms-scroll border-ms-border bg-ms-surface-2 w-[344px] flex-none overflow-y-auto border-l">
+    <aside
+      aria-label="Skill inspector"
+      className={`ms-slide ms-scroll border-ms-border bg-ms-surface-2 w-full flex-none overflow-y-auto md:w-[344px] md:border-l ${className}`}
+    >
       <div className="p-[18px]">
         <div className="mb-1 flex items-center gap-2">
           <Sparkles className="text-ms-primary-ink h-[13px] w-[13px]" aria-hidden="true" />

@@ -99,8 +99,14 @@ const MIN_EDITOR_PCT = 20;
 const MAX_EDITOR_PCT = 80;
 /** How far one arrow-key press moves the divider. */
 const RESIZE_STEP_PCT = 2;
-/** Delay before the preview re-renders after typing stops. */
-const PREVIEW_DEBOUNCE_MS = 100;
+/** Quiet time after a keystroke before the preview re-renders. */
+const PREVIEW_DEBOUNCE_MS = 60;
+/**
+ * Longest the preview may lag while the user keeps typing. Without this cap a
+ * fast typist never leaves a gap longer than the debounce, and the preview
+ * sits frozen until they stop.
+ */
+const PREVIEW_MAX_WAIT_MS = 150;
 /** Average adult reading speed, used for the "min read" estimate. */
 const WORDS_PER_MINUTE = 200;
 
@@ -113,7 +119,10 @@ export function Workspace() {
     key: "marksight-markdown-content",
     defaultValue: STARTER,
   });
-  const debounced = useDebouncedValue(value, { delayMs: PREVIEW_DEBOUNCE_MS });
+  const debounced = useDebouncedValue(value, {
+    delayMs: PREVIEW_DEBOUNCE_MS,
+    maxWaitMs: PREVIEW_MAX_WAIT_MS,
+  });
 
   const { setContent, registerDocumentReplacer } = useContent();
   const { meta, validation } = useSkillMeta();
@@ -122,6 +131,10 @@ export function Workspace() {
   const [skillMode, setSkillMode] = useState(false);
   const [view, setView] = useState<ViewMode>("split");
   const [ratio, setRatio] = useState(50);
+  // Phones show one panel at a time, so in skill mode the inspector takes the
+  // whole screen and this decides whether it's in front. Ignored on desktop,
+  // where the inspector always sits beside the panes.
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
@@ -207,9 +220,17 @@ export function Workspace() {
     [value]
   );
 
-  const toggleSkill = useCallback(() => {
-    setSkillMode((on) => !on);
+  const enterSkill = useCallback(() => {
+    setSkillMode(true);
+    setInspectorOpen(true);
   }, []);
+
+  const exitSkill = useCallback(() => {
+    setSkillMode(false);
+    setInspectorOpen(false);
+  }, []);
+
+  const toggleSkill = skillMode ? exitSkill : enterSkill;
 
   // Detach any in-flight drag listeners if we unmount mid-drag (the mouseup
   // that normally removes them would never fire), and clear the body styles.
@@ -268,13 +289,13 @@ export function Workspace() {
         </a>
 
         {/* ── Header ── */}
-        <header className="border-ms-border bg-ms-surface flex h-[58px] flex-none items-center gap-3.5 border-b px-[18px]">
-          <Logo />
+        <header className="border-ms-border bg-ms-surface flex h-[58px] flex-none items-center gap-2 border-b px-3 sm:gap-3.5 sm:px-[18px]">
+          <Logo compact />
           <div className="flex-1" />
 
           {skillMode && (
             <div
-              className={`ms-slide flex items-center gap-2 rounded-full px-3 py-1.5 ${
+              className={`ms-slide hidden items-center gap-2 rounded-full px-3 py-1.5 whitespace-nowrap md:flex ${
                 validation.valid ? "bg-ms-tint text-ms-primary-ink" : "bg-ms-warn-bg text-ms-warn"
               }`}
             >
@@ -289,22 +310,24 @@ export function Workspace() {
             </div>
           )}
 
-          <OpenSkillMenu onEnterSkill={() => setSkillMode(true)} />
+          <OpenSkillMenu onEnterSkill={enterSkill} />
 
           <button
             type="button"
             onClick={toggleSkill}
-            className={`flex h-[34px] items-center gap-[7px] rounded-[9px] text-[13px] font-semibold ${
+            aria-pressed={skillMode}
+            className={`flex h-[34px] flex-none items-center gap-[7px] rounded-[9px] text-[13px] font-semibold whitespace-nowrap ${
               skillMode
                 ? "border-ms-border-hover bg-ms-tint text-ms-primary-ink hover:border-ms-primary hover:bg-ms-tint-3 border px-[13px] transition-colors"
                 : "bg-ms-primary px-[15px] text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07]"
             }`}
           >
             <Sparkles className="h-[15px] w-[15px]" aria-hidden="true" />
-            <span>{skillMode ? "Skill mode" : "Create skill"}</span>
+            <span className="sm:hidden">Skill</span>
+            <span className="hidden sm:inline">{skillMode ? "Skill mode" : "Create skill"}</span>
           </button>
 
-          <div className="bg-ms-border h-[22px] w-px" />
+          <div className="bg-ms-border hidden h-[22px] w-px sm:block" />
 
           <button
             type="button"
@@ -330,7 +353,7 @@ export function Workspace() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="View on GitHub"
-              className={ICON_BTN}
+              className={`${ICON_BTN} max-sm:hidden`}
             >
               <GithubIcon className="h-[17px] w-[17px]" aria-hidden="true" />
             </a>
@@ -338,13 +361,13 @@ export function Workspace() {
         </header>
 
         {/* ── Toolbar ── */}
-        <div className="border-ms-border bg-ms-surface-2 flex flex-none flex-wrap items-center gap-2.5 border-b px-3.5 py-2">
+        <div className="border-ms-border bg-ms-surface-2 flex flex-none flex-wrap items-center gap-x-2.5 gap-y-2 border-b px-3 py-2 sm:px-3.5">
           {/* Formatting acts on the editor; hide it (and its shortcuts) in
               Preview-only view where the editor is unmounted. */}
           {showEditor ? (
             <MarkdownToolbar onInsert={toolbarInsert} getCurrentContext={getCurrentContext} />
           ) : (
-            <div className="flex-1" />
+            <div className="hidden flex-1 md:block" />
           )}
           <div className="flex flex-none items-center gap-1.5">
             <Tip label="Reset to the welcome guide">
@@ -368,13 +391,25 @@ export function Workspace() {
               </button>
             </Tip>
           </div>
-          <div className="bg-ms-border h-[22px] w-px flex-none" />
-          <ViewSwitch view={view} onChange={setView} />
+          {/* Phones: the formatting row sits above, this row spreads edge to edge. */}
+          <div className="flex-1 md:hidden" />
+          <div className="bg-ms-border hidden h-[22px] w-px flex-none md:block" />
+          <ViewSwitch
+            view={view}
+            onChange={setView}
+            showInspector={skillMode}
+            inspectorOpen={inspectorOpen}
+            onInspectorOpenChange={setInspectorOpen}
+          />
           <ExportMenu skillMode={skillMode} content={debounced} filename="marksight-document" />
         </div>
 
         {/* ── Body ── */}
-        <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 focus:outline-none">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative flex min-h-0 flex-1 focus:outline-none"
+        >
           <div ref={splitRef} className="flex min-w-0 flex-1">
             {showEditor && (
               <EditorPane
@@ -415,7 +450,7 @@ export function Workspace() {
                     setRatio(80);
                   }
                 }}
-                className="border-ms-border bg-ms-tint-2 focus-visible:bg-ms-tint focus-visible:outline-ms-primary flex w-[7px] flex-none cursor-col-resize items-center justify-center border-x outline-none focus-visible:outline-2 focus-visible:-outline-offset-2"
+                className="border-ms-border bg-ms-tint-2 focus-visible:bg-ms-tint focus-visible:outline-ms-primary hidden w-[7px] flex-none cursor-col-resize items-center justify-center border-x outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 md:flex"
               >
                 <div className="bg-ms-scroll-thumb h-[34px] w-[3px] rounded-[3px]" />
               </div>
@@ -431,14 +466,21 @@ export function Workspace() {
                 tags={meta.tags ?? []}
                 readingTime={readingTime}
                 label={skillMode ? "SKILL.md preview" : "Preview"}
-                className={showPreview && !isSplit ? "flex-1" : ""}
+                // Side by side needs room: below md, "split" falls back to the
+                // editor alone (the view switch offers Editor / Preview there).
+                className={isSplit ? "max-md:hidden" : "flex-1"}
                 style={previewStyle}
               />
             )}
           </div>
 
           {skillMode ? (
-            <SkillInspector onExit={() => setSkillMode(false)} />
+            <SkillInspector
+              onExit={exitSkill}
+              className={
+                inspectorOpen ? "max-md:absolute max-md:inset-0 max-md:z-20" : "max-md:hidden"
+              }
+            />
           ) : (
             <OutlineRail content={debounced} onOpenGuide={() => setGuideOpen(true)} />
           )}
@@ -466,6 +508,24 @@ export function Workspace() {
           </div>
 
           <div className="flex-1" />
+
+          {/* Phones: the header has no room for these, so they live here. */}
+          <div className="flex items-center gap-3.5 whitespace-nowrap sm:hidden">
+            <span>
+              <strong className="text-ms-primary-strong font-bold">{metrics.wordCount}</strong>{" "}
+              words
+            </span>
+            <button
+              type="button"
+              onClick={() => setGuideOpen(true)}
+              className="hover:text-ms-primary-ink font-medium transition-colors"
+            >
+              Guide
+            </button>
+            <Link href="/about" className="hover:text-ms-primary-ink font-medium transition-colors">
+              About
+            </Link>
+          </div>
 
           {/* Attribution + community links, folded into the status bar. */}
           <div className="hidden items-center gap-3 whitespace-nowrap lg:flex">

@@ -251,13 +251,15 @@ export function ExportMenu({ skillMode, content, filename = "document" }: Export
         render={
           <button
             type="button"
-            className="bg-ms-primary flex h-[34px] items-center gap-[7px] rounded-[9px] px-[13px] text-[13px] font-semibold text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
+            className="bg-ms-primary flex h-[34px] flex-none items-center gap-[7px] rounded-[9px] px-[13px] text-[13px] font-semibold whitespace-nowrap text-white shadow-[var(--ms-shadow-primary)] transition-[filter] hover:brightness-[1.07] data-[popup-open]:brightness-[1.07]"
           />
         }
       >
         <Download className="h-[15px] w-[15px]" aria-hidden="true" />
-        <span>{skillMode ? "Export skill" : "Export"}</span>
-        <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+        <span>
+          Export<span className="max-sm:hidden">{skillMode ? " skill" : ""}</span>
+        </span>
+        <ChevronDown className="h-3.5 w-3.5 max-sm:hidden" aria-hidden="true" />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
