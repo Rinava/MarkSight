@@ -77,7 +77,7 @@ export function OutlineRail({
     return (
       <aside
         aria-label="Document outline"
-        className="border-ms-border bg-ms-surface-2 flex w-[42px] flex-none flex-col items-center border-l py-4"
+        className="border-ms-border bg-ms-surface-2 hidden w-[42px] flex-none flex-col items-center border-l py-4 md:flex"
       >
         <button
           type="button"
@@ -95,7 +95,7 @@ export function OutlineRail({
   return (
     <aside
       aria-label="Document outline"
-      className="border-ms-border bg-ms-surface-2 flex w-[258px] flex-none flex-col border-l"
+      className="border-ms-border bg-ms-surface-2 hidden w-[258px] flex-none flex-col border-l md:flex"
     >
       <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-3.5 py-4">
         <div className="flex items-center justify-between px-1.5 pb-2">

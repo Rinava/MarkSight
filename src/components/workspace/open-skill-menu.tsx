@@ -154,12 +154,12 @@ export function OpenSkillMenu({ onEnterSkill }: { onEnterSkill: () => void }) {
           render={
             <button
               type="button"
-              className="border-ms-border-2 bg-ms-surface text-ms-label hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover flex h-9 items-center gap-[7px] rounded-[9px] border px-[13px] text-[13px] font-medium transition-colors"
+              className="border-ms-border-2 bg-ms-surface text-ms-label hover:border-ms-border-hover hover:bg-ms-hover hover:text-ms-primary-ink data-[popup-open]:border-ms-border-hover data-[popup-open]:bg-ms-hover flex h-9 flex-none items-center gap-[7px] rounded-[9px] border px-2.5 text-[13px] font-medium whitespace-nowrap transition-colors sm:px-[13px]"
             />
           }
         >
           <FolderOpen className="h-[15px] w-[15px]" aria-hidden="true" />
-          <span>Open skill</span>
+          <span className="max-sm:sr-only">Open skill</span>
           <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
         </Menu.Trigger>
         <Menu.Portal>

@@ -339,10 +339,15 @@ export function MarkdownToolbar({
     <div
       role="toolbar"
       aria-label="Markdown formatting"
-      className="flex flex-1 flex-wrap items-center gap-2"
+      // Phones: one full-width row that scrolls sideways instead of wrapping
+      // into five short rows that push the editor off the screen.
+      className="flex min-w-0 flex-1 items-center gap-2 max-md:basis-full max-md:[scrollbar-width:none] max-md:overflow-x-auto md:flex-wrap"
     >
       {groups.map((group, index) => (
-        <div key={index} className="border-ms-border flex items-center gap-0.5 border-r pr-2">
+        <div
+          key={index}
+          className="border-ms-border flex flex-none items-center gap-0.5 border-r pr-2 max-md:last:border-r-0"
+        >
           {renderButtonGroup(group, activeFormats)}
         </div>
       ))}

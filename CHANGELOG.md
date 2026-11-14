@@ -39,6 +39,16 @@ Everything before this file existed was reconstructed from git history.
 
 ### Fixed
 
+- MCP server: every request to `/api/mcp` failed with a 500 in production. The
+  body-size guard re-wrapped Next's request object in a way that throws on
+  Node 24, which is what the host runs. The server also reports itself as
+  `marksight` now instead of the library's placeholder name
+- Live preview no longer freezes while you type quickly. It used to wait for a
+  pause, so steady typing left it stale until you stopped
+- Phone layout: the formatting toolbar is one swipeable row instead of five
+  stacked ones, the editor and preview each get the full width (switch between
+  them, and the skill inspector, from the view switch), and the header fits
+  without wrapping. Guide and About moved to the status bar on small screens
 - Decorative logo icon hidden from the accessibility tree
 - GitHub brand icon replaced with a local SVG (lucide dropped brand icons)
 - Toolbar tooltips show `Ctrl` shortcuts on Windows and Linux instead of `⌘`
