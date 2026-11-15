@@ -23,12 +23,12 @@ export default function Home() {
       <div className="sr-only">
         <h1>MarkSight — Markdown editor with live preview and Claude Skill export</h1>
         <p>
-          MarkSight is a free, open source markdown workspace. Write markdown on the left and see it
-          rendered live on the right, with a formatting toolbar, keyboard shortcuts, a document
-          outline, and light/dark themes. Everything stays local in your browser. Turn any document
-          into an agent Skill in one click: add a name and description, attach bundled files, and
-          export a ready-to-use SKILL.md folder or .skill bundle for Claude and other AI agents.
-          Export documents to HTML, PDF, or raw Markdown.
+          MarkSight is a free, open source markdown workspace. Write markdown and see it rendered
+          live as you type, with a formatting toolbar, keyboard shortcuts, a document outline, and
+          light/dark themes. Everything stays local in your browser. Turn any document into an agent
+          Skill in one click: add a name and description, attach bundled files, and export a
+          ready-to-use SKILL.md folder or .skill bundle for Claude and other AI agents. Export
+          documents to HTML, PDF, or raw Markdown.
         </p>
       </div>
       <Workspace />

@@ -256,7 +256,9 @@ export function ExportMenu({ skillMode, content, filename = "document" }: Export
         }
       >
         <Download className="h-[15px] w-[15px]" aria-hidden="true" />
-        <span>
+        {/* Icon-only on the narrowest phones: in skill mode the view switch has
+            a third segment, and with the label this row no longer fits 320px. */}
+        <span className="max-[359px]:sr-only">
           Export<span className="max-sm:hidden">{skillMode ? " skill" : ""}</span>
         </span>
         <ChevronDown className="h-3.5 w-3.5 max-sm:hidden" aria-hidden="true" />
