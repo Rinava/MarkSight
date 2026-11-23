@@ -180,7 +180,7 @@ export function MarkdownGuide({
                 Markdown guide
               </Dialog.Title>
               <Dialog.Description className="text-ms-muted-3 mt-0.5 text-[12.5px]">
-                Everything you can write on the left — with a live preview of each.
+                Everything you can write, with a live preview of each.
               </Dialog.Description>
             </div>
             <Dialog.Close

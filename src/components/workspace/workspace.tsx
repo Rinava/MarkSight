@@ -44,12 +44,12 @@ const PORTFOLIO_URL = "https://laramateo.com";
 
 const STARTER = `# Welcome to MarkSight
 
-A calm, distraction-free **markdown workspace** — write on the left, watch it render live on the right.
+A calm, distraction-free **markdown workspace**. Write markdown and watch it render live as you type.
 
 ## Getting started
 
 - Use the **toolbar** to format text, or memorise the shortcuts
-- Toggle **Editor / Split / Preview** from the view switch
+- Switch between **Editor** and **Preview** from the view switch, or put them side by side with **Split** on wider screens
 - Turn any document into an agent **Skill** with one click
 
 > Tip: everything stays local. Nothing leaves your browser.

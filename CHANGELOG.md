@@ -49,6 +49,10 @@ Everything before this file existed was reconstructed from git history.
   stacked ones, the editor and preview each get the full width (switch between
   them, and the skill inspector, from the view switch), and the header fits
   without wrapping. Guide and About moved to the status bar on small screens
+- On 320px-wide phones the toolbar's action row no longer wraps in skill mode
+  (Export is icon-only at that width)
+- The welcome document, the Guide and the page description no longer say
+  "write on the left, render on the right", which isn't true on a phone
 - Decorative logo icon hidden from the accessibility tree
 - GitHub brand icon replaced with a local SVG (lucide dropped brand icons)
 - Toolbar tooltips show `Ctrl` shortcuts on Windows and Linux instead of `⌘`
