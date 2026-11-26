@@ -36,7 +36,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fflate": "^0.8.3",
-    "framer-motion": "^12.43.0",
+    "framer-motion": "^14.14.0",
     "github-slugger": "^2.0.0",
     "lucide-react": "^1.72.0",
     "mcp-handler": "^2.4.0",
