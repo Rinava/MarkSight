@@ -72,6 +72,8 @@ Everything before this file existed was reconstructed from git history.
   for legacy browsers
 - Exported HTML is confirmed sanitized (raw HTML, event handlers and
   `javascript:` links are stripped) and now covered by tests
+- `postcss-selector-parser` floored at ≥ 6.1.5 under `@tailwindcss/typography`,
+  whose latest release still pins a vulnerable version (Dependabot alert #155)
 
 ### Removed
 
